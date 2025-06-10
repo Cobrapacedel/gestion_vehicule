@@ -1,0 +1,164 @@
+{% extends "core/base.html" %}
+
+{% block content %}
+{% load static %}
+
+<div class="container mx-auto mt-6 px-4">
+    <!-- Profil utilisateur -->
+    <div class="flex items-center space-x-4">
+        {% if user.profile.avatar and user.profile.avatar.url %}
+            <img src="{{ user.profile.avatar.url }}" alt="Avatar de {{ user.first_name }}"
+                class="rounded-full w-24 h-24 border shadow">
+        {% else %}
+            <img src="{% static 'avatars/default.png' %}" alt="Avatar par défaut"
+                class="rounded-full w-24 h-24 border shadow">
+        {% endif %}
+        <span class="text-xl font-semibold">{{ user.first_name }} {{ user.last_name }}</span>
+    </div>
+    
+
+    <h2 class="text-2xl font-bold mt-6">👋 Byenvini</h2>
+    <p class="text-center text-blue-600 font-semibold">{{ user.email }}</p>
+
+    <!-- Cartes d'informations -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
+        <div class="bg-blue-600 text-white rounded-xl shadow p-4">
+            <h5 class="text-lg font-bold">💰 Kont ou yo</h5>
+            <p class="mt-2">
+                📢 Ou gen <strong>{{ solde_total_htg|floatformat:2 }} HTG</strong> sou kont ou.
+            </p>
+            <ul class="list-disc list-inside text-sm mt-2">
+                <li>HTG : {{ solde_htg }}</li>
+                <li>USD : {{ solde_usd }}</li>
+                <li>BTG : {{ solde_btg }}</li>
+            </ul>
+            <a href="{% url 'payments:transaction_list' %}"
+               class="mt-3 inline-block bg-white text-black px-4 py-2 rounded font-semibold hover:bg-gray-100">
+                💳 Lis tout tranzaksyon ou yo
+            </a>
+        </div>
+
+        <div class="bg-green-600 text-white rounded-xl shadow p-4">
+            <h5 class="text-lg font-bold">🚗 Machin ou yo</h5>
+            <p class="mt-2">📢 Ou gen <strong>{{ nombre_vehicules }}</strong> machin sou kont ou.</p>
+            <a href="{% url 'vehicles:vehicles_list' %}"
+               class="mt-3 inline-block bg-white text-black px-4 py-2 rounded font-semibold hover:bg-gray-100">
+                📜 Lis tout machin ou yo
+            </a>
+        </div>
+
+        <div class="bg-yellow-500 text-white rounded-xl shadow p-4">
+            <h5 class="text-lg font-bold">🔔 Notifikasyon ou yo</h5>
+            <p class="mt-2">📢 Ou gen <strong>{{ notifications }}</strong> nouvo notifikasyon.</p>
+            <a href="{% url 'notifications:notification_list' %}"
+               class="mt-3 inline-block bg-white text-black px-4 py-2 rounded font-semibold hover:bg-gray-100">
+                📩 Wè notifikasyon yo
+            </a>
+        </div>
+
+        <div class="bg-red-600 text-white rounded-xl shadow p-4">
+            <h5 class="text-lg font-bold">🚨 Kontravansyon ou yo</h5>
+            <p class="mt-2">📢 Ou gen <strong>{{ fines }}</strong> nouvo kontravansyon.</p>
+            <a href="{% url 'fines:fine_list' %}"
+               class="mt-3 inline-block bg-white text-black px-4 py-2 rounded font-semibold hover:bg-gray-100">
+                ⚖️ Wè tout kontravansyon yo
+            </a>
+        </div>
+    </div>
+
+    <!-- Statistiques -->
+    <div class="bg-gray rounded-xl shadow p-6 mt-6 border border-gray-200">
+        <h5 class="text-lg font-bold mb-4">📊 Statistik tranzaksyon chak mwa</h5>
+        <canvas id="transactionsChart" height="100"></canvas>
+    </div>
+
+<div class="bg-gray-300 rounded-lg shadow p-6 mt-6">
+    <h2 class="text-xl font-bold mb-4 text-white">🔔 Preferans Notifikasyon</h2>
+
+<!-- Inclure HTMX -->
+<script src="https://unpkg.com/htmx.org@1.9.2"></script>
+
+<!-- Email Notification Toggle -->
+<div id="email-toggle" class="mb-3">
+    <form 
+        hx-post="{% url 'users:toggle_email_notifications' %}" 
+        hx-swap="outerHTML" 
+        hx-target="#email-toggle"
+        hx-trigger="click"
+    ><strong class="text-black">Imèl Notifikasyon:</strong>
+        {% if profile.email_notifications %}
+            <button type="submit" class="bg-green-500 text-white px-4 py-1 rounded-full flex items-center">
+                <svg class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
+                </svg>
+                Aktive
+            </button>
+        {% else %}
+            <button type="submit" class="bg-red-500 text-white px-4 py-1 rounded-full flex items-center">
+                <svg class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
+                </svg>
+                Dezaktive
+            </button>
+        {% endif %}
+    </form>
+</div>
+
+<!-- SMS Notification Toggle -->
+<div id="sms-toggle">
+    <form 
+        hx-post="{% url 'users:toggle_sms_notifications' %}" 
+        hx-swap="outerHTML" 
+        hx-target="#sms-toggle"
+        hx-trigger="click"
+    ><strong class="text-black">SMS Notifikasyon:</strong>
+        {% if profile.sms_notifications %}
+            <button type="submit" class="bg-green-500 text-white px-4 py-1 rounded-full flex items-center">
+                <svg class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
+                </svg>
+                Aktive
+            </button>
+        {% else %}
+            <button type="submit" class="bg-red-500 text-white px-4 py-1 rounded-full flex items-center">
+                <svg class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
+                </svg>
+                Dezaktive
+            </button>
+        {% endif %}
+    </form>
+</div>
+</div>
+
+
+<script>
+    // Initialisation du graphique
+    const ctx = document.getElementById('transactionsChart').getContext('2d');
+    const transactionsChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: {{ labels|safe }},
+            datasets: [{
+                label: 'Montant total HTG',
+                data: {{ data|safe }},
+                backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1,
+                borderRadius: 8
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: value => value + ' HTG'
+                    }
+                }
+            }
+        }
+    });
+</script>
+
+{% endblock %}

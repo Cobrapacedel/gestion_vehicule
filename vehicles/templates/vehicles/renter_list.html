@@ -1,0 +1,33 @@
+{% extends "core/base.html" %}
+{% load i18n %}
+
+{% block content %}
+<div class="container mx-auto px-4">
+  <h2 class="text-xl font-semibold mb-4">{% trans "Liste des locations" %}</h2>
+  <a href="{% url 'vehicles:renter_add' %}" class="bg-indigo-600 text-white px-4 py-2 rounded mb-4 inline-block">
+    {% trans "Nouvelle location" %}
+  </a>
+  <table class="min-w-full bg-white rounded shadow">
+    <thead>
+      <tr>
+        <th class="px-4 py-2">{% trans "Véhicule" %}</th>
+        <th class="px-4 py-2">{% trans "Locataire" %}</th>
+        <th class="px-4 py-2">{% trans "Début" %}</th>
+        <th class="px-4 py-2">{% trans "Fin" %}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for renter in renters %}
+      <tr class="border-t">
+        <td class="px-4 py-2">{{ renter.vehicle }}</td>
+        <td class="px-4 py-2">{{ renter.user }}</td>
+        <td class="px-4 py-2">{{ renter.start_date }}</td>
+        <td class="px-4 py-2">{{ renter.end_date }}</td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="4" class="text-center py-4">{% trans "Aucune location trouvée." %}</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

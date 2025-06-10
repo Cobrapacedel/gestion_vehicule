@@ -1,0 +1,52 @@
+{% extends "core/base.html" %}
+{% block title %}Tranfè Lajan | Kreye{% endblock %}
+{% block content %}
+<div class="max-w-md mx-auto mt-10 p-6 bg-white shadow-md rounded-xl">
+    <h2 class="text-xl font-semibold text-center text-blue-600 mb-6">Kreye Yon Transfè Lajan</h2>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        
+        <div class="mb-4">
+            {{ form.transfer_id.label_tag }}
+            {{ form.transfer_id }}
+            {{ form.transfer_id.errors }}
+        </div>
+        
+
+        <div class="mb-4">
+            {{ form.recipient.label_tag }}
+            {{ form.recipient }}
+            {{ form.recipient.errors }}
+        </div>
+
+        <div class="mb-4">
+            {{ form.amount.label_tag }}
+            {{ form.amount }}
+            {{ form.amount.errors }}
+        </div>
+
+    <div class="mb-4">
+            {{ form.currency.label_tag }}
+            {{ form.currency }}
+            {{ form.currency.errors }}
+        </div>
+        
+        <div class="mb-4">
+            {{ form.description.label_tag }}
+            {{ form.description }}
+            {{ form.description.errors }}
+        </div>
+        
+        
+        <div class="mb-4">
+            {{ form.status.label_tag }}
+            {{ form.status }}
+            {{ form.status.errors }}
+        </div>
+
+        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Voye</button>
+    </form>
+</div>
+{% endblock %}

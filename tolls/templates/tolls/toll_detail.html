@@ -1,0 +1,18 @@
+{% extends "core/base.html" %}
+{% block content %}
+<div class="max-w-xl mx-auto mt-10 bg-white shadow-md rounded-xl p-6">
+    <h2 class="text-2xl font-semibold text-gray-800 mb-6">📄 Detay Peman</h2>
+    <ul class="divide-y divide-gray-200 text-gray-700">
+        <li class="py-2"><strong>🗓️ Dat :</strong> {{ toll.timestamp }}</li>
+        <li class="py-2"><strong>🚧 Peyaj :</strong> {{ toll.toll_booth }}</li>
+        <li class="py-2"><strong>🚗 Machin :</strong> {{ toll.vehicle.plate_number }}</li>
+        <li class="py-2"><strong>💰 Kantite :</strong> {{ toll.amount }} HTG</li>
+        <li class="py-2"><strong>💳 Metod :</strong> {{ toll.get_payment_method_display }}</li>
+    </ul>
+    <div class="mt-6">
+        <a href="{% url 'toll_list' %}" class="inline-block bg-gray-500 hover:bg-gray-600 text-white font-medium px-4 py-2 rounded-lg transition">
+            ← Tounen
+        </a>
+    </div>
+</div>
+{% endblock %}

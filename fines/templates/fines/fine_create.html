@@ -1,0 +1,33 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto mt-10 p-6 bg-white rounded shadow">
+  <h2 class="text-2xl font-bold text-blue-600 mb-6 text-center">Nouvo Kontravansyon</h2>
+
+  <form method="post" class="space-y-4">
+    {% csrf_token %}
+
+    {% for field in form %}
+      <div>
+        <label class="block text-gray-700 font-medium mb-1">{{ field.label_tag }}</label>
+        {{ field }}
+        {% if field.help_text %}
+          <p class="text-sm text-gray-500">{{ field.help_text }}</p>
+        {% endif %}
+        {% for error in field.errors %}
+          <p class="text-sm text-red-500">{{ error }}</p>
+        {% endfor %}
+      </div>
+    {% endfor %}
+
+    <div class="flex justify-between mt-6">
+      <button type="submit" class="bg-blue-600 text-white px-5 py-2 rounded hover:bg-blue-700 transition">
+        Kreye
+      </button>
+      <a href="{% url 'fines:fine_list' %}" class="bg-gray-200 text-gray-700 px-5 py-2 rounded hover:bg-gray-300 transition">
+        Tounen
+      </a>
+    </div>
+  </form>
+</div>
+{% endblock %}

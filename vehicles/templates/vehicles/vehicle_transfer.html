@@ -1,0 +1,43 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% block title %}Transfere Machin{% endblock %}
+{% block content %}
+<div class="max-w-xl mx-auto bg-white p-6 rounded-xl shadow-md mt-10">
+  <div class="flex items-center justify-center mb-6">
+    <svg class="w-8 h-8 text-blue-600 mr-2" fill="none" stroke="currentColor" stroke-width="2"
+         viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path stroke-linecap="round" stroke-linejoin="round"
+            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1m0-10V5m-3 14h6a2 2 0 002-2V7a2 2 0 00-2-2h-6a2 2 0 00-2 2v10a2 2 0 002 2z">
+      </path>
+    </svg>
+    <h2 class="text-2xl font-bold text-gray-800">Transfere yon machin</h2>
+  </div>
+
+  <form method="post" class="space-y-5">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    <button type="submit"
+            class="w-full flex items-center justify-center bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-300">
+      <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" stroke-width="2"
+           viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-linejoin="round"
+              d="M17 16l4-4m0 0l-4-4m4 4H7"></path>
+      </svg>
+      Transfere
+    </button>
+  </form>
+
+  <div class="mt-6 text-center">
+    <a href="{% url 'vehicles:vehicles_list' %}"
+       class="inline-flex items-center text-blue-600 hover:underline text-sm">
+      <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" stroke-width="2"
+           viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-linejoin="round"
+              d="M15 19l-7-7 7-7"></path>
+      </svg>
+      Tounen nan lis machin yo
+    </a>
+  </div>
+</div>
+{% endblock %}

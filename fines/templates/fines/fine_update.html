@@ -1,0 +1,18 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+  <h2>Modifye yon Kontravansyon</h2>
+
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    <div class="form-group">
+      <label for="reason">Rezon Modifikasyon an:</label>
+      <textarea name="reason" id="reason" class="form-control" required></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-success">Anrejistre</button>
+    <a href="{% url 'fines:fine_list' %}" class="btn btn-secondary">Anile</a>
+  </form>
+{% endblock %}

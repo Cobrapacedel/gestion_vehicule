@@ -1,0 +1,22 @@
+{% extends "core/base.html" %}
+{% load i18n %}
+
+{% block content %}
+<div class="max-w-xl mx-auto p-4 bg-white text-black rounded-2xl shadow">
+  <h2 class="text-2xl font-bold mb-4">{% trans "Enregistrement d'une location" %}</h2>
+  <form method="post" class="space-y-4">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    {% if time %}
+    <p><strong>Durée :</strong> {{ time }} jour{{ time|pluralize }}</p>
+{% endif %}
+
+    <div class="flex justify-end">
+      <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">
+        {% trans "Enregistrer" %}
+      </button>
+    </div>
+  </form>
+</div>
+{% endblock %}

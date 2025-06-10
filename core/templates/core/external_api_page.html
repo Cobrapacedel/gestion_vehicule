@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Données API externe</title>
+</head>
+<body>
+    <h1>Données récupérées depuis une API</h1>
+
+    {% if data.error %}
+        <p style="color: red;">Erreur : {{ data.error }}</p>
+    {% else %}
+        <ul>
+        {% for item in data %}
+            <li>{{ item }}</li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+</body>
+</html>

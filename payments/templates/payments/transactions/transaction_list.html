@@ -1,0 +1,83 @@
+{% extends "core/base.html" %}
+
+{% block title %}Tranzaksyon | Lis{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto px-4 py-6">
+    <h2 class="text-2xl font-bold text-blue-600 mb-6">Lis Tout Tranzaksyon Yo</h2>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="mb-4 p-4 rounded text-white {% if message.tags == 'success' %}bg-green-500{% elif message.tags == 'error' %}bg-red-500{% else %}bg-blue-500{% endif %}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="overflow-x-auto bg-white rounded-lg shadow border">
+        <table class="min-w-full table-auto text-sm">
+            <thead class="bg-gray-100 text-left">
+                <tr>
+                    <th class="px-4 py-2">ID</th>
+                    <th class="px-4 py-2">Kantite</th>
+                    <th class="px-4 py-2">Deviz</th>
+                    <th class="px-4 py-2">Tach</th>
+                    <th class="px-4 py-2">Dat</th>
+                    <th class="px-4 py-2">Estati</th>
+                    <th class="px-4 py-2 text-center">Aksyon</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for transaction in page_obj %}
+                <tr class="border-t">
+                    <td class="px-4 py-2">{{ transaction.id }}</td>
+                    <td class="px-4 py-2">{{ transaction.amount }}</td>
+                    <td class="px-4 py-2">{{ transaction.currency }}</td>
+                    <td class="px-4 py-2">{{ transaction.description }}</td>
+                    <td class="px-4 py-2">{{ transaction.date|date:"d/m/Y H:i" }}</td>
+                    <td class="px-4 py-2">
+                        <span class="{% if transaction.status == 'Réussi' %}text-green-600{% elif transaction.status == 'Échoué' %}text-red-500{% else %}text-yellow-600{% endif %} font-medium">
+                            {{ transaction.status }}
+                        </span>
+                    </td>
+                    <td class="px-4 py-2 text-center">
+                        <a href="{% url 'payments:transaction-detail' transaction.id %}" class="text-blue-600 hover:underline">Detay</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="px-4 py-4 text-center text-gray-500">
+                        Pa gen okenn transaksyon disponib.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="flex justify-between mt-6">                        <a href="{% url 'payments:transaction_create' %}" class="btn bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700" title='+ Kreye'>+ Kreye</a>
+                <a href="{% url 'payments:transaction_delete' %}" class="btn px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-purple-700" title='Efase'>Efase</a></div>
+                <div class="mt-4">
+            <a href="{% url 'core:dashboard' %}" class="text-blue-600 hover:underline">← Retounen </a>
+        </div>
+        
+
+    <!-- Pagination -->
+    <div class="mt-6 flex justify-center gap-2">
+        {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}" class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300">&laquo;</a>
+        {% endif %}
+
+        {% for num in page_obj.paginator.page_range %}
+            {% if num == page_obj.number %}
+                <span class="px-3 py-1 bg-blue-600 text-white rounded">{{ num }}</span>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                <a href="?page={{ num }}" class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300">{{ num }}</a>
+            {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}" class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300">&raquo;</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

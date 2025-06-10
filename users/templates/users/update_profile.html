@@ -1,0 +1,104 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Pwofil | Mizajou{% endblock %}
+
+{% block content %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/update_profile.css' %}">
+
+<div class="container mx-auto p-6">
+    <h2 class="text-3xl font-bold text-center text-blue-600 mb-6">Mizajou sou Pwofil ou</h2>
+
+    <!-- Display messages -->
+    {% if messages %}
+        <div class="mb-6">
+            {% for message in messages %}
+                {% if message.tags == 'error' %}
+                    <div class="bg-red-500 text-white p-3 rounded mb-2">
+                        {{ message }}
+                    </div>
+                {% else %}
+                    <div class="bg-green-500 text-white p-3 rounded mb-2">
+                        {{ message }}
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- Form -->
+    <form method="post" enctype="multipart/form-data" class="bg-gray-500 shadow-md rounded-lg p-6">
+        {% csrf_token %}
+
+        <!-- Avatar Preview -->
+<div class="text-center mb-6">
+    {% if form.avatar.value %}
+        <img src="{{ form.avatar.value.url }}" alt="Foto aktyèl" class="w-32 h-32 rounded-full border-4 border-blue-500 mb-4 mx-auto">
+    {% else %}
+        <img src="{% static 'images/avatars/default.png' %}" alt="Foto pa defo" class="w-32 h-32 rounded-full border-4 border-blue-500 mb-4 mx-auto">
+    {% endif %}
+</div>
+
+<!-- Champ de téléchargement -->
+<div class="mb-4">
+    <label for="{{ form.avatar.id_for_label }}" class="block text-lg font-medium text-gray-200">Chwazi nouvo foto (avatar)</label>
+    
+    {{ form.avatar }}
+
+    {% if form.avatar.errors %}
+        <div class="text-red-500 text-sm mt-2">{{ form.avatar.errors }}</div>
+    {% endif %}
+
+    {% if form.avatar.value %}
+        <p class="text-sm text-gray-300 mt-2">
+            Foto aktyèl: <a href="{{ form.avatar.value.url }}" class="underline text-blue-300">Gade foto</a>
+        </p>
+    {% endif %}
+</div>
+
+        <div class="mb-4">
+            <label for="{{ form.address.id_for_label }}" class="block text-lg font-medium text-black">Adrès</label>
+            {{ form.address }}
+            {% if form.address.errors %}
+                <div class="text-red-500 text-sm mt-2">{{ form.address.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="mb-4">
+            <label for="{{ form.phone_number.id_for_label }}" class="block text-lg font-medium text-black">Telefòn</label>
+            {{ form.phone_number }}
+            {% if form.phone_number.errors %}
+                <div class="text-red-500 text-sm mt-2">{{ form.phone_number.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="mb-4">
+            <div class="flex items-center">
+                {{ form.email_notifications }}
+                <label for="{{ form.email_notifications.id_for_label }}" class="ml-2 text-gray-700">Resevwa notifikasyon yo nan imèl</label>
+            </div>
+            {% if form.email_notifications.errors %}
+                <div class="text-red-500 text-sm mt-2">{{ form.email_notifications.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="mb-4">
+            <div class="flex items-center">
+                {{ form.sms_notifications }}
+                <label for="{{ form.sms_notifications.id_for_label }}" class="ml-2 text-gray-700">Resevwa notifikasyon yo nan SMS</label>
+            </div>
+            {% if form.sms_notifications.errors %}
+                <div class="text-red-500 text-sm mt-2">{{ form.sms_notifications.errors }}</div>
+            {% endif %}
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="w-full py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition">Mizajou</button>
+    </form>
+
+    <div class="text-center mt-6">
+        <a href="{% url 'users:profile' %}" class="text-blue-600 hover:underline">Retounen nan Pwofil ou</a>
+    </div>
+</div>
+
+{% endblock %}

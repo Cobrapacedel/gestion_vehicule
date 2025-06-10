@@ -1,0 +1,205 @@
+/* Carrousel */
+.carrousel-img {
+    height: 400px;
+    object-fit: cover;
+    border-radius: 100px;
+}
+/* Mode clair (par défaut) */
+body {
+    background-color: #f8f9fa;
+    color: #212529;
+    margin-top: 70px;
+}
+
+.navbar {
+    background-color: #343a40;
+    top: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    position: fixed;
+    width: 100%;
+    z-index: 1000;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease-in-out;
+}
+
+.navbar-brand span {
+    color: #17a2b8;
+}
+.navbar-toggler {
+    color: #f1f3f3;
+}
+.navbar-nav .nav-link {
+    transition: color 0.3s ease-in-out;
+}
+
+.navbar-nav .nav-link:hover {
+    color: #17a2b8 !important;
+}
+
+/* Mode sombre activé */
+body.dark-mode {
+    background-color: #212529;
+    color: #f8f9fa;
+}
+
+.dark-mode .navbar {
+    background-color: #000000;
+}
+
+.dark-mode .footer {
+    background-color: #000000;
+}
+
+.dark-mode .navbar-brand span {
+    color: #0dcaf0;
+}
+
+.dark-mode .navbar-nav .nav-link {
+    color: #f8f9fa !important;
+}
+
+.dark-mode .navbar-nav .nav-link:hover {
+    color: #0dcaf0 !important;
+}
+
+/* Messages */
+.messages {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    z-index: 1000;
+}
+/* Footer */
+.footer {
+    background-color: #343a40;
+    padding: 20px;
+}
+.social-icons {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+}
+.social-icons a {
+    color: white;
+    margin: 0 10px;
+    font-size: 24px;
+    transition: color 0.3s ease-in-out;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #343a40;
+    box-shadow: 0 2px 5px rgba(255, 255, 255, 0.8);
+    text-align: center;
+    line-height: 40px; /* Centrer le texte verticalement */
+
+}
+
+.social-icons a:hover {
+    color: #17a2b8;
+    transform: scale(2);
+}
+
+/* Mode sombre pour les icônes */
+.dark-mode .social-icons a {
+    color: #f8f9fa;
+}
+
+.dark-mode .social-icons a:hover {
+    color: #0dcaf0;
+}
+.text-blue {
+    color: blue;
+}
+
+h1, h2, h3, h5 {
+    text-shadow: 2px 2px 3px red;
+    text-align: center;
+    margin-top: 0px;
+}
+.table td, .table th {
+    white-space: nowrap; /* Évite les retours à la ligne inutiles */
+    overflow: hidden;
+    text-overflow: ellipsis; /* Ajoute "..." si trop long */
+    max-width: 150px; /* Limite la largeur des colonnes */
+}
+.container {
+    max-width: 100%;
+    padding: 15px;
+    overflow-x: auto;
+}
+.menu a {
+    display: flex;
+    align-items: center;
+    gap: 5px; /* Ajuste l'espacement entre l'icône et le texte */
+    line-height: normal;
+    margin: 0;
+    padding: 8px 12px;
+}
+#date, #time, #footer {
+    text-shadow: 2px 2px 3px red;
+    margin-top: 0px;
+}
+.navbar-nav ul li span
+{
+    position: absolute;
+}
+.navbar-nav ul li i
+{
+    color: #fff;
+    font-size: 2em;
+    transition: 300ms;
+    transition-delay: 150ma;
+}
+.navbar-nav ul li:hover i
+{
+    transform: scale(0);
+    color: #fff;
+    transition-delay: 0s;
+}
+ul li .text
+{
+    color: #1e1e1e;
+    font-size: 1.5em;
+    z-index: 1;
+    letter-spacing: 0.024em;
+    opacity: 0;
+    transition: 300ms;
+    letter-spacing: -0.125pz;
+}
+.card {
+    border-radius: 30px 0px 30px 0px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    margin: 10px;
+    background-color: #f8f9fa;
+    color: #212529;
+    text-align: center;
+    text-decoration: none;
+    font-size: 1.2em;
+    text-shadow: 2px 2px 3px red;
+    border: 2px solid #343a40;
+}
+.card:hover {
+    transform: scale(1.05);
+}
+.dark-mode .card {
+    background-color: #212529;
+    color: #f8f9fa;
+    border: 2px solid #0dcaf0;
+}
+.dark-mode .card:hover {
+    transform: scale(1.05);
+    background-color: #343a40;
+}

@@ -1,0 +1,43 @@
+{% extends "core/base.html" %}
+
+{% block title %}Pèman | Detay #{{ payment.id }} {% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto px-4 py-6">
+    <h2 class="text-3xl font-semibold text-blue-600 mb-6">Detay Peman #{{ payment.id }}</h2>
+
+    <div class="bg-white p-6 rounded-lg shadow border border-gray-300 space-y-4">
+        <div>
+            <span class="font-semibold text-gray-700">ID:</span> {{ payment.id }}
+        </div>
+        <div>
+            <span class="font-semibold text-gray-700">Kantite:</span> {{ payment.amount }}
+        </div>
+        <div>
+            <span class="font-semibold text-gray-700">Deviz:</span> {{ payment.currency|default:"HTG" }}
+        </div>
+        <div>
+            <span class="font-semibold text-gray-700">Metòd Peman:</span> {{ payment.payment_method|title }}
+        </div>
+        <div>
+            <span class="font-semibold text-gray-700">Dat:</span> {{ payment.timestamp|date:"d/m/Y H:i" }}
+        </div>
+        <div>
+            <span class="font-semibold text-gray-700">Estati:</span>
+            {% if payment.status == "Complété" %}
+                <span class="badge bg-green-500 text-white py-1 px-3 rounded-full">✅ Reyisi</span>
+            {% elif payment.status == "En attente" %}
+                <span class="badge bg-yellow-400 text-black py-1 px-3 rounded-full">⏳ An Atant</span>
+            {% else %}
+                <span class="badge bg-red-500 text-white py-1 px-3 rounded-full">❌ Echwe</span>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="mt-6 space-x-4">
+        <a href="{% url 'payments:payment_edit' payment.id %}" class="btn bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600">Modifye</a>
+        <a href="{% url 'payments:payment_delete' payment.id %}" class="btn bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700">Efase</a>
+        <a href="{% url 'payments:payment_list' %}" class="btn bg-gray-400 text-white px-4 py-2 rounded-lg hover:bg-gray-500">Retounen</a>
+    </div>
+</div>
+{% endblock %}

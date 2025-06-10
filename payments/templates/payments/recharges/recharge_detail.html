@@ -1,0 +1,52 @@
+{% extends "core/base.html" %}
+
+{% block title %}Rechaj | Detay #{{ recharge.id }}{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto px-4 py-6">
+    <h2 class="text-2xl font-bold text-blue-600 mb-4">Detay Rechaj</h2>
+
+    <div class="bg-white shadow rounded-lg border p-6 space-y-4">
+        <div class="flex justify-between">
+            <span class="font-semibold">ID:</span>
+            <span>{{ recharge.id }}</span>
+        </div>
+        <div class="flex justify-between">
+            <span class="font-semibold">Kantite:</span>
+            <span>{{ recharge.amount }} HTG</span>
+        </div>
+        <div class="flex justify-between">
+            <span class="font-semibold">Metòd:</span>
+            <span>{{ recharge.method|title }}</span>
+        </div>
+        <div class="flex justify-between">
+            <span class="font-semibold">Dat:</span>
+            <span>{{ recharge.created_at|date:"d/m/Y H:i" }}</span>
+        </div>
+        <div class="flex justify-between">
+            <span class="font-semibold">Estati:</span>
+           <span class="flex items-center gap-2 font-medium 
+{% if recharge.status == 'Complété' %}text-green-600{% elif recharge.status == 'Echwe' %}text-red-500{% else %}text-yellow-600{% endif %}">
+    {% if recharge.status == 'Complété' %}
+        <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M5 13l4 4L19 7" />
+        </svg>
+    {% elif recharge.status == 'Echwe' %}
+        <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M6 18L18 6M6 6l12 12" />
+        </svg>
+    {% else %}
+        <svg class="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M12 9v2m0 4h.01M12 5a7 7 0 100 14 7 7 0 000-14z" />
+        </svg>
+    {% endif %}
+    {{ recharge.status }}
+</span>
+        </div>
+    </div>
+
+    <div class="mt-6">
+        <a href="{% url 'payments:recharge-list' %}" class="text-blue-600 hover:underline">Retounen sou lis rechaj yo</a>
+    </div>
+</div>
+{% endblock %}

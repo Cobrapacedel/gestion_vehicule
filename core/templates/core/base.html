@@ -1,0 +1,232 @@
+{% load static %}
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="fr" x-data="{ open: false, darkMode: localStorage.getItem('darkMode') === 'enabled', active: 0, images: ['{% static "images/voiture1.png" %}', '{% static "images/voiture2.png" %}', '{% static "images/voiture3.png" %}'] }"
+      x-init="() => {
+          if (darkMode) document.documentElement.classList.add('dark');
+          updateDateTime();
+          setInterval(updateDateTime, 1000);
+      }">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Jere Machin Ou{% endblock %}</title>
+    <meta name="description" content="{% block description %}Jere Machin Ou - Yon platfòm pou jere machin ou yo ak tout tranzaksyon ou yo{% endblock %}">
+    <meta name="keywords" content="{% block keywords %}Jere Machin, machin, tranzaksyon, sèvis{% endblock %}">
+    <meta name="author" content="Cobrapacedel™">
+    <meta name="theme-color" content="#4F46E5">
+    <meta name="robots" content="index, follow">
+    <meta name="googlebot" content="index, follow">
+    <meta name="google" content="notranslate">
+    <meta name="csrf-token" content="{{ csrf_token }}">
+
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class'
+        }
+    </script>
+
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <!-- Custom styles -->
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- Manifest -->
+    <link rel="manifest" href="{% static 'manifest.json' %}">
+    <link rel="icon" type="image/png" sizes="192x192" href="{% static 'icons/icon-192x192.png' %}">
+    <meta name="theme-color" content="#111827">
+
+
+
+    <!-- Favicon -->
+    <link rel="icon" href="{% static 'images/car.png' %}" type="image/png">
+</head>
+<body class="bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-white" x-bind:class="darkMode ? 'dark' : ''">
+
+
+
+<!-- Navbar -->
+<nav class="bg-gray-900 text-white shadow-md">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+        <a href="{% url 'home' %}" class="flex items-center space-x-2 text-lg font-bold">
+            <i class="fa-solid fa-car"></i>
+            <span>Jere Machin <i class="fa-solid fa-face-smile-beam"></i>u</span>
+        </a>
+        <div class="space-x-4 hidden md:flex">
+            {% if user.is_authenticated %}
+                <a href="{% url 'core:dashboard' %}" class="hover:underline"><i class="fa-solid fa-home"></i> Akèy</a>
+                <a href="{% url 'core:about' %}" class="hover:underline"><i class="fa-solid fa-info"></i> Apwopo</a>
+                                <a href="{% url 'core:mon_cv' %}" class="hover:underline"><i class="fa-solid fa-info"></i> CV</a>
+                <a href="{% url 'users:profile' %}" class="hover:underline"><i class="fa-solid fa-user"></i> Pwofil</a>
+                <a href="{% url 'notifications:notification_list' %}" class="relative hover:underline">
+                    <i class="fa-solid fa-bell"></i> Notifikasyon Yo
+                    {% if notifications %}
+                        <span class="absolute top-0 -right-2 bg-red-500 text-xs rounded-full px-2">{{ notifications }}</span>
+                    {% endif %}
+                </a>
+                <a href="{% url 'users:logout' %}" class="hover:underline"><i class="fa-solid fa-sign-out-alt"></i> Dekoneksyon</a>
+            {% else %}
+                <a href="{% url 'users:register' %}" class="hover:underline">Enskripsyon</a>
+                <a href="{% url 'login' %}" class="hover:underline">Koneksyon</a>
+            {% endif %}
+        </div>
+
+
+        <!-- Mobile Menu Button -->
+        <div class="md:hidden">
+            <button @click="open = !open" class="text-white">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div x-show="open" class="md:hidden bg-gray-900 text-white p-4">
+        <a href="{% url 'core:dashboard' %}" class="block py-2">Akèy</a>
+        <a href="{% url 'core:about' %}" class="block py-2">Apwopo</a>
+                <a href="{% url 'core:mon_cv' %}" class="block py-2">CV</a>
+        <a href="{% url 'users:profile' %}" class="block py-2">Pwofil</a>
+        <a href="{% url 'notifications:notification_list' %}" class="block py-2">Notifikasyon Yo</a>
+        <a href="{% url 'users:logout' %}" class="block py-2">Dekoneksyon</a>
+    </div>
+</nav>
+
+<!-- Messages -->
+{% if messages %}
+    <div class="max-w-5xl mx-auto mt-4 space-y-2">
+        {% for message in messages %}
+            <div class="p-4 rounded bg-blue-100 text-blue-800 shadow">{{ message }}</div>
+        {% endfor %}
+    </div>
+{% endif %}
+    
+<!-- Main Content -->
+<main class="max-w-7xl mx-auto mt-6 px-4">
+    {% block content %}{% endblock %}
+                        <!-- Dark Mode Toggle -->
+<div class="fixed top-5 right-5 z-50">
+    <button @click="darkMode = !darkMode; localStorage.setItem('darkMode', darkMode ? 'enabled' : 'disabled'); document.documentElement.classList.toggle('dark')"
+            x-text="darkMode ? '☀️' : '🌙'"
+            class="bg-gray-700 text-white p-2 rounded-full hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500">
+    </button>
+</div>
+</main>
+   
+
+<!-- Carousel -->
+<div class="relative max-w-4xl mx-auto mt-10 rounded overflow-hidden shadow-lg">
+    <img :src="images[active]" class="w-full h-64 object-cover transition-all duration-700">
+    <div class="absolute inset-0 flex justify-between items-center px-4">
+        <button @click="active = (active - 1 + images.length) % images.length"
+                class="bg-white bg-opacity-50 hover:bg-opacity-80 p-2 rounded-full text-xl">
+            <i class="fa-solid fa-chevron-left"></i>
+        </button>
+        <button @click="active = (active + 1) % images.length"
+                class="bg-white bg-opacity-50 hover:bg-opacity-80 p-2 rounded-full text-xl">
+            <i class="fa-solid fa-chevron-right"></i>
+        </button>
+    </div>
+</div>
+
+<!-- Date & Time -->
+<div class="text-center mt-6 text-lg font-medium">
+    <div id="date"></div>
+    <div id="time"></div>
+</div>
+
+<script>
+    function updateDateTime() {
+        const dateEl = document.getElementById('date');
+        const timeEl = document.getElementById('time');
+        const now = new Date();
+
+        const weekdaysHT = ['Dimanch', 'Lendi', 'Madi', 'Mèkredi', 'Jedi', 'Vandredi', 'Samdi'];
+        const monthsHT = ['Janvye', 'Fevriye', 'Mas', 'Avril', 'Me', 'Jen', 'Jiyè', 'Out', 'Septanm', 'Oktòb', 'Novanm', 'Desanm'];
+
+        const weekday = weekdaysHT[now.getDay()];
+        const day = now.getDate();
+        const month = monthsHT[now.getMonth()];
+        const year = now.getFullYear();
+        const dateString = `${weekday} ${day} ${month} ${year}`;
+        dateEl.textContent = dateString;
+
+        let hours = now.getHours();
+        const minutes = now.getMinutes().toString().padStart(2, '0');
+        const seconds = now.getSeconds().toString().padStart(2, '0');
+
+        // Détermination de la période (maten, midi, aprèmidi, aswè, minwi)
+        let period;
+        if (hours >= 1 && hours < 12) {
+            period = '(maten)';
+        } else if (hours === 12) {
+            period = '(midi)';
+        } else if (hours > 12 && hours < 19) {
+            period = '(aprèmidi)';
+        } else if (hours >= 19 && hours <= 23) {
+            period = '(aswè)';
+        } else {
+            period = '(minwi)';
+        }
+
+        const displayHours = hours % 12 || 12; // Format 12h, 0 devient 12
+        const timeString = `${displayHours}:${minutes}:${seconds} ${period}`;
+        timeEl.textContent = timeString;
+
+        setTimeout(updateDateTime, 1000);
+    }
+
+    window.addEventListener('DOMContentLoaded', updateDateTime);
+</script>
+
+<!-- Footer -->
+<footer class="bg-gray-900 text-white mt-10 py-6">
+    <div class="text-center space-y-2">
+        <p><i class="fa-solid fa-car"></i> <strong>Jere Machin <i class="fa-solid fa-face-smile-beam"></i>u</strong> &copy; 2025</p>
+        <p>Tout Dwa Yo Rezève</p>
+        <p><span class="text-blue-300 font-semibold">Cobrapacedel™</span></p>
+
+        <div class="flex flex-wrap justify-center gap-4 text-2xl mt-4">
+            <a href="https://wa.me/+18294630993" target="_blank"><i class="fab fa-whatsapp"></i></a>
+            <a href="https://facebook.com/cobrapacedel" target="_blank"><i class="fab fa-facebook"></i></a>
+            <a href="https://discord.com/cobrapacedel" target="_blank"><i class="fab fa-discord"></i></a>
+            <a href="https://github.com/cobrapacedel" target="_blank"><i class="fab fa-github"></i></a>
+            <a href="https://instagram.com/cobrapacedel" target="_blank"><i class="fab fa-instagram"></i></a>
+            <a href="https://twitter.com/cobrapacedel" target="_blank"><i class="fab fa-twitter"></i></a>
+            <a href="https://t.me/cobrapacedel" target="_blank"><i class="fab fa-telegram"></i></a>
+            <a href="https://www.tiktok.com/@cobrapacedel" target="_blank"><i class="fab fa-tiktok"></i></a>
+            <a href="https://www.youtube.com/@cobrapacedel" target="_blank"><i class="fab fa-youtube"></i></a>
+        </div>
+    </div>
+</footer>
+<script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("{% static 'sw.js' %}")
+        .then(() => console.log("Service Worker registered"))
+        .catch(error => console.log("SW registration failed:", error));
+    }
+  </script>  
+  <script src="https://unpkg.com/lucide@latest"></script>
+<script>
+  lucide.createIcons();
+</script>
+<script>
+    document.body.addEventListener('htmx:configRequest', (event) => {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        event.detail.headers['X-CSRFToken'] = csrfToken;
+    });
+</script>
+</body>
+</html>

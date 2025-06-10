@@ -1,0 +1,13 @@
+{% extends "core/base.html" %}
+{% block content %}
+<div class="max-w-xl mx-auto mt-10 px-6 py-4 bg-green-100 border border-green-300 text-green-800 rounded-xl shadow">
+    <h4 class="text-xl font-bold mb-2">✅ Peman an Reyisi ! 🎉</h4>
+    <p class="mb-4">
+        Peman ou an ki se <strong>{{ toll.amount }} HTG</strong> pou pos peyaj 
+        <strong>{{ toll.toll_booth }}</strong> te anrejistre avèk siksè.
+    </p>
+    <a href="{% url 'toll_receipt' toll.id %}" class="inline-block bg-green-600 hover:bg-green-700 text-white font-medium px-4 py-2 rounded-lg transition">
+        Gade Resi a
+    </a>
+</div>
+{% endblock %}

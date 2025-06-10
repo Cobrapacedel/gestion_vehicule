@@ -1,0 +1,88 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block title %}Vérification OTP{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+<script src="https://cdn.tailwindcss.com"></script>
+
+<div class="min-h-screen flex items-center justify-center bg-gray-900 text-white px-4 py-8">
+  <div class="w-full max-w-sm bg-gray-800 p-6 rounded-xl shadow-lg space-y-6">
+
+    <div class="text-center">
+      <h2 class="text-2xl font-bold text-green-400">Vérification OTP</h2>
+    </div>
+
+    {% if messages %}
+      <div class="space-y-2">
+        {% for message in messages %}
+          <div class="bg-{{ message.tags }}-500 text-white p-2 rounded text-sm">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <form method="post" class="space-y-4">
+      {% csrf_token %}
+
+      <div class="relative">
+        <label for="id_code" class="block text-sm mb-1">Code OTP</label>
+        <span class="absolute left-3 top-9 text-gray-400">🔑</span>
+        {{ form.code|add_class:"appearance-none rounded relative block w-full px-10 py-2 bg-gray-700 border border-gray-600 placeholder-gray-400 text-white focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm" }}
+      </div>
+
+      {% if form.errors %}
+        <div class="bg-red-600 text-white p-2 rounded text-sm">
+          <ul class="list-disc list-inside">
+            {% for field, errors in form.errors.items %}
+              {% for error in errors %}
+                <li>{{ error }}</li>
+              {% endfor %}
+            {% endfor %}
+          </ul>
+        </div>
+      {% endif %}
+
+      <button type="submit"
+              class="w-full py-2 px-4 bg-green-600 hover:bg-green-700 text-white font-medium rounded focus:outline-none focus:ring-2 focus:ring-green-500">
+        ✅ Vérifier OTP
+      </button>
+    </form>
+
+    <div class="text-center space-y-2">
+      <p>Vous n'avez pas reçu de code ?</p>
+      <button id="resend-otp-btn" class="text-blue-400 hover:underline">
+        Renvoyer OTP
+      </button>
+      <p id="resend-status" class="text-sm text-gray-400"></p>
+    </div>
+
+    <a href="{% url 'users:logout' %}" class="block mt-4 w-full text-center py-2 px-4 bg-red-600 hover:bg-red-700 text-white font-medium rounded focus:outline-none focus:ring-2 focus:ring-red-500">
+      🔙 Tounen
+    </a>
+
+  </div>
+</div>
+
+<script>
+document.getElementById("resend-otp-btn").addEventListener("click", function() {
+    fetch("{% url 'users:resend-otp' %}", {
+        method: "POST",
+        headers: {
+            "X-CSRFToken": "{{ csrf_token }}"
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        let statusElement = document.getElementById("resend-status");
+        statusElement.innerText = data.message;
+        statusElement.style.color = data.status === "success" ? "green" : "red";
+    })
+    .catch(error => console.error("Erreur lors du renvoi de l'OTP:", error));
+});
+</script>
+
+<script src="{% static 'js/verify_otp.js' %}"></script>
+
+{% endblock %}

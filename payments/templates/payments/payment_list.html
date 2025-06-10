@@ -1,0 +1,103 @@
+{% extends "core/base.html" %}
+
+{% block title %}Lis Tranzaksyon{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 py-6">
+    <h2 class="text-3xl font-semibold text-blue-600 mb-6">Lis Tout Peman Yo</h2>
+
+    <!-- Formulaire de rechèch -->
+    <form method="GET" class="flex flex-wrap gap-4 mb-6">
+        <div class="w-full md:w-1/4 bg-gray-100 p-4 rounded-lg shadow border border-gray-500">
+            <input type="text" name="q" class="form-input p-3 border rounded-lg w-full" placeholder="Chèche ......" value="{{ request.GET.q }}">
+        </div>
+        <div class="w-full md:w-1/4 bg-gray-100 p-4 rounded-lg shadow border border-gray-500">
+            <input type="date" name="start_date" class="form-input p-3 border rounded-lg w-full" value="{{ request.GET.start_date }}">
+        </div>
+        <div class="w-full md:w-1/4 bg-gray-100 p-4 rounded-lg shadow border border-gray-500">
+            <input type="date" name="end_date" class="form-input p-3 border rounded-lg w-full" value="{{ request.GET.end_date }}">
+        </div>
+        <div class="w-full md:w-1/4 flex items-end">
+            <button type="submit" class="btn btn-primary px-4 py-2 rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none">Filtre</button>
+        </div>
+    </form>
+
+    <!-- Table -->
+    <div class="overflow-x-auto bg-white rounded-lg shadow-md border border-gray-200">
+        <table id="paymentsTable" class="min-w-full table-auto">
+            <thead>
+                <tr class="bg-blue-600 text-white">
+                    <th class="px-4 py-2">ID</th>
+                    <th class="px-4 py-2">Kantite</th>
+                    <th class="px-4 py-2">Deviz</th>
+                    <th class="px-4 py-2">Metòd</th>
+                    <th class="px-4 py-2">Dat</th>
+                    <th class="px-4 py-2">Estati</th>
+                    <th class="px-4 py-2">Aksyon</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for payment in payments %}
+                <tr class="border-b {% if payment.status == 'Complété' %}bg-green-50{% elif payment.status == 'En attente' %}bg-yellow-50{% else %}bg-red-50{% endif %}">
+                    <td class="px-4 py-2">{{ payment.id }}</td>
+                    <td class="px-4 py-2">{{ payment.amount }}</td>
+                    <td class="px-4 py-2">{{ payment.currency|default:'HTG' }}</td>
+                    <td class="px-4 py-2">{{ payment.payment_method|title }}</td>
+                    <td class="px-4 py-2">{{ payment.timestamp|date:"d/m/Y H:i" }}</td>
+                    <td class="px-4 py-2">
+                        {% if payment.status == "Complété" %}
+                            <span class="badge bg-green-500 text-white py-1 px-3 rounded-full">✅ Reyisi</span>
+                        {% elif payment.status == "En attente" %}
+                            <span class="badge bg-yellow-400 text-black py-1 px-3 rounded-full">⏳ An Atant</span>
+                        {% else %}
+                            <span class="badge bg-red-500 text-white py-1 px-3 rounded-full">❌ Echwe</span>
+                        {% endif %}
+                    </td>
+                    <td class="px-4 py-2 space-x-2">
+                        <a href="{% url 'payments:transaction_detail' payment.id %}" class="btn btn-sm bg-blue-600 text-white rounded-lg px-3 py-1 hover:bg-blue-700" title="Detay">Detay</a>
+                        {% if payment.status == "En attente" %}
+                            <a href="{% url 'payments:mark_as_paid' payment.id %}" class="btn btn-sm bg-green-500 text-white rounded-lg px-3 py-1 hover:bg-green-600" title="Make kòm peye">Peye</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="8" class="text-center py-4 text-gray-500">Pa gen okenn pèman disponib.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Boutons -->
+    <div class="flex justify-between mt-6">
+        <a href="{% url 'payments:payment_create' %}" class="btn bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700" title="+ Kreye">+ Kreye</a>
+        <a href="{% url 'payments:transaction_create' %}" class="btn bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600" title="Tounen">Tounen</a>
+    </div>
+</div>
+
+<!-- Script DataTables -->
+<script>
+    $(document).ready(function () {
+        $('#paymentsTable').DataTable({
+            paging: true,
+            ordering: true,
+            info: true,
+            searching: true,
+            language: {
+                lengthMenu: "Montre _MENU_ Pèman pa paj",
+                zeroRecords: "Pa gen rezilta",
+                info: "Ap montre _START_ rive _END_ sou _TOTAL_ pèman",
+                infoEmpty: "Okenn pèman disponib",
+                search: "Chèche :",
+                paginate: {
+                    first: "Premye",
+                    last: "Dènye",
+                    next: "Swivan",
+                    previous: "Anvan"
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

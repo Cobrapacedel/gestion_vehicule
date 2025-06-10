@@ -1,0 +1,42 @@
+{% extends "core/base.html" %}
+
+{% block title %}Pèman | Kreye{% endblock %}
+
+{% block content %}
+<div class="max-w-xl mx-auto px-4 py-10">
+    <h2 class="text-3xl font-semibold text-blue-600 mb-8 text-center">Chwazi Tip Peman</h2>
+
+    <div class="grid grid-cols-1 gap-6">
+        <!-- Peman Kontravansyon -->
+        <a href="{% url 'fines:fine_payment' %}" 
+           class="flex items-center justify-center gap-3 bg-red-500 hover:bg-red-600 text-white py-4 px-6 rounded-lg text-lg font-medium shadow">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2a2 2 0 00-2-2H5V9h2a2 2 0 002-2V5h6v2a2 2 0 002 2h2v4h-2a2 2 0 00-2 2v2H9z" />
+            </svg>
+            Peman Kontravansyon
+        </a>
+
+        <!-- Peman Peyaj -->
+        <a href="{% url 'tolls:toll_payment_form' %}" 
+           class="flex items-center justify-center gap-3 bg-green-500 hover:bg-green-600 text-white py-4 px-6 rounded-lg text-lg font-medium shadow">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.333-2-4-2-5.333 0-1.333 2-1.333 6 0 8 1.333 2 4 2 5.333 0C13.333 14 13.333 10 12 8z" />
+            </svg>
+            Peman Peyaj
+        </a>
+
+        <!-- Peman Dokiman -->
+        <a href="{% url 'documents:document_payment' %}" 
+           class="flex items-center justify-center gap-3 bg-blue-500 hover:bg-blue-600 text-white py-4 px-6 rounded-lg text-lg font-medium shadow">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m2 0a2 2 0 002-2V6a2 2 0 00-2-2h-6l-2 2H6a2 2 0 00-2 2v4a2 2 0 002 2h2m6 4v2m-2-2v2m-2-2v2" />
+            </svg>
+            Peman Dokiman
+        </a>
+    </div>
+    
+        <div class="mt-4">
+            <a href="{% url 'payments:transaction_create' %}" class="text-blue-600 hover:underline">← Retounen sou transaksyon yo</a>
+        </div>
+</div>
+{% endblock %}

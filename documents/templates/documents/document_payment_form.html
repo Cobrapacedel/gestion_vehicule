@@ -1,0 +1,41 @@
+{% extends "core/base.html" %}
+{% block title %}Peman Dokiman{% endblock %}
+
+{% block content %}
+{% load widget_tweaks %}
+{% load static %}
+{% load i18n %}
+<div class="max-w-3xl mx-auto px-4 py-8">
+    <h2 class="text-2xl font-bold text-blue-600 flex items-center gap-2">
+        <i data-lucide="file-text"></i> Pèman Renouvèlman Dokiman
+    </h2>
+    <form method="POST" class="mt-6 bg-white p-6 rounded-lg shadow border">
+        {% csrf_token %}
+        <div class="space-y-4">
+            {{ form.non_field_errors }}
+             <div>
+                <label for="{{ form.document.id_for_label }}" class="block text-gray-700 font-medium">ID Fich Dokiman</label>
+                {{ form.reference_number|add_class:"form-select w-full p-3 border rounded-lg" }}
+                {{ form.reference_number.errors }}
+            </div>
+            <div>
+                <label for="{{ form.document.id_for_label }}" class="block text-gray-700 font-medium">Tip Dokiman</label>
+                {{ form.document_type|add_class:"form-select w-full p-3 border rounded-lg" }}
+                {{ form.document_type.errors }}
+            </div>
+             <div>
+                <label for="{{ form.amount.id_for_label }}" class="block text-gray-700 font-medium">Kantite</label>
+                {{ form.amount|add_class:"form-input w-full p-3 border rounded-lg" }}
+                {{ form.amount.errors }}
+            </div>
+
+            <div class="pt-4 flex gap-4">
+                <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 flex items-center gap-2">
+                    <i data-lucide="check-circle"></i>Peye
+                </button>
+                <a href="{% url 'payments:payment_create' %}" class="text-gray-600 hover:underline">Retounen</a>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

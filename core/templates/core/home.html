@@ -1,0 +1,95 @@
+{% extends "core/base.html" %}
+
+{% block content %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
+
+<!-- Formulaire de recherche -->
+<form method="get" action="{% url 'vehicles:search_results' %}">
+    <div class="flex items-center space-x-2 mt-5 justify-center">
+        <input type="text" name="query" placeholder="Chache..." class="p-2 text-black border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        <button type="submit" class="bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500" aria-label="Search">
+            &#128269;
+        </button>
+    </div>
+</form>
+
+<!-- Section principale -->
+<div class="container mx-auto text-center mt-10">
+    <main class="px-4">
+        <h1 class="text-4xl font-bold mb-4">
+            Byenvini sou <br>
+            <span class="text-blue-500">
+                <i class="fa-solid fa-car"></i> Jere Machin <i class="fa-solid fa-face-smile-beam"></i>u
+            </span>
+        </h1>
+        <p class="text-lg mb-6">Yon platfòm kap pèmèt ou jere tout machin ou yo ansanm ak tout tranzaksyon ou yo pi fasil.</p>
+
+        <h2 class="text-2xl font-semibold mt-6 mb-4"><i class="bi bi-gear"></i> Sèvis nou bay yo :</h2>
+
+        <!-- Grille des services -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-center mb-10 rounded-lg">
+            <!-- Liste de services -->
+            <div class="bg-gray shadow-lg rounded-lg p-8 w-full max-w-4xl mx-auto mt-6 border border-gray-200">
+                <ul class="space-y-2 list-inside">
+                    <li>  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500 inline mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 10-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                </svg>Kreye epi Jere kont ou ak anpil sekirite</li>
+                    <li>  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500 inline mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 10-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                </svg>Mete epi Swiv tout machin ou genyen yo</li>
+                    <li><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500 inline mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 10-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                </svg> Anrejistre tout dokiman machin ou yo</li>
+                    <li>  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500 inline mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 10-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                </svg>Kenbe tras tout tranzaksyon ou yo</li>
+                    <li>  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500 inline mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 10-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                </svg>Chache nenpòt pwopriyetè depi li nan baz done a</li>
+                </ul>
+            </div>
+            <div class="bg-gray shadow-lg rounded-lg p-8 w-full max-w-4xl mx-auto mt-6 border border-gray-200">
+                <ul class="space-y-6">
+                    <li>  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500 inline mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 10-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                </svg>Fè ou sonje ekspirasyon papye machin ou yo</li>
+                    <li>  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500 inline mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 10-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                </svg>Peye otomatikman tout kontravansyon</li>
+                    <li>  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500 inline mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 10-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                </svg>Peye otomatikman tout renouvèlman papye machin ou yo</li>
+                    <li>  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500 inline mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 10-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                </svg>Peye otomatikman tout rout ki peye yo</li>
+                    <li><i class="bi bi-check-circle text-primary"></i>   <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500 inline mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 10-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                </svg>Jere tout machin ou yo</li>
+                </ul>
+            </div>
+            <div class="bg-gray shadow-lg rounded-lg p-8 w-full max-w-4xl mx-auto mt-6 border border-gray-200">
+                <ul class="space-y-6">
+                    <li>  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500 inline mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 10-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                </svg>Jere tout itilizatè ki konekte sou kont ou a</li>
+                    <li>  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500 inline mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 10-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                </svg>Jere tout notifikasyon ou yo</li>
+                    <li>  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500 inline mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 10-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                </svg>Jere tout tranzaksyon ou yo</li>
+                    <li>  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500 inline mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 10-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                </svg>Jere tout dokiman ou yo</li>
+                    <li>  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500 inline mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 10-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                </svg>Jere tout rapò ou yo</li>
+                </ul>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script src="{% static 'js/home.js' %}"></script>
+{% endblock %}

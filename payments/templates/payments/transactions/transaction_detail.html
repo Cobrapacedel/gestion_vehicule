@@ -1,0 +1,38 @@
+{% extends "core/base.html" %}
+
+{% block title %}Transaksyon | Detay #{{ transaction.id }}{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto px-4 py-6">
+    <h2 class="text-2xl font-bold text-blue-600 mb-4">Detay Transaksyon</h2>
+
+    <div class="bg-white shadow rounded-lg border p-6 space-y-4">
+        <div class="flex justify-between">
+            <span class="font-semibold">ID:</span>
+            <span>{{ transaction.id }}</span>
+        </div>
+        <div class="flex justify-between">
+            <span class="font-semibold">Montan:</span>
+            <span>{{ transaction.amount }} HTG</span>
+        </div>
+        <div class="flex justify-between">
+            <span class="font-semibold">Deskripsyon:</span>
+            <span>{{ transaction.description }}</span>
+        </div>
+        <div class="flex justify-between">
+            <span class="font-semibold">Kreye le:</span>
+            <span>{{ transaction.created_at|date:"d/m/Y H:i" }}</span>
+        </div>
+        <div class="flex justify-between">
+            <span class="font-semibold">Estati:</span>
+            <span class="{% if transaction.status == 'Réussi' %}text-green-600{% elif transaction.status == 'Échoué' %}text-red-500{% else %}text-yellow-600{% endif %} font-medium">
+                {{ transaction.status }}
+            </span>
+        </div>
+    </div>
+
+    <div class="mt-6">
+        <a href="{% url 'payments:transaction-list' %}" class="text-blue-600 hover:underline">Retounen sou lis transaksyon yo</a>
+    </div>
+</div>
+{% endblock %}

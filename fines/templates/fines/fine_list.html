@@ -1,0 +1,95 @@
+{% extends "core/base.html" %}
+{% block title %}Kontravansyon | Lis{% endblock %}
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-10">
+  <h2 class="text-2xl font-bold text-blue-600 mb-6">Lis Tout Kontravansyon Yo</h2>
+
+  <!-- Formulaire de recherche -->
+  <form method="GET" class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+    <input type="text" name="query" placeholder="Chache ......" value="{{ request.GET.query }}"
+           class="border-gray-300 rounded-md shadow-sm w-full px-4 py-2 focus:ring-blue-500 focus:border-blue-500">
+
+    <input type="date" name="start_date" value="{{ request.GET.start_date }}"
+           class="border-gray-300 rounded-md shadow-sm w-full px-4 py-2 focus:ring-blue-500 focus:border-blue-500">
+
+    <input type="date" name="end_date" value="{{ request.GET.end_date }}"
+           class="border-gray-300 rounded-md shadow-sm w-full px-4 py-2 focus:ring-blue-500 focus:border-blue-500">
+
+    <button type="submit"
+            class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded shadow">
+      Chèche
+    </button>
+  </form>
+
+  <!-- Table -->
+  <div class="overflow-auto rounded-lg shadow">
+    <table class="min-w-full divide-y divide-gray-200">
+      <thead class="bg-gray-100 text-gray-700 text-sm">
+        {% with request.GET.urlencode as query_params %}
+        <tr>
+          <th class="px-4 py-2 text-left"><a href="?sort=id&{{ query_params }}">ID</a></th>
+          <th class="px-4 py-2 text-left"><a href="?sort=user__username&{{ query_params }}">Itilizatè</a></th>
+          <th class="px-4 py-2 text-left"><a href="?sort=plate_number&{{ query_params }}">Nimewo Plak</a></th>
+          <th class="px-4 py-2 text-left"><a href="?sort=violation__reason&{{ query_params }}">Enfraksyon</a></th>
+          <th class="px-4 py-2 text-left"><a href="?sort=violation__description&{{ query_params }}">Rezon</a></th>
+          <th class="px-4 py-2 text-left"><a href="?sort=amount&{{ query_params }}">Kantite</a></th>
+            <th class="px-4 py-2 text-left"><a href="?sort=currency&{{ query_params }}">Deviz</a></th>
+          <th class="px-4 py-2 text-left"><a href="?sort=created_at&{{ query_params }}">Dat</a></th>
+          <th class="px-4 py-2 text-left"><a href="?sort=status&{{ query_params }}">Estati</a></th>
+          <th class="px-4 py-2 text-left">Aksyon</th>
+        </tr>
+        {% endwith %}
+      </thead>
+      <tbody class="divide-y divide-gray-100 text-sm">
+        {% for fine in fines %}
+        <tr class="hover:bg-gray-50">
+          <td class="px-4 py-2">{{ fine.fine_id }}</td>
+          <td class="px-4 py-2">{{ fine.driver_license }}</td>
+          <td class="px-4 py-2">{{ fine.vehicle }}</td>
+          <td class="px-4 py-2">{{ fine.violation.reason }}</td>
+          <td class="px-4 py-2">{{ fine.violation.description }}</td>
+          <td class="px-4 py-2">{{ fine.base_amount }}</td>
+          <td class="px-4 py-2">{{ fine.currency }}</td>
+          <td class="px-4 py-2">{{ fine.violation_date }}</td>
+          <td class="px-4 py-2">
+            {% if fine.status == 'paid' %}
+              <span class="inline-block bg-green-100 text-green-700 px-2 py-1 rounded text-xs font-medium">Peye</span>
+            {% elif fine.status == 'unpaid' %}
+              <span class="inline-block bg-red-100 text-red-700 px-2 py-1 rounded text-xs font-medium">Pa Peye</span>
+            {% else %}
+              <span class="inline-block bg-yellow-100 text-yellow-700 px-2 py-1 rounded text-xs font-medium">An atant</span>
+            {% endif %}
+          </td>
+          <td class="px-4 py-2 space-x-2">
+            <a href="{% url 'fines:fine_detail' fine.id %}" class="text-blue-600 hover:underline">We</a>
+            <a href="{% url 'fines:fine_update' fine.id %}" class="text-yellow-600 hover:underline">Modifye</a>
+            <a href="{% url 'fines:fine_delete' fine.id %}" class="text-red-600 hover:underline">Efase</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+ <div class= 'mt-6'> <a href="{% url 'core:dashboard' %}" class="text-blue-600 hover:underline">← Retounen </a>
+        </div>
+
+  <!-- Pagination -->
+  {% if fines.has_other_pages %}
+  <div class="mt-6 flex justify-center">
+    <nav class="inline-flex space-x-2">
+      {% if fines.has_previous %}
+      <a href="?page={{ fines.previous_page_number }}&{{ request.GET.urlencode }}"
+         class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">Previous</a>
+      {% endif %}
+
+      <span class="px-4 py-2 bg-blue-600 text-white rounded">{{ fines.number }}</span>
+
+      {% if fines.has_next %}
+      <a href="?page={{ fines.next_page_number }}&{{ request.GET.urlencode }}"
+         class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">Next</a>
+      {% endif %}
+    </nav>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

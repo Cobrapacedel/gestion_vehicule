@@ -1,0 +1,20 @@
+{% extends "core/base.html" %}
+
+{% block content %}
+<div class="max-w-md mx-auto p-6 bg-white shadow-lg rounded-lg">
+    <h2 class="text-2xl font-semibold text-center text-blue-600 mb-4">Peye Kontravansyon ou an</h2>
+    
+    <p class="text-lg mb-6 text-gray-700">Kantite : <span class="font-bold">{{ fine.montant }} {{ fine.devise }}</span></p>
+    
+    <form method="post">
+        {% csrf_token %}
+        <div class="space-y-4">
+            {{ form.as_p }}
+        </div>
+        
+        <div class="mt-6 flex justify-center">
+            <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 focus:outline-none">Peye</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

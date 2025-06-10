@@ -1,0 +1,31 @@
+body {
+            background-color: #f8f9fa;
+        }
+        .otp-container {
+            max-width: 400px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .otp-form {
+            text-align: center;
+        }
+        .otp-form h2 {
+            margin-bottom: 20px;
+        }
+        .otp-form input {
+            width: 100%;
+            margin-bottom: 15px;
+            padding: 10px;
+            font-size: 1rem;
+        }
+        .otp-form button {
+            width: 100%;
+        }
+        .error-message {
+            color: red;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }

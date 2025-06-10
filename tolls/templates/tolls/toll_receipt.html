@@ -1,0 +1,15 @@
+{% extends "core/base.html" %}
+{% block content %}
+<div class="card shadow p-4">
+    <h2>Resi Peman</h2>
+    <ul class="list-group">
+        <li class="list-group-item"><strong>Dat :</strong> {{ toll.timestamp }}</li>
+        <li class="list-group-item"><strong>Peyaj :</strong> {{ toll.toll_booth }}</li>
+        <li class="list-group-item"><strong>Machin :</strong> {{ toll.vehicle.plate_number }}</li>
+        <li class="list-group-item"><strong>Kantite :</strong> {{ toll.amount }} HTG</li>
+        <li class="list-group-item"><strong>Metod :</strong> {{ toll.get_payment_method_display }}</li>
+    </ul>
+    <button onclick="window.print()" class="btn btn-warning mt-3">Enprime</button>
+    <a href="{% url 'toll_list' %}" class="btn btn-secondary mt-3">Tounen</a>
+</div>
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends "core/base.html" %}
+{% block content %}
+<form method="POST">
+    {% csrf_token %}
+    <label>Devise :</label>
+    <select name="devise">
+        {% for devise, platforms in payment_platforms.items %}
+            <option value="{{ devise }}">{{ devise }}</option>
+        {% endfor %}
+    </select>
+
+    <label>Montant :</label>
+    <input type="number" name="montant" step="0.01" required>
+
+    <button type="submit">Recharger</button>
+</form>
+{% endblock %}

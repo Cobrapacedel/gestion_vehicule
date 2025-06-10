@@ -1,0 +1,46 @@
+
+{% extends "core/base.html" %}
+
+{% block content %}
+<div class="max-w-md mx-auto mt-10 p-6 bg-white rounded-xl shadow-md">
+    <h2 class="text-2xl font-bold mb-4 text-center">Jwenn yon Kòd OTP</h2>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="mb-4 p-3 rounded text-white {{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <form method="post" action="{% url 'otp:request_otp' %}">
+        {% csrf_token %}
+{% comment %}
+        <div class="mb-4">
+            <label for="email" class="block font-medium mb-1">Imèl oubyen Nimewo Telefòn</label>
+            <input type="text" name="email_or_phone" id="email" class="w-full px-3 py-2 border rounded-lg" required>
+        </div>
+{% endcomment %}
+        <div class="mb-4">
+            <label for="type" class="block font-medium mb-1">Tip OTP</label>
+            <select name="otp_type" id="type" class="w-full px-3 py-2 border rounded-lg">
+                <option value="login">Koneksyon</option>
+                <option value="payment">Pèman</option>
+                <option value="reset_password">Restore Modpas</option>
+            </select>
+        </div>
+
+        <div class="mb-6">
+            <label for="method" class="block font-medium mb-1">Resepsyon</label>
+            <select name="delivery_method" id="method" class="w-full px-3 py-2 border rounded-lg">
+                <option value="email">Imèl</option>
+                <option value="sms">SMS</option>
+            </select>
+        </div>
+
+        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg">
+            Kòd
+        </button>
+    </form>
+</div>
+{% endblock %}

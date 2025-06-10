@@ -1,0 +1,92 @@
+{% extends "core/base.html" %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 py-6">
+    <h2 class="text-2xl font-bold mb-6 text-gray-800">Peyaj</h2>
+
+    <!-- Graphique -->
+    <div class="bg-white rounded-xl shadow p-4 mb-8">
+        <canvas id="tollChart" class="w-full h-64"></canvas>
+    </div>
+
+    <!-- Statistiques + Bouton -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Tableau -->
+        <div class="bg-white rounded-xl shadow p-4">
+            <h3 class="text-xl font-semibold mb-4 text-gray-700">Statistik Pos Peyaj</h3>
+            <div class="overflow-x-auto">
+                <table class="min-w-full table-auto border border-gray-200">
+                    <thead class="bg-gray-100">
+                        <tr>
+                            <th class="px-4 py-2 border-b text-left text-gray-600">Pos Peyaj</th>
+                            <th class="px-4 py-2 border-b text-left text-gray-600">Total Lajan (HTG)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for toll in tolls %}
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-4 py-2 border-b">{{ toll.name }}</td>
+                            <td class="px-4 py-2 border-b">{{ toll.total_amount }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Bouton -->
+        <div class="flex items-center justify-center">
+            <a href="{% url 'tolls:toll_list' %}" class="inline-block bg-blue-600 text-white font-medium px-6 py-3 rounded-xl shadow hover:bg-blue-700 transition">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V7m-6 4h4m-4 4h4m-4-8h4m-8 8h4m-4-8h4m-8 0h4m0 0H7m0 0H3m0 0h4m0 0H3m0 0h4M3 7h18M3 17h18" />
+                </svg>
+                Tounen nan lis peyaj yo
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js script -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const ctx = document.getElementById("tollChart").getContext("2d");
+    const tollChart = new Chart(ctx, {
+        type: "bar",
+        data: {
+            labels: {{ toll_labels|safe }},
+            datasets: [{
+                label: "Total des paiements (HTG)",
+                data: {{ toll_data|safe }},
+                backgroundColor: "rgba(59, 130, 246, 0.6)",
+                borderColor: "rgba(59, 130, 246, 1)",
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        color: "#4B5563"
+                    }
+                },
+                x: {
+                    ticks: {
+                        color: "#4B5563"
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    labels: {
+                        color: "#1F2937"
+                    }
+                }
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

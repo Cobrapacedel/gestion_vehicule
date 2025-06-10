@@ -1,0 +1,72 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Pwofil Mwen{% endblock %}
+
+{% block content %}
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'css/profile.css' %}">
+<div class="bg-gray-600 text-white rounded-sm shadow p-4">
+<div class="container mx-auto p-6">
+    <h2 class="text-3xl font-bold text-center text-white mb-6">Pwofil Mwen</h2>
+
+    <!-- Profile Details -->
+    <div class="flex flex-col items-center bg-lightgreen shadow-md rounded-lg p-6 mb-6">
+        {% if profile.avatar %}
+            <img src="{{ profile.avatar.url }}" alt="Avatar" class="w-32 h-32 rounded-full border-4 border-blue-500 mb-4">
+        {% else %}
+            <img src="{% static 'images/avatar/default.png' %}" alt="Avatar" class="w-32 h-32 rounded-full border-4 border-blue-500 mb-4">
+        {% endif %}
+        <h3 class="text-xl font-semibold text-white">{{ user.first_name }} {{ user.last_name }}</h3>
+        <p class="text-white mt-2"><strong>Imèl:</strong> <em>{{ user.email }}</em></p>
+        <p class="text-white mt-2"><strong>Telefòn:</strong> <em>{{ user.phone_number }}</em></p>
+        <p class="text-white mt-2"><strong>Adrès:</strong> <em class="text-white">{{ profile.address|default:"Adrès" }}</em></p>
+      <!-- Notification Email -->
+<p class="text-white mt-2 flex items-center gap-2">
+    <strong>Notifikasyon Imèl:</strong>
+    {% if profile.email_notifications %}
+        <em class="bg-green-500 text-white flex items-center rounded-lg px-2 py-1 text-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            Aktive
+        </em>
+    {% else %}
+        <em class="bg-red-500 text-white flex items-center rounded-lg px-2 py-1 text-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+            Dezaktive
+        </em>
+    {% endif %}
+</p>
+
+<!-- Notification SMS -->
+<p class="text-white mt-2 flex items-center gap-2">
+    <strong>Notifikasyon SMS:</strong>
+    {% if profile.sms_notifications %}
+        <em class="bg-green-500 text-white flex items-center rounded-lg px-2 py-1 text-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            Aktive
+        </em>
+    {% else %}
+        <em class="bg-red-500 text-white flex items-center rounded-lg px-2 py-1 text-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+            Dezaktive
+        </em>
+    {% endif %}
+</p>
+    </div>
+</div>
+    <!-- Action Buttons -->
+    <div class="flex justify-between gap-4">
+        <a href="{% url 'users:profile-update' %}" class="bg-blue-500 text-white px-6 py-2 rounded-lg shadow hover:bg-yellow-600 transition">Modifye</a>
+        <a href="{% url 'core:dashboard' %}" class="bg-purple-500 flex items-center text-white px-6 py-2 rounded-lg shadow hover:bg-gray-600 transition">Tounen</a>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,9 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="text-center mt-20">
+    <h1 class="text-4xl font-bold text-red-500">404 - Paj sa pa egziste</h1>
+    <p class="mt-4">Nou pa jwenn sa w t ap chèche a. Tounen sou paj dakèy la.</p>
+    <a href="{% url 'core:dashboard' %}" class="btn mt-4">Al dakèy</a>
+</div>
+{% endblock %}

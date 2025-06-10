@@ -1,0 +1,18 @@
+{% extends "core/base.html" %}
+
+{% block title %}Transaksyon | Efase#{{ transaction.id }}{% endblock %}
+
+{% block content %}
+<div class="max-w-xl mx-auto px-4 py-6">
+    <div class="bg-white shadow rounded-lg p-6 text-center">
+        <h2 class="text-xl font-bold text-red-600 mb-4">Konfimasyon Efase</h2>
+        <p>Eske ou sèten ou vle efase transaksyon sa (#{{ transaction.id }}) ?</p>
+
+        <form method="post" class="mt-6 flex justify-center gap-4">
+            {% csrf_token %}
+            <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">Wi, efase</button>
+            <a href="{% url 'payments:transaction-list' %}" class="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300">Anile</a>
+        </form>
+    </div>
+</div>
+{% endblock %}
