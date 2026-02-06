@@ -8,7 +8,7 @@
 
     <div class="grid grid-cols-1 gap-6">
         <!-- Peman Kontravansyon -->
-        <a href="{% url 'fines:fine_payment' %}" 
+        <a href="{% url 'fines:fine_payment_form' fine.id %}" 
            class="flex items-center justify-center gap-3 bg-red-500 hover:bg-red-600 text-white py-4 px-6 rounded-lg text-lg font-medium shadow">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2a2 2 0 00-2-2H5V9h2a2 2 0 002-2V5h6v2a2 2 0 002 2h2v4h-2a2 2 0 00-2 2v2H9z" />

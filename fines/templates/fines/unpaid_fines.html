@@ -1,0 +1,16 @@
+{% extends "core/base.html" %}
+{% block title %}Amendes Non Payées{% endblock %}
+
+{% block content %}
+<h2 class="text-2xl font-bold mb-4">Amendes non payées</h2>
+
+{% if fine_ids %}
+    <ul class="list-disc pl-6">
+        {% for fine_id in fine_ids %}
+            <li>{{ fine_id }}</li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p class="text-gray-500">Aucune amende non payée.</p>
+{% endif %}
+{% endblock %}

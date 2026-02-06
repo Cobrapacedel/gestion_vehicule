@@ -1,0 +1,27 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% load user_badges %}
+
+{% block title %}Sèvis | Tablo{% endblock %}
+{% block content %}
+
+{# Avatar de l'utilisateur #}
+{% include "core/includes/_avatar.html" %}
+
+{# Soldes multi-devises ou balances #}
+{% include "core/includes/_balances.html" %}
+
+<div class="flex justify-end mt-6 mb-6">
+            <a href="{% url 'payments:transaction_list' %}" class="mt-3 inline-block bg-white text-black px-3 py-1 rounded hover:bg-gray-100">💳 Tranzaksyon</a>
+</div>
+
+{# Cartes statistiques #}
+    {% include "core/includes/_stats_cards.html" with cards=stats_cards %}
+
+{# Liste des notifications #}
+{% include "core/includes/_notifications.html" %}
+
+{# Graphiques / Chart #}
+{% include "core/includes/_chart.html" %}
+
+{% endblock %}

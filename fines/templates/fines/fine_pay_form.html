@@ -1,0 +1,31 @@
+{% extends "core/base.html" %}
+{% block title %}Peman Kontravansyon{% endblock %}
+{% load widget_tweaks %}
+{% block content %}
+<div class="max-w-3xl mx-auto px-4 py-8">
+    <h2 class="text-2xl font-bold text-red-600 mb-6">
+        Peman Kontravansyon
+    </h2>
+
+    
+    <form method="POST" class="bg-white text-black p-6 rounded-lg shadow border space-y-4">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+
+        <!-- Champ ID de la contravention -->
+        <div>
+            <label for="{{ form.fine.id_for_label }}" class="block font-medium text-gray-700">ID Kontravansyon</label>
+            {{ form.fine|add_class:"form-select w-full p-3 border rounded-lg" }}
+            {{ form.fine.errors }}
+        </div>
+
+        <div class="pt-4 flex gap-4">
+            <button type="submit" class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-red-700">
+                Peye
+            </button>
+        </div>
+    </form>
+    <div class="mt-4">
+        <a href="{% url 'core:dashboard' %}" class="text-blue-600 hover:underline">← Retounen</a>
+</div>
+{% endblock %}

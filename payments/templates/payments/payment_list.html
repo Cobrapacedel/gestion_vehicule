@@ -1,10 +1,10 @@
 {% extends "core/base.html" %}
 
-{% block title %}Lis Tranzaksyon{% endblock %}
+{% block title %}Pèman | Lis{% endblock %}
 
 {% block content %}
 <div class="max-w-7xl mx-auto px-4 py-6">
-    <h2 class="text-3xl font-semibold text-blue-600 mb-6">Lis Tout Peman Yo</h2>
+    <h2 class="text-3xl font-semibold text-blue-600 mb-6">Lis Pèman</h2>
 
     <!-- Formulaire de rechèch -->
     <form method="GET" class="flex flex-wrap gap-4 mb-6">
@@ -100,4 +100,20 @@
         });
     });
 </script>
+<!-- Pagination pour Payment -->
+<div class="mt-6 text-sm flex justify-center items-center gap-4 flex-wrap">
+  {% if payments.has_previous %}
+    <a href="?page=1" class="text-blue-600 hover:underline">&laquo; Premye</a>
+    <a href="?page={{ contracts.previous_page_number }}" class="text-blue-600 hover:underline">Anvan</a>
+  {% endif %}
+
+  <span class="text-gray-700">
+    Paj {{ payments.number }} sou {{ payments.paginator.num_pages }}
+  </span>
+
+  {% if payments.has_next %}
+    <a href="?page={{ contracts.next_page_number }}" class="text-blue-600 hover:underline">Pwochen</a>
+    <a href="?page={{ contracts.paginator.num_pages }}" class="text-blue-600 hover:underline">Dènye &raquo;</a>
+  {% endif %}
+</div>
 {% endblock %}

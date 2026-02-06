@@ -1,0 +1,27 @@
+{% if vehicles %}
+    <div class="mt-4">
+        <label class="block text-sm font-medium text-gray-700">
+            Veyikil
+        </label>
+
+        <select
+            name="vehicle_id"
+            id="id_vehicle_id"
+            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+            required
+        >
+            <option value="">— Chwazi yon veyikil —</option>
+
+            {% for vehicle in vehicles %}
+                <option value="{{ vehicle.id }}">
+                    {{ vehicle.brand }} {{ vehicle.model }} —
+                    {{ vehicle.plate_number }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+{% else %}
+    <p class="text-sm text-gray-500 mt-2">
+        Pa gen veyikil.
+    </p>
+{% endif %}

@@ -1,7 +1,8 @@
 from django.contrib.auth.backends import BaseBackend
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth import get_user_model
-from .models import LoginAttempt, OTP
+from .models import LoginAttempt
+from otp.models import OTP
 
 # Get the CustomUser model
 CustomUser = get_user_model()

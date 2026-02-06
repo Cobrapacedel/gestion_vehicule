@@ -46,7 +46,7 @@ def generate_otp(request):
         OTP.objects.filter(user=request.user).delete()
         otp = OTP.create_otp(user=request.user, otp_type='login', delivery_method='email')
         send_otp(request.user, otp)
-        return JsonResponse({"status": "success", "message": "OTP envoyé."})
+        return JsonResponse({"status": "Reyisi", "message": "Nou voye kòd OTP a"})
     return render(request, 'otp/generate_otp.html')
 
 
@@ -56,9 +56,15 @@ def resend_otp(request):
         OTP.objects.filter(user=request.user).delete()
         otp = OTP.create_otp(user=request.user, otp_type='login', delivery_method='email')
         send_otp(request.user, otp)
-        return JsonResponse({"status": "success", "message": "Nouveau code OTP envoyé."})
+        return JsonResponse({"status": "success", "message": "Nou voye yon lòt kòd OTP."})
     return render(request, 'otp/resend_otp.html')
 
+
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .forms import OTPVerificationForm
+from .models import OTP
 
 @login_required
 def verify_otp(request):
@@ -67,19 +73,32 @@ def verify_otp(request):
         if form.is_valid():
             code = form.cleaned_data['code']
             otp_entry = OTP.objects.filter(user=request.user, code=code, is_used=False).first()
+            
             if otp_entry and otp_entry.is_valid():
+                # ✅ Marque le compte comme vérifié
                 request.user.is_verified = True
                 request.user.save()
+
+                # ✅ Marque l’OTP comme utilisé
                 otp_entry.is_used = True
                 otp_entry.save()
-                messages.success(request, "Le code est valide.")
-                return redirect("core:dashboard")
+
+                # ✅ Active la session OTP pour éviter la boucle
+                request.session["otp_verified"] = True
+
+                # ✅ (Optionnel) Supprime l’ancien code pour éviter la réutilisation
+                request.session.pop("otp_code", None)
+
+                messages.success(request, "✅ Kòd OTP a bon, ou konekte avèk siksè.")
+                return redirect("core:dashboard_redirect")  # ou ton URL de dashboard
+
             else:
-                messages.error(request, "Code incorrect ou expiré.")
+                messages.error(request, "❌ Kòd OTP a pa bon oubyen li ekspire.")
         else:
-            messages.error(request, "Formulaire invalide.")
+            messages.error(request, "⚠️ Fòm OTP a pa valab.")
     else:
         form = OTPVerificationForm()
+
     return render(request, "otp/verify_otp.html", {"form": form})
 
 
@@ -90,7 +109,7 @@ def request_otp(request):
         otp_type = request.POST.get("otp_type", "login")
         delivery_method = request.POST.get("delivery_method", "email")
 
-        if delivery_method == 'sms' and not user.phone_number:
+        if delivery_method == 'sms' and not user.phone:
             messages.error(request, "Vous n'avez pas de numéro de téléphone.")
             return redirect('profile')
 
@@ -99,7 +118,7 @@ def request_otp(request):
 
         try:
             send_otp(user, otp)
-            messages.success(request, f"Code envoyé par {delivery_method}.")
+            messages.success(request, f"Resevwa kòd OTP a sou {delivery_method}.")
         except Exception as e:
             messages.error(request, f"Erreur lors de l'envoi : {str(e)}")
 

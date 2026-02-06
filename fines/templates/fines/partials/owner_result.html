@@ -1,0 +1,45 @@
+{% if simple_results or business_results %}
+  <div class="border rounded mt-2 divide-y">
+    {% for profile in simple_results %}
+      <div
+        class="p-2 hover:bg-blue-50 cursor-pointer"
+        hx-get="{% url 'vehicles:htmx_owner_vehicles' %}"
+        hx-vals='{"owner_type": "simple", "owner_id": "{{ profile.id }}"}'
+        hx-target="#vehicle-container"
+        hx-swap="innerHTML"
+        hx-on="click: 
+          document.getElementById('id_owner_query').value='{{ profile.first_name }} {{ profile.last_name }}';
+          document.getElementById('id_owner_type').value='simple';
+          document.getElementById('id_owner_id').value='{{ profile.id }}';"
+      >
+        <strong>{{ profile.first_name }} {{ profile.last_name }}</strong>
+        <div class="text-xs text-gray-500">Utilisateur simple</div>
+      </div>
+    {% endfor %}
+
+    {% for business in business_results %}
+      <div
+        class="p-2 hover:bg-green-50 cursor-pointer"
+        hx-get="{% url 'vehicles:htmx_owner_vehicles' %}"
+        hx-vals='{"owner_type": "business", "owner_id": "{{ business.id }}"}'
+        hx-target="#vehicle-container"
+        hx-swap="innerHTML"
+        hx-on="click: 
+          document.getElementById('id_owner_query').value='{{ business.business_name }}';
+          document.getElementById('id_owner_type').value='business';
+          document.getElementById('id_owner_id').value='{{ business.id }}';"
+      >
+        <strong>{{ business.business_name }}</strong>
+        <div class="text-xs text-gray-500">Compagnie / Business</div>
+      </div>
+    {% endfor %}
+  </div>
+{% elif query %}
+  <div class="p-2 text-sm text-red-600">
+    Aucun propriétaire trouvé
+  </div>
+{% else %}
+  <div class="p-2 text-sm text-gray-500">
+    Tapez pour rechercher un propriétaire
+  </div>
+{% endif %}

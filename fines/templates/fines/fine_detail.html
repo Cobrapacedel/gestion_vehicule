@@ -1,29 +1,51 @@
 {% extends "core/base.html" %}
 
 {% block content %}
-<div class="max-w-3xl mx-auto p-6 bg-gray rounded-2xl shadow">
-    <h2 class="text-2xl font-bold mb-4">Detay Kontravansyon #{{ fine.id }}</h2>
+<div class="max-w-3xl mx-auto p-6 bg-gray-800 rounded-2xl shadow">
+    <h2 class="text-xl text-white font-bold mb-4">
+        Detay Kontravansyon #{{ fine.fine_id }}
+    </h2>
     
-    <div class="list-disc py-4 md:4 space-y-3 text-white-700">
-        <p><span class="font-semibold">Pwopriyetè :</span> {{ fine.user.email }}</p>
-        <p><span class="font-semibold">Machin :</span> {{ fine.vehicle.plate_number }}</p>
-        <p><span class="font-semibold">Chofè :</span> {{ fine.vehicle.license_driver }}</p>
-        <p><span class="font-semibold">Enfraksyon :</span> {{ fine.violation.reason }}</p>
-        <p><span class="font-semibold">Kantite :</span> {{ fine.base_amount }} {{ fine.currency }}</p>
-        <p><span class="font-semibold">Dat :</span> {{ fine.violation_date }}</p>
+    <div class="space-y-3 text-gray-200">
+        <p><span class="font-semibold text-white">Pwopriyetè :</span> {{ fine.owner }}</p>
+        <p><span class="font-semibold text-white">Machin :</span> {{ fine.vehicle }}</p>
+        <p><span class="font-semibold text-white">Lisans Chofè # :</span> {{ fine.driver_license }}</p>
+        <p><span class="font-semibold text-white">Chofè :</span> {{ fine.driver }}</p>
+        <p><span class="font-semibold text-white">Enfraksyon :</span> {{ fine.violation.reason }}</p>
+        <p><span class="font-semibold text-white">Kantite :</span> {{ fine.base_amount }} {{ fine.currency }}</p>
+        <p><span class="font-semibold text-white">Dat :</span> {{ fine.violation_date|date:"d/m/Y" }}</p>
         <p>
-            <span class="font-semibold">Estati :</span> 
-            {% if fine.paid %}
-                <span class="inline-block px-2 py-1 text-sm bg-green-100 text-green-800 rounded-full">Peye</span>
+            <span class="font-semibold text-white">Estati :</span> 
+            {% if fine.is_paid %}
+                <span class="inline-block px-2 py-1 text-sm bg-green-200 text-green-900 rounded-full">
+                    ✅ Peye
+                </span>
             {% else %}
-                <span class="inline-block px-2 py-1 text-sm bg-red-100 text-red-800 rounded-full">Pa Peye</span>
+                <span class="inline-block px-2 py-1 text-sm bg-red-200 text-red-900 rounded-full">
+                    ⏳ Annatant
+                </span>
             {% endif %}
         </p>
     </div>
 
-    <div class="mt-6 space-x-3">
-        <a href="{% url 'fines:fine_update' fine.id %}" class="inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Modifye</a>
-        <a href="{% url 'fines:fine_delete' fine.id %}" class="inline-block px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">Efase</a>
+    <div class="mt-6 flex items-center space-x-4">
+        {% if fine.is_paid %}
+            <!-- Bouton désactivé si déjà payé -->
+            <button class="px-4 py-2 bg-gray-500 text-gray-300 rounded-lg cursor-not-allowed" disabled>
+                ✅ Deja peye
+            </button>
+        {% else %}
+            <!-- Bouton de paiement actif -->
+            <a href="{% url 'fines:fine_payment_form' fine.id %}" 
+               class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+               💳 Peye
+            </a>
+        {% endif %}
+
+        <a href="{% url 'fines:fine_list' %}" 
+           class="text-blue-400 hover:text-blue-200 hover:underline transition">
+           ← Retounen
+        </a>
     </div>
 </div>
 {% endblock %}

@@ -1,0 +1,36 @@
+{% extends 'core/base.html' %}
+{% load widget_tweaks %}
+
+{% block title %}Antrepriz | Koneksyon{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center bg-gray-700 text-white py-12 px-4 sm:px-6 lg:px-8">
+  <form method="post" class="bg-gray-800 p-8 sm:p-10 rounded-xl shadow-xl w-full max-w-md space-y-5">
+    {% csrf_token %}
+    <h2 class="text-3xl font-bold text-center text-blue-400 mb-4">Koneksyon Antrepriz</h2>
+
+    {% for field in form %}
+      <div>
+        <label for="{{ field.id_for_label }}" class="block text-sm font-medium mb-1">{{ field.label }}</label>
+        <div class="relative">
+          {% if "email" in field.name %}<span class="absolute left-3 top-2.5 text-gray-400">📧</span>{% endif %}
+          {% if "password" in field.name %}<span class="absolute left-3 top-2.5 text-gray-400">🔐</span>{% endif %}
+          {{ field|add_class:"w-full pl-10 py-2 px-3 bg-gray-700 rounded border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-black" }}
+        </div>
+        {% if field.errors %}
+          <p class="text-red-400 text-sm mt-1">{{ field.errors|striptags }}</p>
+        {% endif %}
+      </div>
+    {% endfor %}
+
+    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 py-2 rounded font-semibold text-white transition text-sm">
+      🔑 Konekte
+    </button>
+
+    <p class="text-center text-sm text-gray-300 pt-2">
+      Ou poko gen kont?
+      <a href="{% url 'users:register_choice' %}" class="text-blue-400 hover:underline">Enskri kòm antrepriz.</a>
+    </p>
+  </form>
+</div>
+{% endblock %}

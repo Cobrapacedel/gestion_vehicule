@@ -1,58 +1,101 @@
 {% extends 'core/base.html' %}
+{% load static %}
+{% load widget_tweaks %}
 
-{% block title %}Connexion{% endblock %}
+{% block title %}Koneksyon{% endblock %}
 
 {% block content %}
-{% load static %}
-<link rel="stylesheet" href="{% static 'css/login.css' %}">
-    <div class="login-container">
-        <h2>Koneksyon</h2>
-
-        <!-- Affichage des messages de retour -->
-        {% if messages %}
-            <div class="messages">
-                {% for message in messages %}
-                    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
-                {% endfor %}
-            </div>
-        {% endif %}
-
-        <!-- Formulaire de connexion -->
-        <form method="post">
-            {% csrf_token %}
-            <div class="mb-3">
-                <label for="id_username" class="form-label">Imèl</label>
-                <input type="email" name="username" id="id_username" class="form-control" placeholder="Mete Imèl ou" required>
-            </div>
-            <div class="mb-3">
-                <label for="id_password" class="form-label">Modpas</label>
-                <input type="password" name="password" id="id_password" class="form-control" placeholder="Mete Modpas ou" required>
-            </div>
-
-            <!-- Affichage des erreurs spécifiques aux champs -->
-            {% if form.errors %}
-                <div class="error-message">
-                    <p>Veuillez corriger les erreurs ci-dessous :</p>
-                    <ul>
-                        {% for field, errors in form.errors.items %}
-                            {% for error in errors %}
-                                <li>{{ error }}</li>
-                            {% endfor %}
-                        {% endfor %}
-                    </ul>
-                </div>
-            {% endif %}
-
-            <button type="submit" class="btn btn-primary w-100">Konekte</button>
-        </form>
-
-        <!-- Lien pour la réinitialisation du mot de passe et l'inscription -->
-        <div class="mt-3 text-center">
-            <p>Si ou poko, <a href="{% url 'users:register' %}">Kreye yon Kont</a></p>
-            <p>Ou te bliye modpas la? <a href="{% url 'password_reset' %}">Kreye yon lòt</a></p>
-        </div>
+{% comment %}
+<link rel="stylesheet" href="{% static 'css/styles.css' %}">
+<script src="https://cdn.tailwindcss.com"></script>
+{% endcomment %}
+<div class="min-h-screen flex items-center justify-center bg-gray-700 text-white py-12 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-md w-full space-y-8">
+    <div>
+      <h2 class="mt-6 text-center text-3xl font-extrabold text-red-500">Konekte nan Kont ou</h2>
     </div>
-  
-    <!-- Optionnellement, un script Javascript spécifique pour la page -->
-    <script src="{% static 'js/login.js' %}"></script>
+
+    {% if messages %}
+      <div class="space-y-2">
+        {% for message in messages %}
+          <div class="bg-{{ message.tags }}-500 text-white p-3 rounded text-sm">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <form class="mt-8 space-y-6" method="post">
+      {% csrf_token %}
+
+      <div class="rounded-md shadow-sm -space-y-px">
+        <div class="relative mb-4">
+          <label for="id_username" class="block text-sm font-medium mb-1">Imèl</label>
+          {% render_field form.username class="appearance-none rounded relative block w-full px-10 py-2 bg-gray-800 border border-gray-700 placeholder-gray-400 text-white focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm" placeholder="ex: ou@example.com" %}
+          <span class="absolute left-3 top-9 text-gray-400">📧</span>
+        </div>
+
+        <div class="relative mb-1">
+          <label for="id_password" class="block text-sm font-medium mb-1">Modpas</label>
+          {% render_field form.password class="appearance-none rounded relative block w-full px-10 py-2 bg-gray-800 border border-gray-700 placeholder-gray-400 text-white focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm" placeholder="••••••••" id="password" %}
+          <span class="absolute left-3 top-9 text-gray-400">🔒</span>
+        </div>
+
+        <div class="flex items-center mb-4">
+          <input type="checkbox" id="showPassword" class="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded">
+          <label for="showPassword" class="ml-2 block text-sm text-gray-300">Montre modpas la</label>
+        </div>
+      </div>
+
+      <div class="flex items-center mb-4">
+        <input id="remember" name="remember" type="checkbox" class="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded">
+        <label for="remember" class="ml-2 block text-sm text-gray-200">Rete konekte</label>
+      </div>
+
+      <div class="g-recaptcha mb-4" data-sitekey="VOTRE_CLE_SITE"></div>
+
+      {% if form.errors %}
+        <div class="bg-red-600 text-white rounded p-3 text-sm">
+          <p class="font-semibold">Gen kèk erè :</p>
+          <ul class="list-disc list-inside">
+            {% for field, errors in form.errors.items %}
+              {% for error in errors %}
+                <li>{{ error|yesno:"Kote pou ekri yo obligatwa! Valè sa pa valab. Erè nan modpas oswa imel" }}</li>
+              {% endfor %}
+            {% endfor %}
+          </ul>
+        </div>
+      {% endif %}
+
+      {% if recaptcha_error %}
+        <div class="bg-red-600 text-white rounded p-3 text-sm">
+          Erè : Tanpri verifye w pa yon robo.
+        </div>
+      {% endif %}
+
+      <div>
+        <button type="submit"
+                class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md bg-green-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+          🚀 Konekte
+        </button>
+      </div>
+    </form>
+
+    <div class="text-center mt-6">
+      <p>Ou poko gen kont ? <a href="{% url 'users:register_choice' %}" class="text-blue-400 hover:underline">Kreye Kont</a></p>
+      <p>Ou bliye modpas la ? <a href="{% url 'password_reset' %}" class="text-blue-400 hover:underline">Reyinisyalize</a></p>
+    </div>
+  </div>
+</div>
+
+<!-- Google reCAPTCHA -->
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
+<!-- Afficher ou masquer le mot de passe -->
+<script>
+  document.getElementById('showPassword').addEventListener('change', function () {
+    const pwdField = document.getElementById('password');
+    pwdField.type = this.checked ? 'text' : 'password';
+  });
+</script>
+
+<script src="{% static 'js/login.js' %}"></script>
 {% endblock %}

@@ -1,0 +1,11 @@
+<form 
+    hx-post="{% url 'vehicles:add_vehicle' %}" 
+    hx-target="#vehicles-list"
+    hx-swap="beforeend"
+    class="space-y-4"
+>
+    {{ form.as_p }}
+    <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700">
+        ➕ Ajoute machin
+    </button>
+</form>

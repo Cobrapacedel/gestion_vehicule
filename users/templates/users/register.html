@@ -1,78 +1,30 @@
 {% extends 'core/base.html' %}
-{% load widget_tweaks %}
-{% block title %}Enskripsyon{% endblock %}
+{% block title %}Itilizatè | Enskripsyon{% endblock %}
+
 {% block content %}
-<div class="min-h-screen flex items-center justify-center bg-gray-700 text-white py-12 px-4 sm:px-6 lg:px-8">
-  <form method="post" class="bg-gray-800 p-8 sm:p-10 rounded-xl shadow-xl w-full max-w-lg space-y-5">
-    <h2 class="text-3xl font-bold text-center text-red-500">Enskripsyon</h2>
+<div class="min-h-screen flex items-center justify-center bg-gray-700 py-12 px-4 sm:px-6 lg:px-8">
+  <div class="bg-gray-800 p-8 sm:p-10 rounded-xl shadow-xl w-full max-w-md space-y-6">
+    <h2 class="text-3xl font-bold text-red-500 mb-6 text-center">Kreye Kont Itilizatè</h2>
 
-    {% csrf_token %}
-
-    {% for field in form %}
-      <div>
-        <label for="{{ field.id_for_label }}" class="block text-sm font-medium mb-1">{{ field.label }}</label>
-        <div class="relative">
-          {% if "email" in field.name %}
-            <span class="absolute left-3 top-2.5 text-gray-400">📧</span>
-          {% elif "driver_license" in field.name %}
-            <span class="absolute left-3 top-2.5 text-gray-400">🪪</span>
-          {% elif "phone" in field.name %}
-            <span class="absolute left-3 top-2.5 text-gray-400">📱</span>
-          {% elif "first_name" in field.name or "last_name" in field.name %}
-            <span class="absolute left-3 top-2.5 text-gray-400">🙎</span>
-          {% elif "password" in field.name %}
-            <span class="absolute left-3 top-2.5 text-gray-400">🔐</span>
+    <form method="post" enctype="multipart/form-data" class="space-y-4">
+      {% csrf_token %}
+      {% for field in form %}
+        <div class="flex flex-col">
+          {{ field.label_tag }} 
+          {{ field }}
+          {% if field.errors %}
+            <p class="text-red-500 text-sm">{{ field.errors|striptags }}</p>
           {% endif %}
-          {{ field|add_class:"w-full pl-10 py-2 px-3 bg-gray-700 rounded border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" }}
         </div>
-        {% if field.help_text %}
-          <small class="text-gray-400">{{ field.help_text }}</small>
-        {% endif %}
-        {% if field.errors %}
-          <p class="text-red-400 text-sm mt-1">{{ field.errors|striptags }}</p>
-        {% endif %}
-      </div>
-    {% endfor %}
+      {% endfor %}
+      <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition">Kreye Kont</button>
+    </form>
 
-    <!-- Case à cocher pour afficher le mot de passe -->
-    <div class="flex items-center">
-      <input type="checkbox" id="show-password" class="mr-2" onclick="togglePasswordVisibility()" />
-      <label for="show-password" class="text-sm text-gray-300">Montre modpas yo</label>
-    </div>
-
-    <!-- reCAPTCHA -->
-    {% if USE_RECAPTCHA %}
-    <div class="pt-4">
-      <div class="g-recaptcha" data-sitekey="{{ RECAPTCHA_SITE_KEY }}"></div>
-      {% if recaptcha_error %}
-        <p class="text-red-400 text-sm mt-1">Tanpri konfime ke ou pa yon robo.</p>
-      {% endif %}
-    </div>
-    {% endif %}
-
-    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 py-2 rounded font-semibold text-white transition text-sm">
-      📝 Enskri
-    </button>
-
-    <p class="text-center text-sm text-gray-300 pt-2">
-      Ou deja gen kont?
-      <a href="{% url 'login' %}" class="text-blue-400 hover:underline">Konekte la.</a>
-    </p>
-  </form>
+    <p class="text-gray-300 text-sm text-center">Deja gen kont? <a href="{% url 'login' %}" class="text-blue-400">Konekte</a></p>
+  </div>
 </div>
-
-<!-- JS pour afficher/masquer le mot de passe -->
-<script>
-  function togglePasswordVisibility() {
-    const passwordFields = document.querySelectorAll('input[type="password"]');
-    passwordFields.forEach(field => {
-      field.type = field.type === 'password' ? 'text' : 'password';
-    });
-  }
-</script>
-
-<!-- Script reCAPTCHA -->
-{% if USE_RECAPTCHA %}
-  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
-{% endif %}
+   <!-- ⏪ Retour -->
+  <div class="mt-6">
+    <a href="{% url 'users:register_choice' %}" class="text-blue-600 hover:underline">← Tounen</a>
+  </div>
 {% endblock %}

@@ -1,101 +1,92 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const marqueField = document.getElementById("id_marque");
-    const modeleField = document.getElementById("id_modele");
-    const vehicleList = document.getElementById("vehicleList");
     const addVehicleForm = document.getElementById("addVehicleForm");
+    const submitLoader = document.getElementById("submit-loader");
+    const successNotification = document.getElementById("success-notification");
+    const errorNotification = document.getElementById("error-notification");
+    const brandField = document.getElementById("id_brand");
+    const modelField = document.getElementById("id_model");
 
-    // Vérifie si les éléments DOM existent
-    if (!marqueField || !modeleField || !vehicleList || !addVehicleForm) {
-        console.error("Un ou plusieurs éléments DOM sont manquants.");
-        return;
+    if (!addVehicleForm) return;
+
+    // 🔹 Fonction pour afficher notification
+    function showNotification(element, message) {
+        element.textContent = message;
+        element.classList.remove("hidden");
+        setTimeout(() => element.classList.add("hidden"), 3000); // Masquer après 3s
     }
 
-    // Charger les modèles quand la marque change
-    marqueField.addEventListener("change", function () {
-        const marque = marqueField.value.trim();
-        modeleField.innerHTML = "<option value=''>Chargement...</option>";
+    // 🔹 Charger les modèles dynamiquement selon la marque
+    if (brandField && modelField) {
+        brandField.addEventListener("change", function () {
+            const brand = brandField.value;
+            modelField.innerHTML = "<option value=''>Chaje modèl yo...</option>";
 
-        if (marque) {
-            fetch(`/vehicles/get-models/?brand=${encodeURIComponent(marque)}`)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`Erreur HTTP : ${response.status}`);
-                    }
-                    return response.json();
-                })
+            if (!brand) {
+                modelField.innerHTML = "<option value=''>Chwazi yon mak avan</option>";
+                return;
+            }
+
+            fetch(`/vehicles/get_models/?brand=${encodeURIComponent(brand)}`)
+                .then(res => res.json())
                 .then(data => {
-                    modeleField.innerHTML = "<option value=''>Sélectionnez un modèle</option>";
-                    if (data.models && data.models.length > 0) {
-                        data.models.forEach(modele => {
-                            const option = document.createElement("option");
-                            option.value = modele;
-                            option.textContent = modele;
-                            modeleField.appendChild(option);
-                        });
-                    } else {
-                        modeleField.innerHTML = "<option value=''>Aucun modèle disponible</option>";
-                    }
+                    modelField.innerHTML = "<option value=''>Chwazi yon modèl</option>";
+                    data.models.forEach(model => {
+                        const option = document.createElement("option");
+                        option.value = model;
+                        option.textContent = model;
+                        modelField.appendChild(option);
+                    });
                 })
-                .catch(error => {
-                    modeleField.innerHTML = "<option value=''>Erreur de chargement</option>";
-                    console.error("Erreur AJAX :", error);
+                .catch(err => {
+                    modelField.innerHTML = "<option value=''>Erè pandan chajman</option>";
+                    console.error(err);
                 });
-        } else {
-            modeleField.innerHTML = "<option value=''>Sélectionnez une marque d'abord</option>";
-        }
-    });
+        });
+    }
 
-    // Gestion de l'ajout d'un véhicule
-    addVehicleForm.addEventListener("submit", function (event) {
-        event.preventDefault(); // Empêcher le rechargement de la page
+    // 🔹 Submit Ajax
+    addVehicleForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        submitLoader.classList.remove("hidden");
+        successNotification.classList.add("hidden");
+        errorNotification.classList.add("hidden");
 
         const formData = new FormData(addVehicleForm);
-
-        // Inclure le jeton CSRF dans la requête AJAX
         const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-        fetch("{% url 'vehicles:add_vehicle' %}", {
+
+        fetch(addVehicleForm.dataset.url, {
             method: "POST",
             body: formData,
-            headers: { "X-CSRFToken": csrfToken, "X-Requested-With": "XMLHttpRequest" }
+            headers: {
+                "X-CSRFToken": csrfToken,
+                "X-Requested-With": "XMLHttpRequest"
+            }
         })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`Erreur HTTP : ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data.id) {
-                    const newVehicle = document.createElement("li");
-                    newVehicle.textContent = `${data.brand} - ${data.model} (${data.year}) - ${data.color}`;
-                    vehicleList.appendChild(newVehicle);
-                    addVehicleForm.reset();
+        .then(res => res.json())
+        .then(data => {
+            submitLoader.classList.add("hidden");
 
-                    // Afficher un message de succès
-                    alert("Véhicule ajouté avec succès !");
-                } else if (data.errors) {
-                    // Afficher les erreurs de validation
-                    alert("Erreur(s) de validation : " + Object.values(data.errors).join(", "));
+            if (data.success) {
+                showNotification(successNotification, data.message || "Machin anrejistre avèk siksè !");
+                // Redirection après 1s
+                if (data.redirect_url) {
+                    setTimeout(() => {
+                        window.location.href = data.redirect_url;
+                    }, 1000);
                 }
-            })
-            .catch(error => {
-                alert("Erreur de connexion : " + error.message);
-                console.error("Erreur AJAX :", error);
-            });
-    });
-
-    // Validation client-side avec Bootstrap
-    (function () {
-        'use strict';
-        const forms = document.querySelectorAll('.needs-validation');
-        Array.prototype.slice.call(forms).forEach(function (form) {
-            form.addEventListener('submit', function (event) {
-                if (!form.checkValidity()) {
-                    event.preventDefault();
-                    event.stopPropagation();
+            } else {
+                let msg = data.message || "Erè pandan anrejistreman machin nan.";
+                if (data.errors) {
+                    msg += "\n" + JSON.stringify(data.errors);
                 }
-                form.classList.add('was-validated');
-            }, false);
+                showNotification(errorNotification, msg);
+            }
+        })
+        .catch(err => {
+            submitLoader.classList.add("hidden");
+            showNotification(errorNotification, "Erè rezo. Tanpri eseye ankò.");
+            console.error(err);
         });
-    })();
+    });
 });

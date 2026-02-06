@@ -1,20 +1,13 @@
 from django import forms
-from .models import TollPayment
+from .models import TollBooth
 
 
-class TollPaymentForm(forms.ModelForm):
+class TollBoothForm(forms.ModelForm):
     class Meta:
-        model = TollPayment
-        fields = ['toll_booth', 'amount', 'currency', 'payment_method']
-
-    def __init__(self, *args, **kwargs):
-        user = kwargs.pop('user', None)
-        super().__init__(*args, **kwargs)
-
-        # Exemple : filtrer les guichets selon l’utilisateur (optionnel)
-        if user and not user.is_superuser:
-            self.fields['toll_booth'].queryset = self.fields['toll_booth'].queryset.filter(
-                toll__region__icontains="Sud"  # exemple fixe
-            )
-
-        self.fields['amount'].widget.attrs.update({'placeholder': 'Ex. 500.00'})
+        model = TollBooth
+        fields = ['toll', 'booth_number', 'location']
+        widgets = {
+            'toll': forms.Select(attrs={'class': 'form-select'}),
+            'booth_number': forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Ex. A1'}),
+            'location': forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Emplacement du guichet'}),
+        }

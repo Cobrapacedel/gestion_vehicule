@@ -1,0 +1,58 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% load humanize %}
+{% load user_badges %}
+
+{% block title %}Itilizatè | Tablo{% endblock %}
+
+{% block content %}
+
+{# Avatar de l'utilisateur #}
+{% comment %}
+{% include "core/includes/_avatar.html" %}
+{% endcomment %}
+<div class="flex items-center space-x-4 mb-6">
+{% if user_type == "simple" %}
+        <img src="{{ simple.avatar.url }}" 
+             alt="Avatar" 
+             class="w-32 h-32 rounded-lg border-4 border-blue-600 mb-4 object-cover">
+ 
+    {% else %}
+        <img src="{% static 'avatars/default.png' %}" 
+             alt="Avatar" 
+             class="w-32 h-32 rounded-lg border-4 border-blue-600 mb-4 object-cover">
+    {% endif %}
+
+    {# Nom et email #}
+    <div>
+        <h2 class="text-xl font-semibold">
+    
+                {{ simple.first_name|default:"" }} {{ simple.last_name|default:"" }}
+        
+        </h2>
+
+        <p class="text-sm text-gray-600">{{ user.email|default:"" }}</p>
+
+        {# Badges utilisateur #}
+        {% user_badges user %}
+    </div>
+</div>
+
+{# Soldes multi-devises ou balances #}
+{% include "core/includes/_balances.html" %}
+
+<div class="flex justify-end mt-6 mb-6">
+            <a href="{% url 'payments:transaction_list' %}" class="mt-3 inline-block bg-white text-black px-3 py-1 rounded hover:bg-gray-100">💳 Tranzaksyon</a>
+</div>
+
+
+{# Cartes statistiques #}
+    {% include "core/includes/_stats_cards.html" with cards=stats_cards %}
+
+{# Liste des notifications #}
+{% include "core/includes/_notifications.html" %}
+
+{# Graphiques / Chart #}
+{% include "core/includes/_chart.html" %}
+
+{% endblock %}

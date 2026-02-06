@@ -1,0 +1,32 @@
+{% extends "core/base.html" %}
+{% block content %}
+<h2 class="text-2xl font-bold mb-4">⚠️ Supprimer Notification</h2>
+
+<div class="bg-white rounded-lg shadow p-6">
+    <p class="mb-4 text-gray-700">
+        Êtes-vous sûr de vouloir supprimer la notification suivante ?
+    </p>
+
+    <div class="mb-4 border p-4 rounded bg-gray-50">
+        <strong>Titre :</strong> {{ notification.title }}<br>
+        <strong>Type :</strong> {{ notification.get_notification_type_display }}<br>
+        <strong>Date :</strong> {{ notification.created_at|date:"d/m/Y H:i" }}<br>
+        <strong>Contenu :</strong>
+        <p class="mt-2 text-gray-700">{{ notification.content }}</p>
+    </div>
+
+    <form method="POST">
+        {% csrf_token %}
+        <div class="flex gap-2 mt-4">
+            <button type="submit" 
+                    class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded">
+                Supprimer définitivement
+            </button>
+            <a href="{% url 'notifications:notification_list' %}" 
+               class="bg-gray-300 hover:bg-gray-400 text-black px-4 py-2 rounded">
+                Annuler
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

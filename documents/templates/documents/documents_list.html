@@ -1,41 +1,71 @@
 {% extends "core/base.html" %}
-
 {% block content %}
-<div class="max-w-6xl mx-auto mt-16 p-6 bg-white rounded-2xl shadow-lg">
-    <h2 class="text-3xl font-bold text-gray-800 mb-6">List Dokiman yo</h2>
+    <h2 class="text-2xl font-bold mb-4">📄 Mes Renouvellements de Documents</h2>
+<!-- Formulaire de recherche et filtrage -->
 
-    <table class="min-w-full bg-white border border-gray-300 rounded-lg shadow-md">
-        <thead>
-            <tr class="bg-gray-100 text-white-600">
-                <th class="px-4 py-3 text-left">ID</th>
-                <th class="px-4 py-3 text-left">Tip</th>
-                <th class="px-4 py-3 text-left">Machin</th>
-                <th class="px-4 py-3 text-left">Dat lap Ekspire</th>
-                <th class="px-4 py-3 text-left">Aksyon</th>
+<form method="GET" class="flex flex-wrap gap-4 mb-6">
+  <input type="text" name="query" placeholder="Chache..." value="{{ request.GET.query }}"
+         class="w-full sm:w-1/3 px-4 py-2 text-black border border-gray-300 rounded-lg focus:outline-none focus:ring focus:border-blue-400">
+
+  <input type="date" name="start_date" value="{{ request.GET.start_date }}"
+         class="w-full sm:w-1/4 px-4 py-2 text-black border border-gray-300 rounded-lg focus:outline-none focus:ring focus:border-blue-400">
+
+  <input type="date" name="end_date" value="{{ request.GET.end_date }}"
+         class="w-full sm:w-1/4 px-4 py-2 text-black border border-gray-300 rounded-lg focus:outline-none focus:ring focus:border-blue-400">
+
+    <button type="submit"
+            class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded shadow">
+      Chèche   </button>
+</form>
+<!-- Tableau des Documents-->
+<div class="overflow-x-auto bg-white rounded-lg shadow">
+  <table class="w-full text-left text-sm">
+    <thead class="bg-gray-100 text-black border-b font-semibold">
+      {% with query_params=request.GET.urlencode %}    <tr>
+                <th class="border px-4 py-2">Date</th>
+                <th class="border px-4 py-2">Montant</th>
+                <th class="border px-4 py-2">Payé</th>
+                <th class="border px-4 py-2">Actions</th>
             </tr>
+            {% endwith %}
         </thead>
         <tbody>
-            {% for document in documents %}
-            <tr class="border-b border-gray-200 hover:bg-gray-50">
-                <td class="px-4 py-2 text-gray-700">{{ user.id }}</td>
-                <td class="px-4 py-2 text-gray-700">{{ document.document_type }}</td>
-                <td class="px-4 py-2 text-gray-700">{{ document.vehicle }}</td>
-                <td class="px-4 py-2 text-gray-700">{{ document.expiration_date }}</td>
-                <td class="px-4 py-2">
-                    <a href="{% url 'document_detail' document.id %}"
-                       class="text-blue-600 hover:text-blue-800 mr-4">Wè</a>
-                    <a href="{% url 'document_update' document.id %}"
-                       class="text-yellow-600 hover:text-yellow-800 mr-4">Modifye</a>
-                    <a href="{% url 'document_delete' document.id %}"
-                       class="text-red-600 hover:text-red-800">Siprime</a>
+            {% for r in renewals %}
+            <tr class="hover:bg-gray-50">
+                <td class="border px-4 py-2">{{ r.created_at|date:"d/m/Y" }}</td>
+                <td class="border px-4 py-2">{{ r.amount }}</td>
+                <td class="border px-4 py-2">
+                    {% if r.is_paid %}
+                        <span class="text-green-600 font-semibold">Oui</span>
+                    {% else %}
+                        <span class="text-red-600 font-semibold">Non</span>
+                    {% endif %}
                 </td>
+                <td class="border px-4 py-2">
+                    {% if not r.is_paid %}
+                        <a href="{% url 'documents:pay_renewal' r.id %}" class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">Payer</a>
+                    {% endif %}
+                    <a href="{% url 'documents:renewal_detail' r.id %}" class="text-blue-600 hover:underline ml-2">Voir</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4" class="border px-4 py-2 text-center text-gray-500">Aucun renouvellement trouvé.</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
+
+    {% if is_paginated %}
+    <div class="mt-4 flex justify-center space-x-2">
+        {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}" class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300">&laquo; Précédent</a>
+        {% endif %}
+        <span class="px-3 py-1 bg-gray-100 rounded">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}" class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300">Suivant &raquo;</a>
+        {% endif %}
+    </div>
+    {% endif %}
 </div>
- <a href="{% url 'payments:transaction_list' %}"
-               class="mt-3 inline-block bg-white text-black px-4 py-2 rounded font-semibold hover:bg-gray-100">
-                💳 Lis tout tranzaksyon ou yo
-            </a>
 {% endblock %}

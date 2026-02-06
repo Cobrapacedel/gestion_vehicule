@@ -1,0 +1,118 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Nouvo Machin{% endblock %}
+
+{% block content %}
+<div class="container mx-auto mt-10 px-6">
+    <h1 class="text-2xl font-semibold mb-6">Anrejistre yon nouvo machin</h1>
+
+    <!-- Messages flash -->
+    <div id="success-notification" class="hidden bg-green-100 text-green-800 p-4 rounded-md mb-4"></div>
+    <div id="error-notification" class="hidden bg-red-100 text-red-800 p-4 rounded-md mb-4"></div>
+
+    <form id="addVehicleForm" method="post" data-url="{% url 'vehicles:vehicle_add' %}" novalidate>
+        {% csrf_token %}
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+            <!-- Type de véhicule -->
+            <div>
+                <label for="id_vehicle_type">Kalite Machin <span class="text-red-500">*</span></label>
+                <select name="vehicle_type" id="id_vehicle_type" required
+                        class="mt-2 block w-full border rounded px-4 py-2 text-black">
+                    <option value="">Chwazi yon kalite</option>
+                    <option value="car">Machin</option>
+                    <option value="motorcycle">Moto</option>
+                    <option value="truck">Kamyon</option>
+                    <option value="bus">Bis</option>
+                </select>
+            </div>
+
+            <!-- Marque -->
+            <div>
+                <label for="id_brand">Mak <span class="text-red-500">*</span></label>
+                <select name="brand" id="id_brand" required
+                        class="mt-2 block w-full border rounded px-4 py-2 text-black">
+                    <option value="">Chwazi yon mak</option>
+                </select>
+            </div>
+
+            <!-- Modèle -->
+            <div>
+                <label for="id_model">Modèl <span class="text-red-500">*</span></label>
+                <select name="model" id="id_model" required
+                        class="mt-2 block w-full border rounded px-4 py-2 text-black">
+                    <option value="">Chwazi yon modèl</option>
+                </select>
+                <div id="model-loader" class="hidden mt-2 text-blue-600">Chaje modèl yo...</div>
+            </div>
+
+            <!-- Plaque -->
+            <div>
+                <label for="id_plate_number">Nimewo Plak <span class="text-red-500">*</span></label>
+                <input type="text" name="plate_number" id="id_plate_number" required
+                       placeholder="Eg: AA-1234" class="mt-2 block w-full border rounded px-4 py-2 text-black">
+            </div>
+
+            <!-- Serial number -->
+            <div>
+                <label for="id_serial_number">Nimewo Motè <span class="text-red-500">*</span></label>
+                <input type="text" name="serial_number" id="id_serial_number" required
+                       placeholder="Eg: 1HGCM82633A123456" class="mt-2 block w-full border rounded px-4 py-2 text-black">
+            </div>
+
+            <!-- Année -->
+            <div>
+                <label for="id_year">Ane <span class="text-red-500">*</span></label>
+                <input type="number" name="year" id="id_year" min="1900" max="2099" required
+                       placeholder="Eg: 2020" class="mt-2 block w-full border rounded px-4 py-2 text-black">
+            </div>
+
+            <!-- Couleur -->
+            <div>
+                <label for="id_color">Koulè <span class="text-red-500">*</span></label>
+                <input type="text" name="color" id="id_color" required
+                       placeholder="Eg: Wouj" class="mt-2 block w-full border rounded px-4 py-2 text-black">
+            </div>
+
+            <!-- Kilométrage -->
+            <div>
+                <label for="id_mileage">Kilometraj <span class="text-red-500">*</span></label>
+                <input type="number" name="mileage" id="id_mileage" min="0" required
+                       placeholder="Eg: 45000" class="mt-2 block w-full border rounded px-4 py-2 text-black">
+            </div>
+
+            <!-- Gaz -->
+            <div>
+                <label for="id_fuel_type">Tip Gaz <span class="text-red-500">*</span></label>
+                <select name="fuel_type" id="id_fuel_type" required class="mt-2 block w-full border rounded px-4 text-black py-2">
+                    <option value="gasoline">Gazolin</option>
+                    <option value="diesel">Dizèl</option>
+                    <option value="electrique">Elektrik</option>
+                    <option value="hybride">Ibrid</option>
+                </select>
+            </div>
+
+            <!-- Statut -->
+            <div>
+                <label for="id_status">Estati <span class="text-red-500">*</span></label>
+                <select name="status" id="id_status" required class="mt-2 block w-full border rounded px-4 py-2 text-black">
+                    <option value="available">Disponib</option>
+                    <option value="rented">Lwe</option>
+                    <option value="maintenance">Garaj</option>
+                    <option value="sold">Vann</option>
+                    <option value="transferred">Transfere</option>
+                </select>
+            </div>
+
+        </div>
+
+        <div class="mt-4 flex items-center">
+            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-green-600">Anrejistre</button>
+            <a href="{% url 'vehicles:vehicles_list' %}" class="ml-4 bg-red-500 text-white px-4 py-2 rounded hover:bg-yellow-600">Anile</a>
+        </div>
+    </form>
+</div>
+
+<script src="{% static 'js/vehicles_ajax.js' %}"></script>
+{% endblock %}

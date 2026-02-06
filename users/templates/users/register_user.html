@@ -1,0 +1,91 @@
+{% extends "core/base.html" %}
+{% load widget_tweaks %}
+{% block title %}Inscription — Utilisateur{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center bg-gray-800 py-12 px-4">
+  <div class="w-full max-w-md bg-gray-900 p-8 rounded-xl shadow-lg">
+    
+    <h1 class="text-2xl font-bold text-white text-center mb-6">
+      Créer un compte utilisateur
+    </h1>
+
+    {% if messages %}
+      <div class="mb-4">
+        {% for m in messages %}
+          <div class="px-3 py-2 rounded {{ m.tags }}">{{ m }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <!-- FORMULAIRE UNIQUE -->
+    <form method="POST" novalidate>
+        
+{% if form.errors %}
+<div class="bg-red-900 text-red-200 p-4 rounded mb-4">
+    <strong>Erreurs détectées :</strong>
+    <ul class="list-disc pl-5">
+        {% for field, errors in form.errors.items %}
+            <li><strong>{{ field }} :</strong> {{ errors|join:", " }}</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+      {% csrf_token %}
+
+      <!-- Email -->
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-300">Email</label>
+        {{ form.email|add_class:"w-full mt-1 p-2 bg-gray-800 border border-gray-700 rounded text-white" }}
+        {% for err in form.email.errors %}
+          <p class="text-red-400 text-sm">{{ err }}</p>
+        {% endfor %}
+      </div>
+
+      <!-- Téléphone -->
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-300">Téléphone</label>
+        {{ form.phone|add_class:"w-full mt-1 p-2 bg-gray-800 border border-gray-700 rounded text-white" }}
+        {% for err in form.phone.errors %}
+          <p class="text-red-400 text-sm">{{ err }}</p>
+        {% endfor %}
+      </div>
+
+      <!-- Password 1 -->
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-300">Mot de passe</label>
+        {{ form.password1|add_class:"w-full mt-1 p-2 bg-gray-800 border border-gray-700 rounded text-white" }}
+        {% for err in form.password1.errors %}
+          <p class="text-red-400 text-sm">{{ err }}</p>
+        {% endfor %}
+      </div>
+
+      <!-- Password 2 -->
+      <div class="mb-6">
+        <label class="block text-sm font-medium text-gray-300">Confirmer le mot de passe</label>
+        {{ form.password2|add_class:"w-full mt-1 p-2 bg-gray-800 border border-gray-700 rounded text-white" }}
+        {% for err in form.password2.errors %}
+          <p class="text-red-400 text-sm">{{ err }}</p>
+        {% endfor %}
+      </div>
+
+      <!-- Button -->
+      <button type="submit"
+              class="w-full py-2 rounded bg-green-600 hover:bg-green-500 text-white font-semibold">
+        Créer le compte
+      </button>
+
+      <p class="text-sm text-gray-400 mt-4 text-center">
+        Vous voulez créer un compte business ?
+        <a href="{% url 'users:register_choice' %}?type=business"
+           class="text-blue-400 hover:underline">
+          Inscription entreprise
+        </a>
+      </p>
+
+    </form>
+
+  </div>
+</div>
+{% endblock %}

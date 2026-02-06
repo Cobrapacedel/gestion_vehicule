@@ -1,30 +1,23 @@
-        // Scroll to footer if ?scroll=footer
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.has('scroll') && urlParams.get('scroll') === 'footer') {
-            document.getElementById('footer').scrollIntoView({ behavior: 'smooth' });
-        }
-
-        // Heure et date dynamique
-    function updateTime() {
+    function updateDateTime() {
+        const dateEl = document.getElementById('date');
+        const timeEl = document.getElementById('time');
         const now = new Date();
-        const optionsDate = {
-            weekday: 'long',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-            timeZone: 'America/Port-au-Prince'  // Pour Haïti
-        };
-        const optionsTime = {
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            hour12: false,
-            timeZone: 'America/Port-au-Prince'
-        };
-
-        document.getElementById("date").textContent = now.toLocaleDateString("fr-FR", optionsDate);
-        document.getElementById("time").textContent = now.toLocaleTimeString("fr-FR", optionsTime);
+        const weekdaysHT = ['Dimanch', 'Lendi', 'Madi', 'Mèkredi', 'Jedi', 'Vandredi', 'Samdi'];
+        const monthsHT = ['Janvye', 'Fevriye', 'Mas', 'Avril', 'Me', 'Jen', 'Jiyè', 'Out', 'Septanm', 'Oktòb', 'Novanm', 'Desanm'];
+        const weekday = weekdaysHT[now.getDay()];
+        const day = now.getDate();
+        const month = monthsHT[now.getMonth()];
+        const year = now.getFullYear();
+        dateEl.textContent = `${weekday} ${day} ${month} ${year}`;
+        let hours = now.getHours();
+        const minutes = now.getMinutes().toString().padStart(2,'0');
+        const seconds = now.getSeconds().toString().padStart(2,'0');
+        let period;
+        if(hours >=1 && hours<12) period='(maten)';
+        else if(hours===12) period='(midi)';
+        else if(hours>12 && hours<19) period='(aprèmidi)';
+        else if(hours>=19 && hours<=23) period='(aswè)';
+        else period='(minwi)';
+        const displayHours = hours%12||12;
+        timeEl.textContent = `${displayHours}:${minutes}:${seconds} ${period}`;
     }
-
-    setInterval(updateTime, 1000);
-    updateTime();

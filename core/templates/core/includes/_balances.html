@@ -1,0 +1,76 @@
+{% load humanize %}
+{% load crypto %}
+
+
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-6">
+
+    <!-- BTC -->
+    <div class="bg-yellow-50 border-l-4 border-yellow-500 rounded-2xl p-5 shadow-md hover:shadow-xl transition transform hover:-translate-y-1">
+        <h3 class="text-lg font-semibold text-gray-800 flex items-center justify-between">
+            🪙 BTC
+            <button type="button" onclick="document.getElementById('btc-wallet').classList.toggle('hidden')" 
+                    class="text-gray-500 hover:text-gray-800">👁️</button>
+        </h3>
+        <p class="text-2xl font-bold text-yellow-700 mt-2">{{ solde_btc|floatformat:8 }} ₿</p>
+        <div id="btc-wallet" class="hidden mt-2 text-gray-600 text-sm break-all">
+            {% if wallet.network == 'btc' %}        <p class="text-xl font-bold text-yellow-700 mt-2"><em>{{ wallet.address }}</em></p>{% else %}Pas de wallet{% endif %}
+        </div>
+    </div>
+
+    <!-- USDT -->
+    <div class="bg-green-50 border-l-4 border-green-500 rounded-2xl p-5 shadow-md hover:shadow-xl transition transform hover:-translate-y-1">
+        <h3 class="text-lg font-semibold text-gray-800 flex items-center justify-between">
+            💵 USDT
+            <button type="button" onclick="document.getElementById('usdt-wallet').classList.toggle('hidden')" 
+                    class="text-gray-500 hover:text-gray-800">👁️</button>
+        </h3>
+        <p class="text-2xl font-bold text-green-700 mt-2">{{ solde_usdt|floatformat:2 }} USDT</p>
+        <div id="usdt-wallet" class="hidden mt-2 text-gray-600 text-sm break-all">
+            {% for w in user.wallets.all %}
+                {% if w.network == 'bsc' %}
+                            <p class="text-xl font-bold text-green-700 mt-2"><em>{{ w.address }}</em></p>
+                {% endif %}
+            {% empty %}
+                Pas de wallet
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- JMU -->
+    <div class="bg-orange-50 border-l-4 border-orange-500 rounded-2xl p-5 shadow-md hover:shadow-xl transition transform hover:-translate-y-1">
+        <h3 class="text-lg font-semibold text-gray-800 flex items-center justify-between">
+            ⚡ JMU
+            <button type="button" onclick="document.getElementById('jmu-wallet').classList.toggle('hidden')" 
+                    class="text-gray-500 hover:text-gray-800">👁️</button>
+        </h3>
+        <p class="text-2xl font-bold text-orange-700 mt-2">{{ solde_jmu|floatformat:18 }} JMU</p>
+        <div id="jmu-wallet" class="hidden mt-2 text-gray-600 text-sm break-all">
+            {% for w in user.wallets.all %}
+                {% if w.currency == 'jmu' %}
+                    Adresse: {{ w.address }}
+                {% endif %}
+            {% empty %}
+                Pas de wallet
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Total HTG -->
+    <div class="bg-blue-50 border-l-4 border-blue-500 rounded-2xl p-5 shadow-md hover:shadow-xl transition transform hover:-translate-y-1">
+        <h3 class="text-lg font-semibold text-gray-800 flex items-center justify-between">
+            💰 Total HTG
+            <button type="button" onclick="document.getElementById('htg-wallet').classList.toggle('hidden')" 
+                    class="text-gray-500 hover:text-gray-800">👁️</button>
+        </h3>
+        <p class="text-2xl font-bold text-blue-700 mt-2">{{ solde_total_htg|intcomma }} HTG</p>
+        <div id="htg-wallet" class="hidden mt-2 text-gray-600 text-sm break-all">
+            {% for w in user.wallets.all %}
+                {% if w.currency == 'htg' %}
+                    Adresse: {{ w.address }}
+                {% endif %}
+            {% empty %}
+                Pas de wallet
+            {% endfor %}
+        </div>
+    </div>
+</div>

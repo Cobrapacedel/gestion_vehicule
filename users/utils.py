@@ -7,6 +7,25 @@ import requests
 
 # Utility Functions
 
+def can_access_client(user, client):
+    return client.real_user == user or user.is_superuser or is_admin(user)
+
+def is_admin(user):
+    """
+    Vérifie si l'utilisateur est administrateur pour ton projet.
+    Un administrateur est soit :
+      - superuser Django
+      - ou un utilisateur avec role 'admin', 'dealer', 'agency' ou 'garage'
+    """
+
+    if not user or user.is_anonymous:
+        return False
+
+    # Définition des rôles considérés comme administrateurs
+    admin_roles = {"admin", "dealer", "agency", "garage"}
+
+    return user.is_superuser or (getattr(user, "role", None) in admin_roles)
+
 def generate_otp(length=6):
     """
     Génère un OTP sécurisé aléatoire.
@@ -15,33 +34,57 @@ def generate_otp(length=6):
     """
     return str(secrets.randbelow(10**length)).zfill(length)  # Toujours `length` chiffres
 
-def validate_phone_number(phone_number):
+def validate_phone(phone):
     """
     Valide un numéro de téléphone avec la bibliothèque `phonenumbers`.
-    :param phone_number: Numéro de téléphone à valider.
+    :param phone: Numéro de téléphone à valider.
     :raises ValidationError: Si le numéro est invalide.
     """
     try:
-        parsed = phonenumbers.parse(phone_number, None)
+        parsed = phonenumbers.parse(phone, None)
         if not phonenumbers.is_valid_number(parsed):
             raise ValidationError("Numéro de téléphone invalide.")
     except phonenumbers.NumberParseException:
         raise ValidationError("Format de numéro de téléphone incorrect.")
 
-def send_email(subject, message, recipient_list):
+def send_email_safe(
+    *,
+    user=None,
+    to_email=None,
+    subject="",
+    message="",
+    fail_silently=True,
+):
     """
-    Envoie un email avec Django.
-    :param subject: Sujet de l'email.
-    :param message: Contenu du message.
-    :param recipient_list: Liste des destinataires.
+    Envoi d'email sécurisé.
+    Accepte soit un user, soit une adresse email directe.
     """
-    send_mail(
-        subject=subject,
-        message=message,
-        from_email=settings.DEFAULT_FROM_EMAIL,
-        recipient_list=recipient_list,
-        fail_silently=False,
-    )
+
+    recipient = None
+
+    if user and getattr(user, "email", None):
+        recipient = user.email
+    elif to_email:
+        recipient = to_email
+
+    if not recipient:
+        logger.warning("Email non envoyé (aucun destinataire) : %s", subject)
+        return False
+
+    try:
+        send_mail(
+            subject=subject,
+            message=message,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[recipient],
+            fail_silently=fail_silently,
+        )
+        return True
+    except Exception as e:
+        logger.exception("Erreur lors de l'envoi email : %s", e)
+        if not fail_silently:
+            raise
+        return False
 
 def send_otp_via_email(user, otp):
     """

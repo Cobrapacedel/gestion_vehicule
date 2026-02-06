@@ -3,7 +3,8 @@ from django.shortcuts import redirect
 from django.contrib import messages
 from .models import LoginAttempt, LoginHistory
 from .utils import get_geolocation
-from django.conf import settings  # Import settings
+from django.conf import settings
+from django.urls import reverse
 
 class AccountLockMiddleware(MiddlewareMixin):
     """

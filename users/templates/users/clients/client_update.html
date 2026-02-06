@@ -1,0 +1,37 @@
+{% extends "core/base.html" %}
+{% block title %}Modifye Kliyan{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex justify-center items-center bg-gray-900 px-4 py-10 text-white">
+    <div class="bg-gray-800 p-8 rounded-xl shadow-lg w-full max-w-xl">
+
+        <h1 class="text-2xl font-bold text-center text-yellow-400 mb-6">Modifye Kliyan</h1>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="space-y-4">
+                {% for field in form %}
+                <div>
+                    <label class="block mb-1 font-semibold">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}
+                        <p class="text-red-400 text-sm">{{ field.errors.0 }}</p>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+
+            <button class="w-full mt-6 bg-blue-500 py-2 rounded-lg hover:bg-blue-600">
+                Mete ajou
+            </button>
+
+            <a href="{% url 'users:client_list' %}" 
+               class="block text-center mt-4 text-gray-300 hover:text-white">
+                Retounen
+            </a>
+        </form>
+
+    </div>
+</div>
+{% endblock %}

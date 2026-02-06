@@ -1,0 +1,182 @@
+[
+    {
+        "model": "fines.violation",
+        "pk": 1,
+        "fields": {
+            "code": "V001",
+            "reason": "Excès de vitesse en zone urbaine",
+            "amount": "2500.00",
+            "currency": "HTG",
+            "is_active": true,
+            "created_at": "2025-01-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "fines.violation",
+        "pk": 2,
+        "fields": {
+            "code": "V002",
+            "reason": "Excès de vitesse en zone scolaire",
+            "amount": "5000.00",
+            "currency": "HTG",
+            "is_active": true,
+            "created_at": "2025-01-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "fines.violation",
+        "pk": 3,
+        "fields": {
+            "code": "V003",
+            "reason": "Non-respect d’un feu tricolore",
+            "amount": "3500.00",
+            "currency": "HTG",
+            "is_active": true,
+            "created_at": "2025-01-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "fines.violation",
+        "pk": 4,
+        "fields": {
+            "code": "V004",
+            "reason": "Stationnement interdit",
+            "amount": "1500.00",
+            "currency": "HTG",
+            "is_active": true,
+            "created_at": "2025-01-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "fines.violation",
+        "pk": 5,
+        "fields": {
+            "code": "V005",
+            "reason": "Absence de permis de conduire valide",
+            "amount": "10000.00",
+            "currency": "HTG",
+            "is_active": true,
+            "created_at": "2025-01-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "fines.violation",
+        "pk": 6,
+        "fields": {
+            "code": "V006",
+            "reason": "Conduite sans ceinture de sécurité",
+            "amount": "2000.00",
+            "currency": "HTG",
+            "is_active": true,
+            "created_at": "2025-01-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "fines.violation",
+        "pk": 7,
+        "fields": {
+            "code": "V007",
+            "reason": "Usage du téléphone au volant",
+            "amount": "3000.00",
+            "currency": "HTG",
+            "is_active": true,
+            "created_at": "2025-01-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "fines.violation",
+        "pk": 8,
+        "fields": {
+            "code": "V008",
+            "reason": "Conduite sans assurance valide",
+            "amount": "8000.00",
+            "currency": "HTG",
+            "is_active": true,
+            "created_at": "2025-01-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "fines.violation",
+        "pk": 9,
+        "fields": {
+            "code": "V009",
+            "reason": "Surcharge du véhicule",
+            "amount": "6000.00",
+            "currency": "HTG",
+            "is_active": true,
+            "created_at": "2025-01-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "fines.violation",
+        "pk": 10,
+        "fields": {
+            "code": "V010",
+            "reason": "Conduite en état d’ivresse",
+            "amount": "25000.00",
+            "currency": "HTG",
+            "is_active": true,
+            "created_at": "2025-01-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "fines.violation",
+        "pk": 11,
+        "fields": {
+            "code": "V011",
+            "reason": "Défaut de plaque d’immatriculation",
+            "amount": "7000.00",
+            "currency": "HTG",
+            "is_active": true,
+            "created_at": "2025-01-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "fines.violation",
+        "pk": 12,
+        "fields": {
+            "code": "V012",
+            "reason": "Circulation sans carte grise",
+            "amount": "9000.00",
+            "currency": "HTG",
+            "is_active": true,
+            "created_at": "2025-01-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "fines.violation",
+        "pk": 13,
+        "fields": {
+            "code": "V013",
+            "reason": "Non-respect des limitations de tonnage",
+            "amount": "12000.00",
+            "currency": "HTG",
+            "is_active": true,
+            "created_at": "2025-01-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "fines.violation",
+        "pk": 14,
+        "fields": {
+            "code": "V014",
+            "reason": "Circulation sans contrôle technique valide",
+            "amount": "8500.00",
+            "currency": "HTG",
+            "is_active": true,
+            "created_at": "2025-01-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "fines.violation",
+        "pk": 15,
+        "fields": {
+            "code": "V015",
+            "reason": "Refus d’obtempérer à un contrôle routier",
+            "amount": "15000.00",
+            "currency": "HTG",
+            "is_active": true,
+            "created_at": "2025-01-01T00:00:00Z"
+        }
+    }
+]

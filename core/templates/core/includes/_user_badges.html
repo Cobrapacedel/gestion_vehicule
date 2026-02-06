@@ -1,0 +1,8 @@
+<div class="flex space-x-2 mt-1">
+  {% for badge in badges %}
+    <span class="px-2 py-1 rounded-full text-xs {{ badge.color }}">
+      {% if badge.label == "Active" %}✅{% elif badge.label == "Inactive" %}❌{% elif badge.label == "Staff" %}👑{% elif badge.label == "Mécanicien" %}🛠️{% endif %}
+      {{ badge.label }}
+    </span>
+  {% endfor %}
+</div>

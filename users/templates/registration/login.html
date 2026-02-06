@@ -5,7 +5,7 @@
 {% block title %}Koneksyon{% endblock %}
 
 {% block content %}
-<link rel="stylesheet" href="{% static 'css/style.css' %}">
+<link rel="stylesheet" href="{% static 'css/styles.css' %}">
 <script src="https://cdn.tailwindcss.com"></script>
 
 <div class="min-h-screen flex items-center justify-center bg-gray-700 text-white py-12 px-4 sm:px-6 lg:px-8">
@@ -79,7 +79,7 @@
     </form>
 
     <div class="text-center mt-6">
-      <p>Ou poko gen kont ? <a href="{% url 'users:register' %}" class="text-blue-400 hover:underline">Kreye Kont</a></p>
+      <p>Ou poko gen kont ? <a href="{% url 'users:register_choice' %}" class="text-blue-400 hover:underline">Kreye Kont</a></p>
       <p>Ou bliye modpas la ? <a href="{% url 'password_reset' %}" class="text-blue-400 hover:underline">Reyinisyalize</a></p>
     </div>
   </div>

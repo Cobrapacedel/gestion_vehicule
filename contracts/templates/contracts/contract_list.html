@@ -1,0 +1,100 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}Lis Kontra{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto p-6">
+
+    <h1 class="text-2xl font-bold mb-6">Lis Kontra</h1>
+
+    <!-- Message -->
+    {% if messages %}
+        <div class="mb-4">
+            {% for message in messages %}
+                <div class="p-3 rounded bg-green-100 text-green-700">{{ message }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <div class="flex justify-between items-center mb-4">
+        <a href="{% url 'contracts:contract_create' %}" 
+           class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
+           + Kreye Kontra
+        </a>
+    </div>
+
+    <div class="overflow-x-auto bg-white shadow rounded-lg p-4">
+
+        <table class="w-full text-left">
+            <thead>
+                <tr class="border-b font-semibold">
+                    <th class="p-2">ID</th>
+                    <th class="p-2">Tip</th>
+                    <th class="p-2">Veyikil</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for contract in page_obj %}
+                <tr class="border-b">
+                    <td class="p-2">{{ contract.id }}</td>
+
+                    <td class="p-2">
+                        {% if contract.contract_type == "sell" %}
+                            <span class="bg-green-200 text-green-800 px-2 py-1 rounded">Vant</span>
+                        {% elif contract.contract_type == "rent" %}
+                            <span class="bg-blue-200 text-blue-800 px-2 py-1 rounded">Lokasyon</span>
+                        {% elif contract.contract_type == "loan" %}
+                            <span class="bg-yellow-200 text-yellow-800 px-2 py-1 rounded">Prete</span>
+                        {% elif contract.contract_type == "service" %}
+                            <span class="bg-purple-200 text-purple-800 px-2 py-1 rounded">Sèvis</span>
+                        {% else %}
+                            <span class="bg-gray-200 text-gray-800 px-2 py-1 rounded">{{ contract.contract_type }}</span>
+                        {% endif %}
+                    </td>
+
+                    <td class="p-2">
+                        {{ contract.vehicle.plate_number }}<br>
+                        <span class="text-gray-500 text-sm">{{ contract.vehicle.brand }} {{ contract.vehicle.model }}</span>
+                    </td>
+                    <td class="p-2">
+                        <a href="{% url 'contracts:contract_detail' contract.id %}" 
+                           class="text-blue-600 hover:underline">
+                           Detay
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center py-4 text-gray-500">
+                        Pa gen kontra disponib.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Pagination -->
+        <div class="mt-4 flex justify-center">
+            <div class="flex space-x-2">
+                {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}"
+                   class="px-3 py-1 bg-gray-200 rounded">←</a>
+                {% endif %}
+
+                <span class="px-3 py-1 bg-blue-600 text-white rounded">
+                    {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}
+                </span>
+
+                {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}"
+                   class="px-3 py-1 bg-gray-200 rounded">→</a>
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

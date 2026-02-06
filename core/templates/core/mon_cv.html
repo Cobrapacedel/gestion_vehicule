@@ -2,82 +2,128 @@
 {% load static %}
 
 {% block content %}
-<style>
-  body {
-    font-family: Arial, sans-serif;
-    line-height: 1.6;
-    background: #f9f9f9;
-    color: #333;
-  }
- /* h1, h2 { color: #2c3e50; }*/
-  .contact, .section { margin-bottom: 25px; }
-  .section-title {
-    background: #2c3e50;
-    color: white;
-    padding: 6px 10px;
-    border-radius: 4px;
-  }
-  ul { padding-left: 20px; }
-  .highlight { font-weight: bold; color: #1a73e8; }
-  a { color: #1a73e8; text-decoration: none; }
-  a:hover { text-decoration: underline; }
-</style>
+{% load static %}
 
-<h1>KADHAFFI MAC-ARTHUR DELINOIS</h1>
-<div class="contact">
-  📧 <a href="mailto:delinoiskadhaffimacarthur@gmail.com">delinoiskadhaffimacarthur@gmail.com</a><br>
-<a href="https://wa.me/+18294630993" target="_blank"><i class="fab fa-whatsapp"></i> +1 (829) 463 - 0993</a> <br>
-  🔗 <a href="https://github.com/cobrapacedel" target="_blank">github.com/cobrapacedel</a> |<br>
-  💻 Développeur Full Stack | Unity | Django | Cybersécurité<br>
-  📍 Haïti<br>
-  🛠️ Disponible pour missions freelance / remote
-</div>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portfolio - Kadhaffi Mac-Arthur Delinois</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-800 font-sans">
 
-<div class="section">
-  <div class="section-title">🔧 COMPÉTENCES CLÉS</div>
-  <ul>
-    <li><span class="highlight">Langages :</span> Python, HTML/CSS, SQL</li>
-    <li><span class="highlight">Frameworks :</span> Django, Unity, Tailwind CSS</li>
-    <li><span class="highlight">Cybersécurité :</span> durcissement, détection d'activités suspectes, géolocalisation IP</li>
-    <li><span class="highlight">Bases de données :</span> SQLite, PostgreSQL, Firebase</li>
-    <li><span class="highlight">Outils :</span> Git, GitHub, Termux, Postman, Docker (base)</li>
-    <li><span class="highlight">Pratiques :</span> JWT, API REST, WebSockets, déploiement</li>
-  </ul>
-</div>
+  <!-- Header -->
+  <header class="bg-white shadow-md rounded-lg py-6">
+    <div class="container mx-auto text-center">
+      <h1 class="text-3xl font-bold text-gray-900">KADHAFFI MAC-ARTHUR DELINOIS</h1>
+      <p class="mt-2 text-lg text-gray-600">💻 Développeur Full Stack | Unity | Django | Cybersécurité</p>
+      <p class="text-gray-500">📍 Haïti — Disponible en remote/freelance</p>
 
-<div class="section">
-  <div class="section-title">🧪 PROJETS CLÉS</div>
-  <ul>
-    <li><strong class="text-blue-300 font-semibold">Bee_High </strong> Jeu de stratégie multijoueur (Unity + Django)</li>
-    <li><strong class="text-blue-300 font-semibold">Jere Machin  <i class="fa-solid fa-face-smile-beam"></i>u</strong> Application de gestion de véhicules (utilisateurs, documents, amendes, OTP, transferts)</li>
-    <li><strong class="text-blue-300 font-semibold">Jeu devinette (C#)</strong> version GUI avec signature <strong><span class="text-blue-300 font-semibold">Cobrapacedel™</span></strong></li>
-  </ul>
-</div>
+      <!-- Contact -->
+      <div class="mt-4 flex flex-col md:flex-row gap-3 justify-center text-sm">
+        <a href="mailto:delinoiskadhaffimacarthur@gmail.com"
+           class="text-blue-600 hover:underline">📧 Email</a>
+        <a href="https://wa.me/+18294630993" target="_blank"
+           class="text-green-600 hover:underline">💬 WhatsApp</a>
+        <a href="https://github.com/cobrapacedel" target="_blank"
+           class="text-gray-800 hover:underline">🔗 GitHub</a>
+      </div>
 
-<div class="section">
-  <div class="section-title">📚 FORMATION AUTODIDACTE</div>
-  <p>
-    Apprentissage par tutoriels, documentation officielle et projets réels.<br>
-    Veille constante en cybersécurité, Django, Unity et développement Web.<br>
-    Utilisation quotidienne de Termux sur Android pour coder efficacement.
-  </p>
-</div>
+      <!-- Photo -->
+      <div class="mt-6 flex justify-center">
+        <img src="{% static 'images/photo_id.jpg' %}" alt="Photo d'identité"
+             class="w-36 h-36 rounded-2xl border-2 border-blue-500 object-cover">
+      </div>
+    </div>
+  </header>
 
-<div class="section">
-  <div class="section-title">💡 QUALITÉS</div>
-  <ul>
-    <li>Autonome, persévérant, créatif</li>
-    <li>Rigueur dans l’organisation du code</li>
-    <li>Communication claire et structurée</li>
-    <li>Passion pour l’apprentissage continu</li>
-  </ul>
-</div>
+  <!-- Main -->
+  <main class="container mx-auto px-6 py-10 space-y-12">
 
-<div class="section">
-  <div class="section-title">🎯 OBJECTIF</div>
-  <p>
-    Contribuer à des projets innovants en développement logiciel ou cybersécurité,<br>
-    à distance ou en freelance, avec une signature unique : <strong><span class="text-blue-300 font-semibold">Cobrapacedel™</span></strong>.
-  </p>
-</div>
+    <!-- Profil -->
+    <section>
+      <h2 class="bg-gray-800 text-white px-3 py-1 rounded-lg font-semibold inline-block">Profil</h2>
+    <div class="mt-3 space-y-4">
+
+        <div class="bg-white p-4 shadow rounded-lg">
+      <p class="mt-3 text-gray-700">
+        Passionné par le développement logiciel et la cybersécurité, j’allie créativité et rigueur technique
+        pour concevoir des solutions modernes, efficaces et sécurisées.
+      </p>
+    </section>
+
+    <!-- Compétences -->
+    <section>
+      <h2 class="bg-gray-800 text-white px-3 py-1 rounded-lg font-semibold inline-block">Compétences</h2>
+    <div class="mt-3 space-y-4">
+
+        <div class="bg-white p-4 shadow rounded-lg">
+      <ul class="mt-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 text-gray-700">
+        <li class="flex items-center gap-2">✅ Python (Django, DRF)</li>
+        <li class="flex items-center gap-2">✅ JavaScript (React, Vue.js)</li>
+        <li class="flex items-center gap-2">✅ C# (Unity)</li>
+        <li class="flex items-center gap-2">✅ PostgreSQL, SQLite</li>
+        <li class="flex items-center gap-2">✅ Git, GitHub</li>
+        <li class="flex items-center gap-2">✅ Tailwind CSS</li>
+        <li class="flex items-center gap-2">✅ Docker (bases)</li>
+        <li class="flex items-center gap-2">✅ Sécurité & bonnes pratiques</li>
+      </ul>
+    </section>
+
+    <!-- Projets -->
+    <section>
+      <h2 class="bg-gray-800 text-white px-3 py-1 rounded-lg font-semibold inline-block">Projets</h2>
+      <div class="mt-3 space-y-4">
+
+        <div class="bg-white p-4 shadow rounded-lg">
+          <h3 class="font-bold text-blue-600">🚗 Gestion de véhicules (Django + DRF)</h3>
+          <p class="text-gray-700">Application web complète avec gestion des utilisateurs, paiements,
+            infractions et API REST sécurisée.</p>
+        </div>
+
+        <div class="bg-white p-4 shadow rounded-lg">
+          <h3 class="font-bold text-blue-600">🐝 Bee_High (Unity + C#)</h3>
+          <p class="text-gray-700">Prototype de jeu de gestion multijoueur stratégique basé sur
+            des colonies d’abeilles.</p>
+        </div>
+
+        <div class="bg-white p-4 shadow rounded-lg">
+          <h3 class="font-bold text-blue-600">⚽ Prédiction de scores (IA + API)</h3>
+          <p class="text-gray-700">Application de data science permettant de prédire les résultats
+            probables de matchs de football.</p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Formation -->
+    <section>
+      <h2 class="bg-gray-800 text-white px-3 py-1 rounded-lg font-semibold inline-block">Formation</h2>
+    <div class="mt-3 space-y-4">
+
+        <div class="bg-white p-4 shadow rounded-lg">
+      <ul class="mt-3 text-gray-700 space-y-2">
+        <li>🎓 Développement Web & Mobile — Autodidacte + cours en ligne (OpenClassrooms, FreeCodeCamp)</li>
+        <li>🎓 Cybersécurité — Initiation et veille continue</li>
+      </ul>
+    </section>
+
+    <!-- Expérience -->
+    <section>
+      <h2 class="bg-gray-800 text-white px-3 py-1 rounded-lg font-semibold inline-block">Expérience</h2>
+    <div class="mt-3 space-y-4">
+
+        <div class="bg-white p-4 shadow rounded-lg">
+      <ul class="mt-3 text-gray-700 space-y-2">
+        <li>💼 Freelance — Développement d’applications web (Django/React)</li>
+        <li>💼 Gestion de projets personnels (Bee_High, Gestion véhicules, Prédiction football)</li>
+      </ul>
+    </section>
+
+  </main>
+
+</body>
+</html>
 {% endblock %}

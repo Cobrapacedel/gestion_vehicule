@@ -1,19 +1,38 @@
-{% extends 'core/base.html' %}
+{% extends "core/base.html" %}
 
 {% block content %}
-  <h2>Confirmer la suppression de l'amende</h2>
+<div class="max-w-xl mx-auto bg-white dark:bg-gray-800 shadow-md rounded-2xl p-6 mt-10">
+    <h2 class="text-xl font-bold text-white dark:text-red-400 mb-4">
+        Konfimasyon Efasman Kontravansyon # {{ fine.fine_id }}
+    </h2>
 
-  <p>Es-tu sûr de vouloir supprimer cette amende ? Une raison est requise.</p>
+    <p class="mb-6 text-gray-700 dark:text-gray-300">
+        Mwen vle efase kontravansyon # {{ fine.fine_id }}, pou lisans {{ fine.driver_license }} pou <strong>rezon</strong> sa.
+    </p>
 
-  <form method="post">
-    {% csrf_token %}
+    <form method="post" class="space-y-4">
+        {% csrf_token %}
 
-    <div class="form-group">
-      <label for="reason">Raison de la suppression :</label>
-      <textarea name="reason" id="reason" class="form-control" required></textarea>
-    </div>
+        <div>
+            <label for="reason" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Rezon an :
+            </label>
+            <textarea name="reason" id="reason" rows="4" required
+                class="w-full rounded-2xl border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:ring-red-500 focus:border-red-500 shadow-sm"></textarea>
+        </div>
 
-    <button type="submit" class="btn btn-danger">Supprimer</button>
-    <a href="{% url 'fines:fine_detail' fine.id %}" class="btn btn-secondary">Annuler</a>
-  </form>
+        <div class="flex items-center gap-4">
+            <button type="submit"
+                class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-2xl shadow transition duration-200">
+                Efase
+            </button>
+            <a href="{% url 'fines:fine_detail' fine.id %}"
+               class="bg-gray-300 hover:bg-gray-400 text-gray-800 dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white font-semibold py-2 px-4 rounded-2xl shadow transition duration-200">
+            Anile
+            </a>
+        </div>
+    </form>
+     <div class= 'mt-6'> <a href="{% url 'fines:fine_list' %}" class="text-blue-600 hover:underline">← Retounen </a>
+        </div>
+</div>
 {% endblock %}

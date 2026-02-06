@@ -1,0 +1,151 @@
+{% extends "core/base.html" %}
+{% load static i18n humanize vehicle_tags %}
+
+{% block content %}
+<h1 class="text-xl font-bold mb-6">
+    Detay Kontra #{{ contract.id }}
+</h1>
+
+<div class="bg-white p-6 rounded shadow space-y-6">
+
+    <!-- TYPE DE CONTRAT -->
+    <div>
+        <h2 class="font-bold mb-2">Tip Kontra</h2>
+        {% include "contracts/partials/contract_badge.html" with contract=contract %}
+    </div>
+<p><strong>Dat:</strong> {{ contract.created_at|date:"d/m/Y" }}</p>
+    <!-- VEHICULE (PAS POUR SERVICE) -->
+    {% if contract.vehicle %}
+    <div>
+        <h2 class="font-bold mb-2">Enfòmasyon Veyikil</h2>
+
+        <p><strong>{% trans "Kalite" %} :</strong>
+            {{ contract.vehicle.vehicle_type|vehicle_type_badge }}
+        </p>
+
+        <p><strong>Mak :</strong> {{ contract.vehicle.brand }}</p>
+        <p><strong>Modèl :</strong> {{ contract.vehicle.model }}</p>
+        <p><strong>Nimewo Plak :</strong> {{ contract.vehicle.plate_number }}</p>
+        <p><strong>Nimewo Motè :</strong> {{ contract.vehicle.serial_number }}</p>
+        <p><strong>Lanne :</strong> {{ contract.vehicle.year }}</p>
+
+        <p>
+            <strong>{% trans "Kalite gaz" %} :</strong>
+            {{ contract.vehicle.fuel_type|fuel_type_badge }}
+        </p>
+    </div>
+    {% endif %}
+
+    <!-- ANCIEN PROPRIÉTAIRE -->
+    <div>
+        <h2 class="font-bold mb-2">Ansyen Pwopriyetè</h2>
+
+        <p><strong>Imèl :</strong> {{ contract.old_user.email }}</p>
+        <p><strong>Telefòn :</strong> {{ contract.old_user.phone }}</p>
+
+        {% if contract.old_user.businessprofile %}
+            <p><strong>Biznis :</strong>
+                {{ contract.old_user.businessprofile.business_name }}
+            </p>
+            <p><strong>Adrès :</strong>
+                {{ contract.old_user.businessprofile.address }}
+                <p><strong>Nimewo Patant:</strong> {{ contract.old_user.businessprofile.patente_number }}</p>
+                <p><strong>Sitwèb:</strong> {{ contract.old_user.businessprofile.web_site }}</p>
+            </p>
+        {% else %}
+            <p><strong>Non :</strong> {{ contract.old_user.first_name }}</p>
+            <p><strong>Siyati :</strong> {{ contract.old_user.last_name }}</p>
+                        <p><strong>Adrès :</strong>
+                {{ contract.old_user.simple.address }}
+                <p><strong>Nimewo Lisans:</strong> {{ contract.old_user.simple.driver_license_number }}</p>
+        {% endif %}
+    </div>
+
+    <!-- NOUVEAU PROPRIÉTAIRE -->
+    <div>
+        <h2 class="font-bold mb-2">Nouvo Pwopriyetè</h2>
+        <p><strong>Imèl :</strong> {{ contract.new_user.email }}</p>
+        <p><strong>Telefòn :</strong> {{ contract.new_user.phone }}</p>
+                {% if contract.new_user.businessprofile %}
+            <p><strong>Biznis :</strong>
+                {{ contract.new_user.businessprofile.business_name }}
+            </p>
+            <p><strong>Adrès :</strong>
+                {{ contract.new_user.businessprofile.address }}
+                <p><strong>Nimewo Patant:</strong> {{ contract.new_user.businessprofile.patente_number }}</p>
+                <p><strong>Sitwèb:</strong> {{ contract.new_user.businessprofile.web_site }}</p>
+            </p>
+        {% else %}
+            <p><strong>Non :</strong> {{ contract.new_user.first_name }}</p>
+            <p><strong>Siyati :</strong> {{ contract.new_user.last_name }}</p>
+                        <p><strong>Adrès :</strong>
+                {{ contract.new_user.simple.address }}
+                <p><strong>Nimewo Lisans:</strong> {{ contract.new_user.simple.driver_license_number }}</p>
+        {% endif %}
+    </div>
+
+    <hr>
+
+    <!-- VENTE -->
+    {% if contract.contract_type == "sell" %}
+        <div>
+            <h2 class="font-bold">Garanti</h2>
+            <p>{{ contract.warranty_period }} jou</p>
+            <p><strong>Pri :</strong> {{ contract.price|intcomma }} HTG</p>
+        </div>
+    {% endif %}
+
+    <!-- PRÊT -->
+    {% if contract.contract_type == "loan" %}
+        <div>
+            <h2 class="font-bold">Durée Prêt</h2>
+            <p>{{ contract.duration_days }} jou</p>
+        </div>
+    {% endif %}
+
+    <!-- LOCATION -->
+    {% if contract.contract_type == "rent" %}
+        <div>
+            <h2 class="font-bold">Location</h2>
+            <p>Debut : {{ contract.start_date }}</p>
+            <p>Fin : {{ contract.end_date }}</p>
+            <p>Pri : {{ contract.price|intcomma }} HTG</p>
+
+            {% if contract.penalty_fee %}
+                <p class="text-red-600 font-bold">
+                    Pénalité : {{ contract.penalty_fee|intcomma }} HTG
+                </p>
+            {% endif %}
+        </div>
+    {% endif %}
+
+    <!-- SERVICE -->
+    {% if contract.contract_type == "service" %}
+        <div>
+            <h2 class="font-bold">Sèvis</h2>
+            <p>
+                <strong>Tip Sèvis :</strong>
+                {{ contract.service_type.name }}
+            </p>
+            <p>
+                <strong>Pri :</strong>
+                {{ contract.price|intcomma }} HTG
+            </p>
+        </div>
+    {% endif %}
+
+    <!-- ACTIONS -->
+    <div class="mt-6 flex gap-3">
+        <a href="{% url 'contracts:contract_update' contract.id %}"
+           class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600">
+            Modifye
+        </a>
+
+        <a href="{% url 'contracts:contract_list' %}"
+           class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">
+            Retounen
+        </a>
+    </div>
+
+</div>
+{% endblock %}

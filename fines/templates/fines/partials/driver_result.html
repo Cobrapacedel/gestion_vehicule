@@ -1,0 +1,19 @@
+{% if profile %}
+    <div class="p-2 border rounded bg-green-50 text-green-800">
+        <strong>Chofè :</strong>
+        {{ profile.user.simple.first_name }} {{ profile.user.simple.last_name }}
+        <div class="text-xs text-green-600">
+            Lisans : {{ profile.driver_license_number }}
+        </div>
+    </div>
+
+{% elif query %}
+    <div class="p-2 border rounded bg-red-50 text-red-800">
+        Pa gen chofè ak nimewo lisans sa a
+    </div>
+
+{% else %}
+    <div class="p-2 border rounded bg-gray-50 text-gray-600">
+        Antre nimewo lisans lan
+    </div>
+{% endif %}

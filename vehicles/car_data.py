@@ -11,7 +11,7 @@ VEHICLE_BRANDS = {
         "Alfa Romeo", "Jeep", "Dacia", "Ferrari", "Lamborghini", "Bugatti",
         "Rolls-Royce", "Bentley", "McLaren"
     ],
-    'motorcycle': [
+    'moto': [
         'Yamaha', 'Suzuki', 'Kawasaki', 'Harley-Davidson', 'Ducati', 'KTM',
         'Triumph', 'Royal Enfield'
     ],

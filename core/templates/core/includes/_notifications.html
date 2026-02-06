@@ -1,0 +1,45 @@
+<div class="bg-gray-200 rounded-lg shadow p-6 mt-6">
+    <h2 class="text-xl font-bold mb-4 text-gray-800">🔔 Preferans Notifikasyon</h2>
+
+    <!-- Email -->
+    <div id="email-toggle" class="mb-3">
+        <form hx-post="{% url 'users:toggle_email_notifications' %}" 
+              hx-swap="outerHTML" hx-target="#email-toggle">
+            {% csrf_token %}
+            <strong class="text-black">Imèl Notifikasyon:</strong>
+            <button type="submit" class="ml-2 px-4 py-1 rounded-full flex items-center
+                {% if profile.email_notifications %}bg-green-500 text-white{% else %}bg-red-500 text-white{% endif %}">
+                {% if profile.email_notifications %}
+                    ✅ Aktive
+                {% else %}
+                    ❌ Dezaktive
+                {% endif %}
+            </button>
+        </form>
+    </div>
+
+    <!-- SMS -->
+    <div id="sms-toggle">
+        <form hx-post="{% url 'users:toggle_sms_notifications' %}" 
+              hx-swap="outerHTML" hx-target="#sms-toggle">
+            {% csrf_token %}
+            <strong class="text-black">SMS Notifikasyon:</strong>
+            <button type="submit" class="ml-2 px-4 py-1 rounded-full flex items-center
+                {% if profile.sms_notifications %}bg-green-500 text-white{% else %}bg-red-500 text-white{% endif %}">
+                {% if profile.sms_notifications %}
+                    ✅ Aktive
+                {% else %}
+                    ❌ Dezaktive
+                {% endif %}
+            </button>
+        </form>
+    </div>
+</div>
+
+{# Script global pour CSRF dans toutes les requêtes HTMX #}
+<script>
+    document.body.addEventListener('htmx:configRequest', (event) => {
+        const csrftoken = "{{ csrf_token }}";
+        event.detail.headers['X-CSRFToken'] = csrftoken;
+    });
+</script>

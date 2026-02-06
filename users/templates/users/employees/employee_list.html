@@ -1,0 +1,89 @@
+{% extends "core/base.html" %}
+{% block title %}Lis Anplwaye{% endblock %}
+
+{% block content %}
+<div class="min-h-screen px-6 py-10 bg-gray-900 text-white">
+    <h1 class="text-3xl font-bold mb-6 text-center text-yellow-400">Lis Anplwaye</h1>
+
+    <!-- 🔍 Search -->
+    <form method="get" class="flex justify-center mb-6">
+        <input 
+            type="text" 
+            name="q"
+            placeholder="Chèche pa non, imèl, telefòn..."
+            value="{{ request.GET.q }}"
+            class="w-1/2 p-2 rounded-l-lg bg-gray-800 border border-gray-700 text-white"
+        >
+        <button class="bg-blue-600 px-4 rounded-r-lg hover:bg-blue-700">Chèche</button>
+    </form>
+
+    <!-- ➕ Add Button -->
+    <div class="flex justify-end mb-4">
+        <a href="{% url 'users:employee_create' %}"
+           class="bg-green-600 px-4 py-2 rounded-lg hover:bg-green-700">
+            + Ajoute Anplwaye
+        </a>
+    </div>
+
+    <!-- 📄 Table -->
+    <div class="overflow-x-auto">
+        <table class="min-w-full bg-gray-800 rounded-lg overflow-hidden">
+            <thead class="bg-gray-700">
+                <tr>
+                    <th class="p-3 text-left">Non konplè</th>
+                    <th class="p-3 text-left">Aksyon</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for employee in page_obj %}
+                <tr class="border-b border-gray-700">
+                    <td class="p-3">{{ employee.first_name }} {{ employee.last_name }}</td>
+                    
+<td class="p-3">
+    <div class="flex flex-col gap-2 w-32">
+
+        <a href="{% url 'users:employee_detail' employee.id %}"
+           class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 text-center">
+            Detay
+        </a>
+
+        <a href="{% url 'users:employee_update' employee.id %}"
+           class="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600 text-center">
+            Modifye
+        </a>
+
+        <form action="{% url 'users:employee_delete' employee.id %}" method="post">
+            {% csrf_token %}
+            <button type="submit"
+                    class="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 w-full">
+                Efase
+            </button>
+        </form>
+
+    </div>
+</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center py-4 text-gray-400">Pa gen anplwaye pou moman an.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 📌 Pagination -->
+    <div class="flex justify-center mt-6">
+        {% if employees.has_previous %}
+            <a class="px-3 py-2 bg-gray-700 rounded-l hover:bg-gray-600"
+               href="?page={{ employees.previous_page_number }}">Prev</a>
+        {% endif %}
+        <span class="px-4 py-2 bg-gray-800">{{ employees.number }} / {{ employees.paginator.num_pages }}</span>
+        {% if employees.has_next %}
+            <a class="px-3 py-2 bg-gray-700 rounded-r hover:bg-gray-600"
+               href="?page={{ employees.next_page_number }}">Next</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

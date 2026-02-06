@@ -1,0 +1,26 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto py-8" x-data>
+  <h1 class="text-2xl font-bold mb-4">🚗 Mes véhicules gérés</h1>
+
+  <!-- Barre de recherche -->
+  <form hx-get="{% url 'vehicles:managed_vehicles_list' %}"
+        hx-target="#vehicles-table"
+        hx-push-url="true"
+        class="mb-4 flex items-center space-x-2">
+    <input type="text" name="q" value="{{ query }}" placeholder="Rechercher un véhicule..."
+           class="border rounded-lg px-4 py-2 w-full focus:outline-none focus:ring focus:ring-blue-200">
+    <button type="submit"
+            class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+      🔍 Rechercher
+    </button>
+  </form>
+
+  <!-- Table ou grille HTMX -->
+  <div id="vehicles-table" hx-trigger="load" hx-get="{% url 'vehicles:managed_vehicles_list' %}">
+    {% include "vehicles/partials/vehicles_table.html" %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,85 @@
+{% extends "core/base.html" %}
+
+{% block content %}
+<h2 class="text-2xl font-bold mb-6 flex items-center gap-2">
+    📄 Detay sou Notifikasyon an
+</h2>
+
+<div class="bg-white text-black rounded-xl shadow-md p-6 max-w-2xl">
+
+    <div class="space-y-3">
+        <div>
+            <strong>ID :</strong> {{ notification.id }}
+        </div>
+
+        <div>
+            <strong>Tit :</strong> {{ notification.title }}
+        </div>
+
+        <div>
+            <strong>Tip :</strong>
+            <span class="px-2 py-1 rounded text-sm bg-gray-100">
+                {{ notification.get_notification_type_display }}
+            </span>
+        </div>
+
+        <div>
+            <strong>Dat :</strong>
+            {{ notification.created_at|date:"d/m/Y H:i" }}
+        </div>
+
+        <div>
+            <strong>Estati :</strong>
+            {% if notification.is_read %}
+                <span class="ml-2 px-2 py-1 rounded bg-green-100 text-green-700 font-semibold">
+                    ✔ Li
+                </span>
+            {% else %}
+                <span class="ml-2 px-2 py-1 rounded bg-red-100 text-red-700 font-semibold">
+                    ⏳ Poko Li
+                </span>
+            {% endif %}
+        </div>
+
+        <div>
+            <strong>Mesaj :</strong>
+            <p class="mt-2 text-gray-700 whitespace-pre-line">
+                {{ notification.message|linebreaksbr }}
+            </p>
+        </div>
+    </div>
+
+    <div class="flex flex-wrap gap-3 mt-8">
+
+        {% if not notification.is_read %}
+        <form method="post" action="{% url 'notifications:mark_as_read' notification.id %}">
+            {% csrf_token %}
+            <button
+                type="submit"
+                class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded flex items-center gap-2"
+            >
+                <i class="fa-solid fa-circle-check"></i>
+                Make kòm li
+            </button>
+        </form>
+        {% endif %}
+
+        <a
+            href="{% url 'notifications:notification_delete' notification.id %}"
+            class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded flex items-center gap-2"
+            onclick="return confirm('Ou vle efase notifikasyon sa a ?');"
+        >
+            <i class="fa-solid fa-trash"></i>
+            Efase
+        </a>
+
+        <a
+            href="{% url 'notifications:notification_list' %}"
+            class="bg-gray-300 hover:bg-gray-400 text-black px-4 py-2 rounded flex items-center gap-2"
+        >
+            <i class="fa-solid fa-arrow-left"></i>
+            Lis Notifikasyon
+        </a>
+    </div>
+</div>
+{% endblock %}

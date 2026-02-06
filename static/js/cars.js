@@ -4,17 +4,16 @@ document.addEventListener("DOMContentLoaded", function () {
     const modelField = document.getElementById("id_model");
     const modelLoader = document.getElementById("model-loader");
 
-    // Fonction pour charger les marques selon le type de véhicule
     function loadBrands() {
         const type = vehicleTypeField.value.trim();
-        brandField.innerHTML = "<option value=''>Chargement...</option>";
-        modelField.innerHTML = "<option value=''>Sélectionnez une marque d'abord</option>";
+        brandField.innerHTML = "<option value=''>Tann...</option>";
+        modelField.innerHTML = "<option value=''>Chwazi yon modèl</option>";
 
         if (type) {
             fetch(`/vehicles/ajax/get-brands/?vehicle_type=${encodeURIComponent(type)}`)
                 .then(res => res.json())
                 .then(data => {
-                    brandField.innerHTML = "<option value=''>Sélectionnez une marque</option>";
+                    brandField.innerHTML = "<option value=''>Chwazi yon mak</option>";
                     data.brands.forEach(brand => {
                         const option = document.createElement("option");
                         option.value = brand;
@@ -29,20 +28,19 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // Fonction pour charger les modèles
     function loadModels() {
         const marque = brandField.value.trim();
         const type = vehicleTypeField.value.trim();
 
-        modelField.innerHTML = "<option value=''>Chargement...</option>";
+        modelField.innerHTML = "<option value=''>Tann...</option>";
 
         if (marque && type) {
-            modelLoader.classList.remove("d-none");
+            modelLoader.classList.remove("hidden");
 
             fetch(`/vehicles/ajax/get-models/?brand=${encodeURIComponent(marque)}&vehicle_type=${encodeURIComponent(type)}`)
                 .then(res => res.json())
                 .then(data => {
-                    modelField.innerHTML = "<option value=''>Sélectionnez un modèle</option>";
+                    modelField.innerHTML = "<option value=''>Chwazi yon modèl</option>";
                     data.models.forEach(model => {
                         const option = document.createElement("option");
                         option.value = model;
@@ -54,16 +52,12 @@ document.addEventListener("DOMContentLoaded", function () {
                     console.error("Erreur chargement modèles :", err);
                     modelField.innerHTML = "<option value=''>Erreur de chargement</option>";
                 })
-                .finally(() => modelLoader.classList.add("d-none"));
+                .finally(() => modelLoader.classList.add("hidden"));
         } else {
             modelField.innerHTML = "<option value=''>Sélectionnez une marque d'abord</option>";
         }
     }
 
-    // Événements
-    vehicleTypeField.addEventListener("change", () => {
-        loadBrands();
-    });
-
+    vehicleTypeField.addEventListener("change", loadBrands);
     brandField.addEventListener("change", loadModels);
 });

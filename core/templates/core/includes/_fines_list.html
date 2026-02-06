@@ -1,0 +1,19 @@
+<div class="mt-3 bg-red-50 p-3 rounded-lg border border-red-200">
+    {% if user.unpaid_fines %}
+        <p class="text-sm font-semibold text-red-700 mb-2">🚨 Lis tout kontravansyon yo:</p>
+        <ul class="list-disc list-inside text-sm text-red-600 space-y-1">
+            {% for fine in user.unpaid_fines %}
+                <li>
+                    📅 {{ fine.violation_date|date:"d/m/Y" }} — {{ fine.violation }} — {{ fine.vehicle.plate_number }}
+                    {% if fine.is_paid %}
+                        <span class="text-green-600">(✅ Peye)</span>
+                    {% else %}
+                        <span class="text-red-600">(⏳ Pa peye)</span>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="text-sm text-gray-500">✅ Pa gen okenn kontravansyon pou itilizatè sa.</p>
+    {% endif %}
+</div>

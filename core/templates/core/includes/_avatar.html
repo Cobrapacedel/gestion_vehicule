@@ -1,0 +1,38 @@
+{% load static %}
+{% load user_badges %}
+
+<div class="flex items-center space-x-4 mb-6">
+
+    {# Détermination et affichage de l'avatar #}
+    {% if user.user_type == "simple" %} {% comment %}and simple and simple.avatar %}
+     {% endcomment %}   <img src="{{ simple.avatar.url }}" 
+             alt="Avatar" 
+             class="w-32 h-32 rounded-lg border-4 border-blue-600 mb-4 object-cover">
+    {% elif user.user_type == "business" and businessprofile and businessprofile.avatar %}
+        <img src="{{ businessprofile.avatar.url }}" 
+             alt="Avatar" 
+             class="w-32 h-32 rounded-lg border-4 border-blue-600 mb-4 object-cover">
+    {% else %}
+        <img src="{% static 'avatars/default.png' %}" 
+             alt="Avatar" 
+             class="w-32 h-32 rounded-lg border-4 border-blue-600 mb-4 object-cover">
+    {% endif %}
+
+    {# Nom et email #}
+    <div>
+        <h2 class="text-xl font-semibold">
+            {% if user.user_type == "simple" and simple %}
+                {{ simple.first_name|default:"" }} {{ simple.last_name|default:"" }}
+            {% elif user.user_type == "business" and businessprofile %}
+                {{ businessprofile.business_name|default:"Entreprise" }}
+            {% else %}
+                Utilisateur
+            {% endif %}
+        </h2>
+
+        <p class="text-sm text-gray-600">{{ user.email|default:"" }}</p>
+
+        {# Badges utilisateur #}
+        {% user_badges user %}
+    </div>
+</div>

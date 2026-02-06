@@ -7,7 +7,7 @@
     <hr class="mb-8 border-blue-300">
 
     <!-- Description -->
-    <section class="mb-10 text-gray-700 leading-relaxed">
+    <section class="mb-10 text-gray-400 leading-relaxed">
         <p>
             <span class="font-semibold text-blue-500">
                 <i class="fa-solid fa-car"></i> Jere Machin <i class="fa-solid fa-face-smile-beam"></i>u</span> : Se yon aplikasyon entènèt ki fasilite jesyon machin, itilizatè, pèman, ak tout operasyon ki gen rapò ak machin ou yo.
@@ -125,9 +125,9 @@
     <!-- Metadata -->
     <section class="mb-10 text-center text-m text-gray-500">
         <p>📅 <strong>Dat Kreyasyon:</strong></p>
-        <p><span class="text-m font-semibold text-blue-600 mb-4 text-center">{{ project.creation_date }}</span></p>
+        <p><span class="text-m font-semibold text-blue-600 mb-4 text-center">{{ project.creation_date |default:"12 Me 2024" }}</span></p>
         <p>📅 <strong>Dènye Mizajou:</strong></p>
-        <p><span class="text-m font-semibold text-blue-600 mb-4 text-center">{{ project.last_update }}</span></p>
+        <p><span class="text-m font-semibold text-blue-600 mb-4 text-center">{{ project.last_update| default:"N/A" }}</span></p>
         <p>📅 <strong>Dènye Chanjman:</strong></p>
         <p><span class="text-m font-semibold text-blue-600 mb-4 text-center">{{ project.last_change|default:"N/A" }}</span></p>
         <p>🖥 ️<strong>Non Sistèm:</strong></p>

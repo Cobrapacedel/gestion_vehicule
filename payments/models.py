@@ -1,185 +1,630 @@
-from django.db import models
-from django.conf import settings
-from django.utils import timezone
-from channels.layers import get_channel_layer
-from asgiref.sync import async_to_sync
 import uuid
-from .utils import get_bsc_wallet_balance
+from decimal import Decimal
 
-# Pas d'import direct ici — on utilisera des chaînes pour éviter les cycles
-# from documents.models import Document
+from django.conf import settings
+from django.db import models, transaction
+from django.utils import timezone
 
-def send_payment_notification(user, message=None):
-    channel_layer = get_channel_layer()
-    last_payment = user.payments.last()
-    msg = message or f"Votre paiement de {last_payment.amount} {last_payment.currency} a été traité avec succès."
-    async_to_sync(channel_layer.group_send)(
-        f'notifications_{user.id}',
-        {
-            'type': 'send_notification',
-            'message': msg
-        }
+# ======================================================
+# CONFIG
+# ======================================================
+LEDGER_DECIMAL_PLACES = 18
+LEDGER_PRECISION = Decimal("1." + "0" * 18)
+
+# ======================================================
+# 💰 BALANCE (COMPTE PRINCIPAL UTILISATEUR)
+# ======================================================
+class Balance(models.Model):
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="balance"
     )
 
-class Wallet(models.Model):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="wallet")
-    public_key = models.CharField(max_length=42, unique=True)
-    network = models.CharField(max_length=30, choices=[
-        ('bsc', 'Binance Smart Chain'),
-        ('eth', 'Ethereum'),
-        ('polygon', 'Polygon'),
-    ])
-    wallet_balance = models.DecimalField(max_digits=20, decimal_places=8, default=0)
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
 
-    def update_balance(self):
-        if self.network == "bsc":
-            balance = get_bsc_wallet_balance(self.public_key)
-            if balance is not None:
-                self.wallet_balance = balance
-                self.save()
-        return self.wallet_balance
-        
-class Balance(models.Model):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="balance")
-    htg_balance = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
-    usd_balance = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
-    btg_balance = models.DecimalField(max_digits=18, decimal_places=8, default=0.00000000)
-    btc_balance = models.DecimalField(max_digits=18, decimal_places=8, default=0.00000000)
-    usdt_balance = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
+    def __str__(self):
+        return f"Balance({self.user})"
 
-    def total_balance(self, rates=None):
-        conversion_rates = rates or {
-            "HTG": 1,
-            "USD": 135,
-            "BTG": 30 * 135,
-            "BTC": 60000 * 135,
-            "USDT": 135,
-        }
-        return (
-            self.htg_balance +
-            self.usd_balance * conversion_rates["USD"] +
-            self.btg_balance * conversion_rates["BTG"] +
-            self.btc_balance * conversion_rates["BTC"] +
-            self.usdt_balance * conversion_rates["USDT"]
+    def get_currency(self, currency):
+        currency = currency.lower()
+        obj, _ = BalanceCurrency.objects.get_or_create(
+            balance=self,
+            currency=currency
         )
+        return obj
 
+    @transaction.atomic
     def credit(self, amount, currency):
-        field = f"{currency.lower()}_balance"
-        setattr(self, field, getattr(self, field) + amount)
-        self.save()
-        Transaction.objects.create(
-            user=self.user,
-            amount=amount,
-            currency=currency,
-            status="Completed",
-            description="Crédit automatique"
-        )
+        bc = self.get_currency(currency)
+        amount = Decimal(str(amount)).quantize(LEDGER_PRECISION)
+        bc.amount += amount
+        bc.save(update_fields=["amount"])
 
+    @transaction.atomic
     def debit(self, amount, currency):
-        field = f"{currency.lower()}_balance"
-        if getattr(self, field) >= amount:
-            setattr(self, field, getattr(self, field) - amount)
-            self.save()
-            Transaction.objects.create(
-                user=self.user,
-                amount=-amount,
-                currency=currency,
-                status="Completed",
-                description="Débit automatique"
-            )
-            return True
-        return False
+        bc = self.get_currency(currency)
+        amount = Decimal(str(amount)).quantize(LEDGER_PRECISION)
+        if bc.amount < amount:
+            raise ValueError("Solde insuffisant")
+
+        amount = Decimal(str(amount)).quantize(LEDGER_PRECISION)
+        bc.amount -= amount
+        bc.save(update_fields=["amount"])
+
+
+# ======================================================
+# 💱 BALANCE PAR DEVISE
+# ======================================================
+class BalanceCurrency(models.Model):
+    JMU = "jmu"
+    HTG = "htg"
+    USD = "usd"
+    
+    CURRENCY_TYPES = [
+        (JMU, "JMU"),
+        (HTG, "HTG"),
+        (USD, "USD"),
+        ]
+        
+    balance = models.ForeignKey(
+        Balance,
+        on_delete=models.CASCADE,
+        related_name="currencies"
+    )
+
+    currency = models.CharField(
+        max_length=10,
+        choices=CURRENCY_TYPES,
+        default=JMU
+    )
+
+    amount = models.DecimalField(
+        max_digits=30,
+        decimal_places=LEDGER_DECIMAL_PLACES,
+        default=Decimal("0")
+    )
+
+    updated_at = models.DateTimeField(
+        auto_now=True
+    )
+
+    class Meta:
+        unique_together = ("balance", "currency")
 
     def __str__(self):
-        return f"Solde de {self.user.email} (Total HTG : {self.total_balance():,.2f})"
+        return f"{self.balance.user} | {self.amount} {self.currency}"
 
 
+# ======================================================
+# 📜 TRANSACTIONS (LEDGER / AUDIT)
+# ======================================================
 class Transaction(models.Model):
-    transaction_id = models.UUIDField(default=uuid.uuid4, unique=True, editable=False, db_index=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    amount = models.DecimalField(max_digits=12, decimal_places=2)
-    currency = models.CharField(max_length=10, choices=[("HTG", "HTG"), ("USD", "USD"), ("BTG", "BTG"), ("BTC", "BTC"), ("USDT", "USDT")])
-    date = models.DateTimeField(auto_now_add=True)
-    status = models.CharField(max_length=20, choices=[("Pending", "Annatant"), ("Completed", "Reyisi"), ("Failed", "Echwe")], default="Pending")
-    reference = models.UUIDField(default=uuid.uuid4, unique=True, editable=False, db_index=True)
-    description = models.TextField(blank=True, null=True)
+    SIGNUP = "signup"
+    REFERRAL = "referral"
+    PAYMENT = "payment_success"
+    CREATE_VEHICLE = "create_first_vehicle"
+    BONUS = "bonus"
+    DAILY_LOGIN = "daily_login"
+    RANDOM = "random"
+    CONTRACT = "contract"
+    TRANSFER = "transfer"
+
+    BONUS_TYPE = [
+        (SIGNUP, "Création de compte"),
+        (REFERRAL, "Parrainage"),
+        (PAYMENT, "Paiement"),
+        (CREATE_VEHICLE, "Création du Premier Vehiéhicule"),
+        (RANDOM, "Aléatoire"),
+        (DAILY_LOGIN, "Bonus quotidien"),
+        (CONTRACT, "Contrat"),
+        (TRANSFER, "Transfert"),
+    ]
+
+    CREDIT = "CREDIT"
+    DEBIT = "DEBIT"
+    
+    TRANSACTION_TYPES = [
+        (CREDIT, "ajoute"),
+        (DEBIT, "retire")
+    ]
+
+    SYSTEM = "SYSTEM"
+    USER = "USER"
+    ADMIN = "ADMIN"
+    
+    SOURCES = [
+        (SYSTEM, "Système"), 
+        (USER, "Utilisateur"), 
+        (ADMIN, "Administrateur")
+    ]
+
+    STATUS_PENDING = "pending"
+    STATUS_COMPLETED = "completed"
+    STATUS_FAILED = "failed"
+
+    STATUS_CHOICES = [
+        (STATUS_PENDING, "En attente"),
+        (STATUS_COMPLETED, "Réussi"),
+        (STATUS_FAILED, "Échoué"),
+    ]
+    
+    JMU = "jmu"
+    HTG = "htg"
+    USD = "usd"
+    
+    CURRENCY_TYPES = [
+        (JMU, "JMU"),
+        (HTG, "HTG"),
+        (USD, "USD"),
+        ]
+
+    id = models.UUIDField(
+        primary_key=True, 
+        default=uuid.uuid4,
+        editable=False
+    )
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="transactions",
+    )
+
+    amount = models.DecimalField(
+        max_digits=30,
+        decimal_places=LEDGER_DECIMAL_PLACES,
+    )
+
+    currency = models.CharField(
+        max_length=10,
+        choices=CURRENCY_TYPES,
+        default=JMU
+    )
+
+    bonus_type = models.CharField(
+        max_length=30,
+        choices=BONUS_TYPE,
+        default=SIGNUP
+    )
+
+    transaction_type = models.CharField(
+        max_length=30,
+        choices=TRANSACTION_TYPES,
+        default=CREDIT
+    )
+
+    source = models.CharField(
+        max_length=10,
+        choices=SOURCES,
+        default=USER
+    )
+
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default=STATUS_PENDING,
+    )
+
+    description = models.TextField(
+        blank=True,
+        null=True
+    )
+    
+    metadata = models.JSONField(
+        default=dict, 
+        blank=True
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
 
     def __str__(self):
-        return f"{self.user.username} - {self.amount} {self.currency} ({self.status})"
+        return f"{self.user} | {self.bonus_type} | {self.amount} {self.currency}"
 
 
+# ======================================================
+# 💳 PAYMENT (PAIEMENT INTERNE)
+# ======================================================
 class Payment(models.Model):
-    PAYMENT_TYPES = [
-        ("renewal", "Renouvle Dokiman"),
-        ("fine", "Pèman Kontravansyon"),
+    CRYPTO = "crypto"
+    MOBILE = "mobile"
+    BANK = "bank"
+
+    METHOD_TYPES = [
+        (CRYPTO, "Crypto"),
+        (MOBILE, "Mobile Money"),
+        (BANK, "Banque"),
     ]
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="payments")
-    amount = models.DecimalField(max_digits=12, decimal_places=2)
-    currency = models.CharField(max_length=5, choices=[("HTG", "HTG"), ("USD", "USD"), ("BTG", "BTG"), ("BTC", "BTC"), ("USDT", "USDT")])
-    payment_type = models.CharField(max_length=20, choices=PAYMENT_TYPES, db_index=True)
-    payment_date = models.DateTimeField(auto_now_add=True)
-    transaction = models.OneToOneField(Transaction, on_delete=models.SET_NULL, null=True, blank=True)
+    
+    STATUS_PENDING = "pending"
+    STATUS_COMPLETED = "completed"
+    STATUS_FAILED = "failed"
+
+    STATUS_CHOICES = [
+        (STATUS_PENDING, "En attente"),
+        (STATUS_COMPLETED, "Réussi"),
+        (STATUS_FAILED, "Échoué"),
+    ]
+    
+    JMU = "jmu"
+    HTG = "htg"
+    USD = "usd"
+    
+    CURRENCY_TYPES = [
+        (JMU, "JMU"),
+        (HTG, "HTG"),
+        (USD, "USD"),
+        ]
+        
+    id = models.UUIDField(
+        primary_key=True, 
+        default=uuid.uuid4,
+        editable=False
+    )
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="payments"
+    )
+
+    amount = models.DecimalField(
+        max_digits=30,
+        decimal_places=LEDGER_DECIMAL_PLACES
+    )
+    
+    currency = models.CharField(
+        max_length=10,
+        choices=CURRENCY_TYPES,
+        default=JMU
+    )
+
+    is_paid = models.BooleanField(
+        default=False
+    )
+
+    transaction = models.OneToOneField(
+        Transaction,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="payment"
+    )
+    
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default=STATUS_PENDING
+    )
+    
+    method = models.CharField(
+        max_length=20, 
+        choices=METHOD_TYPES
+    )
+    
+    metadata = models.JSONField(
+        default=dict,
+        blank=True
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+    
+    paid_at = models.DateTimeField(
+        null=True, 
+        blank=True
+    )
 
     def __str__(self):
-        return f"{self.payment_type} - {self.amount} {self.currency}"
+        return f"Payment {self.amount} {self.currency} - {self.user}"
 
 
+# ======================================================
+# 🔋 RECHARGE (WALLET ➜ BALANCE)
+# ======================================================
 class Recharge(models.Model):
-    RECHARGE_METHODS = [
-        ("mobile", "Mobile Money"),
-        ("card", "Kat Labank"),
-        ("crypto", "Kripto"),
-        ("bank", "Bank"),
-    ]
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="recharges")
-    amount = models.DecimalField(max_digits=12, decimal_places=2)
-    currency = models.CharField(max_length=5, choices=[("HTG", "HTG"), ("USD", "USD"), ("BTG", "BTG"), ("BTC", "BTC"), ("USDT", "USDT")])
-    method = models.CharField(max_length=20, choices=RECHARGE_METHODS)
-    status = models.CharField(max_length=20, choices=[("Pending", "Annatant"), ("Completed", "Reyisi"), ("Failed", "Echwe")], default="Pending")
-    requested_at = models.DateTimeField(auto_now_add=True)
-    completed_at = models.DateTimeField(null=True, blank=True)
-    transaction = models.OneToOneField(Transaction, on_delete=models.SET_NULL, null=True, blank=True)
+    CRYPTO = "crypto"
+    MOBILE = "mobile"
+    BANK = "bank"
 
-    def complete_recharge(self):
-        if self.status != "Completed":
-            self.status = "Completed"
-            self.completed_at = timezone.now()
-            self.save()
-            self.user.balance.credit(self.amount, self.currency)
-            send_payment_notification(self.user)
+    METHOD_TYPES = [
+        (CRYPTO, "Crypto"),
+        (MOBILE, "Mobile Money"),
+        (BANK, "Banque"),
+    ]
+    
+    STATUS_PENDING = "pending"
+    STATUS_SUCCESS = "success"
+    STATUS_FAILED = "failed"
+
+    STATUS_CHOICES = [
+        (STATUS_PENDING, "En attente"),
+        (STATUS_SUCCESS, "Réussie"),
+        (STATUS_FAILED, "Échouée"),
+    ]
+    
+    JMU = "jmu"
+    HTG = "htg"
+    USD = "usd"
+    
+    CURRENCY_TYPES = [
+        (JMU, "JMU"),
+        (HTG, "HTG"),
+        (USD, "USD"),
+        ]
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="recharges"
+    )
+
+    amount = models.DecimalField(
+        max_digits=30,
+        decimal_places=LEDGER_DECIMAL_PLACES
+    )
+    
+    currency = models.CharField(
+        max_length=10,
+        choices=CURRENCY_TYPES,
+        default=JMU
+    )
+
+    provider = models.CharField(
+        max_length=50
+    )
+    
+    reference = models.CharField(
+        max_length=100, 
+        unique=True
+    )
+    
+    method = models.CharField(
+        max_length=20, 
+        choices=METHOD_TYPES,
+        default=CRYPTO
+    )
+    
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default=STATUS_PENDING
+    )
+
+    transaction = models.OneToOneField(
+        Transaction,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="recharge"
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+    
+    processed_at = models.DateTimeField(
+        null=True,
+        blank=True
+    )
 
     def __str__(self):
-        return f"Recharge {self.amount} {self.currency} via {self.method} - {self.status}"
+        return f"Recharge {self.amount} {self.currency} - {self.user}"
 
 
+# ======================================================
+# 🔄 FUND TRANSFER (UTILISATEUR ➜ UTILISATEUR)
+# ======================================================
 class FundTransfer(models.Model):
-    TRANSFER_METHODS = [
-        ("mobile", "Mobile Money"),
-        ("card", "Kat Labank"),
-        ("crypto", "Kripto"),
-        ("bank", "Bank"),
-    ]
-    sender = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='sent_transfers')
-    fund_transfer_id = models.CharField(max_length=9, blank=True)
-    recipient = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='received_transfers')
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
-    currency = models.CharField(max_length=5, choices=[("HTG", "HTG"), ("USD", "USD"), ("BTG", "BTG"), ("BTC", "BTC"), ("USDT", "USDT")])
-    method = models.CharField(max_length=20, choices=TRANSFER_METHODS)
-    status = models.CharField(max_length=20, choices=[("Pending", "Annatant"), ("Completed", "Reyisi"), ("Failed", "Echwe")], default="Pending")
-    description = models.CharField(max_length=255, blank=True)
-    requested_at = models.DateTimeField(auto_now_add=True)
-    completed_at = models.DateTimeField(null=True, blank=True)
-    transaction = models.OneToOneField(Transaction, on_delete=models.SET_NULL, null=True, blank=True)
+    CRYPTO = "crypto"
+    MOBILE = "mobile"
+    BANK = "bank"
 
-    def complete_transfer(self):
-        if self.status != "Completed":
-            self.status = "Completed"
-            self.completed_at = timezone.now()
-            self.save()
-            self.sender.balance.debit(self.amount, self.currency)
-            self.recipient.balance.credit(self.amount, self.currency)
-            send_payment_notification(self.sender, f"Vous avez envoyé {self.amount} {self.currency} à {self.recipient.username}.")
-            send_payment_notification(self.recipient, f"Vous avez reçu {self.amount} {self.currency} de {self.sender.username}.")
+    METHOD_TYPES = [
+        (CRYPTO, "Crypto"),
+        (MOBILE, "Mobile Money"),
+        (BANK, "Banque"),
+    ]
+    
+    STATUS_PENDING = "pending"
+    STATUS_COMPLETED = "completed"
+    STATUS_FAILED = "failed"
+
+    STATUS_CHOICES = [
+        (STATUS_PENDING, "En attente"),
+        (STATUS_COMPLETED, "Réussi"),
+        (STATUS_FAILED, "Échoué"),
+    ]
+    
+    JMU = "jmu"
+    HTG = "htg"
+    USD = "usd"
+    
+    CURRENCY_TYPES = [
+        (JMU, "JMU"),
+        (HTG, "HTG"),
+        (USD, "USD"),
+        ]
+        
+    id = models.UUIDField(
+        primary_key=True, 
+        default=uuid.uuid4,
+        editable=False
+    )
+
+    sender = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="sent_transfers"
+    )
+
+    receiver = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="received_transfers"
+    )
+    
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default=STATUS_PENDING
+    )
+
+    amount = models.DecimalField(
+        max_digits=30, 
+        decimal_places=LEDGER_DECIMAL_PLACES
+    )
+    
+    currency = models.CharField(
+        max_length=10,
+        choices=CURRENCY_TYPES,
+        default=JMU
+    )
+    
+    method = models.CharField(
+        max_length=20, 
+        choices=METHOD_TYPES,
+        default=CRYPTO
+    )
+
+    sender_transaction = models.OneToOneField(
+        Transaction,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="debit_transfer"
+    )
+
+    receiver_transaction = models.OneToOneField(
+        Transaction,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="credit_transfer"
+    )
+    
+    description = models.TextField(
+        blank=True,
+        null=True
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
 
     def __str__(self):
-        return f"{self.sender} ➜ {self.recipient} | {self.amount} {self.currency}"
+        return f"{self.sender} ➜ {self.receiver} ({self.amount} {self.currency})"
+
+
+# ======================================================
+# 🔐 WALLET (EXTERNE)
+# ======================================================
+class Wallet(models.Model):
+    CRYPTO = "crypto"
+    MOBILE = "mobile"
+    BANK = "bank"
+
+    WALLET_TYPES = [
+        (CRYPTO, "Crypto"),
+        (MOBILE, "Mobile Money"),
+        (BANK, "Banque"),
+    ]
+    
+    BTC = "btc"
+    ETH = "eth"
+    BSC = "bsc"
+    
+    NETWORK_TYPES = [
+        (BTC, "Bitcoin"),
+        (ETH, "Ethereum"),
+        (BSC, "Binance Smart Chain"),
+        ]
+        
+    JMU = "jmu"
+    HTG = "htg"
+    USD = "usd"
+    
+    CURRENCY_TYPES = [
+        (JMU, "JMU"),
+        (HTG, "HTG"),
+        (USD, "USD"),
+        ]
+
+    id = models.UUIDField(
+        primary_key=True, 
+        default=uuid.uuid4,
+        editable=False
+    )
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="wallets"
+    )
+    
+    balance = models.ForeignKey(
+        Balance, 
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="wallets")
+
+    wallet_type = models.CharField(
+        max_length=20, 
+        choices=WALLET_TYPES,
+        default=CRYPTO
+    )
+
+    network = models.CharField(
+        max_length=50, 
+        choices=NETWORK_TYPES,
+        default=BTC
+    )
+    
+    public_key = models.CharField(
+        max_length=255,
+        unique=True
+    )
+    
+    address = models.CharField(
+        max_length=255,
+        unique=True
+    )
+
+    currency = models.CharField(
+        max_length=10,
+        choices=CURRENCY_TYPES,
+        default=JMU
+    )
+
+    label = models.CharField(
+        max_length=50, 
+        blank=True
+    )
+    
+    is_active = models.BooleanField(
+        default=True
+    )
+    
+    is_verified = models.BooleanField(
+        default=False
+    )
+
+    metadata = models.JSONField(
+        default=dict, 
+        blank=True
+        )
+        
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    class Meta:
+        unique_together = ("user", "network", "public_key", "address")
+
+    def __str__(self):
+        return f"{self.user} | {self.network} | {self.address}"

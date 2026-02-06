@@ -1,0 +1,80 @@
+{% extends "core/base.html" %}
+
+{% block content %}
+
+<div class="max-w-2xl mx-auto mt-6">
+
+    <h1 class="text-2xl font-bold mb-6">
+        Detay Peman #{{ payment.id }}
+    </h1>
+
+    <div class="bg-white shadow rounded-lg p-6">
+
+        <div class="space-y-4">
+
+            <!-- Montant -->
+            <div class="flex justify-between">
+                <span class="font-semibold">Montan :</span>
+                <span class="text-lg font-bold text-green-700">
+                    {{ payment.amount }} HTG
+                </span>
+            </div>
+
+            <!-- Méthode de paiement -->
+            <div class="flex justify-between">
+                <span class="font-semibold">Mòd Peman :</span>
+                <span>
+                    {% include "partials/payment_badge.html" with type=payment.payment_method %}
+                </span>
+            </div>
+
+            <!-- Date de création -->
+            <div class="flex justify-between">
+                <span class="font-semibold">Dat :</span>
+                <span>{{ payment.created_at|date:"d/m/Y H:i" }}</span>
+            </div>
+
+            <!-- Contrat -->
+            <div class="flex justify-between">
+                <span class="font-semibold">Kontra :</span>
+                <a href="{% url 'contracts:contract_detail' payment.contract.id %}"
+                   class="text-blue-600 underline">
+                    #{{ payment.contract.id }}
+                </a>
+            </div>
+
+            <!-- Optionnel: Description -->
+            {% if payment.note %}
+            <div>
+                <span class="font-semibold">Nòt :</span>
+                <p class="text-gray-700">{{ payment.note }}</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- ACTION BUTTONS -->
+        <div class="mt-8 flex justify-between">
+
+            <a href="{% url 'contracts:contract_payment_update' payment.id %}"
+               class="bg-yellow-500 text-white px-4 py-2 rounded-lg shadow">
+                Modifye
+            </a>
+
+            <a href="{% url 'contracts:contract_payment_delete' payment.id %}"
+               class="bg-red-600 text-white px-4 py-2 rounded-lg shadow"
+               onclick="return confirm('Ou sèten ou vle efase peman sa a ?');">
+                Efase
+            </a>
+        </div>
+    </div>
+
+    <div class="text-center mt-6">
+        <a href="{% url 'contracts:contract_payment_list' payment.contract.id %}"
+           class="text-blue-600 underline">
+            ← Tounen sou lis peman yo
+        </a>
+    </div>
+
+</div>
+
+{% endblock %}

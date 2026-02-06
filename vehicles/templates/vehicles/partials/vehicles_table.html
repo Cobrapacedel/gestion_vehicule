@@ -1,0 +1,33 @@
+{% if page_obj.object_list %}
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% for vehicle in page_obj %}
+      <div class="p-4 bg-white rounded-xl shadow hover:shadow-lg transition">
+        <h2 class="text-xl font-semibold">{{ vehicle.brand }} {{ vehicle.model }}</h2>
+        <p class="text-gray-600">Type : {{ vehicle.vehicle_type|default:"Non précisé" }}</p>
+        <p class="text-gray-600">Immatriculation : {{ vehicle.license_plate|default:"N/A" }}</p>
+        <p class="text-sm text-gray-500">Statut : {{ vehicle.status|default:"Inconnu" }}</p>
+      </div>
+    {% endfor %}
+  </div>
+
+  <!-- Pagination -->
+  <div class="flex justify-center items-center mt-6 space-x-2">
+    {% if page_obj.has_previous %}
+      <button hx-get="?page={{ page_obj.previous_page_number }}&q={{ query }}" 
+              hx-target="#vehicles-table"
+              class="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300">⬅️ Précédent</button>
+    {% endif %}
+
+    <span class="px-4 py-2 bg-blue-100 text-blue-800 rounded-lg">
+      Page {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}
+    </span>
+
+    {% if page_obj.has_next %}
+      <button hx-get="?page={{ page_obj.next_page_number }}&q={{ query }}"
+              hx-target="#vehicles-table"
+              class="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300">Suivant ➡️</button>
+    {% endif %}
+  </div>
+{% else %}
+  <p class="text-gray-500 text-center mt-6">Aucun véhicule trouvé.</p>
+{% endif %}

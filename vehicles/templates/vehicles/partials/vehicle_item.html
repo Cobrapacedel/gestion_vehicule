@@ -1,0 +1,29 @@
+<tr id="vehicle-{{ vehicle.id }}" class="hover:bg-gray-50 text-black">
+    <td class="px-4 py-2">{{ vehicle.id }}</td>
+    <td class="px-4 py-2">{{ vehicle.brand }}</td>
+    <td class="px-4 py-2">{{ vehicle.model }}</td>
+    <td class="px-4 py-2">{{ vehicle.plate_number }}</td>
+    <td class="px-4 py-2">{{ vehicle.created_at|date:"d/m/Y H:i" }}</td>
+    <td class="px-4 py-2 capitalize">{{ vehicle.vehicle_type }}</td>
+    <td class="px-4 py-2">
+        {% if vehicle.status == 'available' %}
+            <span class="inline-block px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded">Disponib</span>
+        {% else %}
+            <button hx-get="{% url 'vehicles:vehicle_detail_partial' vehicle.id %}"
+                    hx-target="#vehicle-detail-{{ vehicle.id }}"
+                    hx-swap="toggle"
+                    class="inline-block px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded">
+                {{ vehicle.status|capfirst }}
+            </button>
+            <div id="vehicle-detail-{{ vehicle.id }}" class="hidden text-xs text-gray-700 mt-1"></div>
+        {% endif %}
+    </td>
+    {% comment %}
+    <td class="px-4 py-2">
+        <button hx-delete="{% url 'vehicles:delete_vehicle' vehicle.id %}"
+                hx-target="#vehicle-{{ vehicle.id }}"
+                hx-swap="outerHTML"
+                class="text-red-600 hover:underline">🗑️</button>
+    </td>
+    {% endcomment %}
+</tr>

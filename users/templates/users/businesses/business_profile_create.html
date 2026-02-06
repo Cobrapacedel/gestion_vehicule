@@ -1,0 +1,37 @@
+{% extends "core/base.html" %}
+{% block title %}Kreye Pwofil Biznis{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex justify-center items-center bg-gray-100 py-12 px-4">
+    <div class="w-full max-w-2xl bg-white rounded-xl shadow-xl">
+
+        <div class="bg-green-600 text-white p-4 rounded-t-xl">
+            <h2 class="text-2xl font-bold text-center">Kreye Pwofil Biznis</h2>
+        </div>
+
+        <form method="post" enctype="multipart/form-data" class="p-6 space-y-6">
+            {% csrf_token %}
+            {% for field in form %}
+            <div>
+                <label class="font-semibold text-gray-700">{{ field.label }}</label>
+                {{ field }}
+                {% if field.errors %}
+                    <p class="text-red-500 text-sm">{{ field.errors.0 }}</p>
+                {% endif %}
+            </div>
+            {% endfor %}
+
+            <div class="flex justify-between pt-4">
+                <a href="{% url 'core:dashboard_redirect' %}"
+                   class="bg-gray-500 text-white px-5 py-2 rounded-lg hover:bg-gray-600">
+                    Retounen
+                </a>
+                <button class="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600">
+                    Kreye
+                </button>
+            </div>
+        </form>
+
+    </div>
+</div>
+{% endblock %}

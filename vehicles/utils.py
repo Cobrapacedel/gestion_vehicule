@@ -56,5 +56,12 @@ VEHICLE_DATA = {
     "Freightliner": ["Cascadia", "Columbia", "M2 106"],
     "Mercedes-Benz Trucks": ["Actros", "Atego", "Econic"],
     "Kenworth": ["T680", "W900", "T880"],
+}, 
+    "bus": {
+    "Mercedes-Benz": ["Citaro", "Sprinter City", "Tourismo"],
+    "Volvo": ["7900 Electric", "9700", "9900"],
+    "Scania": ["Citywide", "Interlink", "K-series"],
+    "MAN": ["Lion’s City", "Lion’s Coach", "Lion’s Intercity"],
+    "Iveco": ["Crossway", "Urbanway", "Evadys"],
 }
 }

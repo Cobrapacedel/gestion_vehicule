@@ -7,120 +7,112 @@
 <div class="container mx-auto mt-10 px-6">
     <h1 class="text-2xl font-semibold mb-6">Anrejistre yon nouvo machin</h1>
 
-    <!-- Messages Flash -->
-    {% if messages %}
-        <div class="messages">
-            {% for message in messages %}
-                <div class="alert alert-{{ message.tags }} mb-4 p-4 rounded bg-{{ message.tags }}-200 text-{{ message.tags }}-800">
-                    {{ message }}
-                </div>
-            {% endfor %}
-        </div>
-    {% endif %}
+    <!-- Messages flash -->
+    <div id="success-notification" class="hidden bg-green-100 text-green-800 p-4 rounded-md mb-4"></div>
+    <div id="error-notification" class="hidden bg-red-100 text-red-800 p-4 rounded-md mb-4"></div>
 
-    <form id="addVehicleForm" method="post" enctype="multipart/form-data" class="space-y-6" novalidate>
+    <form id="addVehicleForm" method="post" data-url="{% url 'vehicles:add_vehicle' %}" novalidate>
         {% csrf_token %}
-        
-        <div class="grid grid-cols-1 text-black md:grid-cols-2 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+            <!-- Type de véhicule -->
             <div>
-                <label for="id_vehicle_type" class="block text-sm font-medium text-gray-500">Kalite Machin:</label>
-                <select name="vehicle_type" id="id_vehicle_type" class="mt-2 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" required>
+                <label for="id_vehicle_type">Kalite Machin <span class="text-red-500">*</span></label>
+                <select name="vehicle_type" id="id_vehicle_type" required
+                        class="mt-2 block w-full border rounded px-4 py-2 text-black">
                     <option value="">Chwazi yon kalite</option>
                     <option value="car">Machin</option>
                     <option value="motorcycle">Moto</option>
                     <option value="truck">Kamyon</option>
+                    <option value="bus">Bis</option>
                 </select>
             </div>
 
+            <!-- Marque -->
             <div>
-                <label for="id_brand" class="block text-sm font-medium text-gray-500">Mak</label>
-                <select id="id_brand" name="brand" class="mt-2 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                    <option value="">Sélectionnez une marque</option>
-                    <!-- Add the brands here -->
-                    <option value="Toyota">Toyota</option>
-                    <option value="Honda">Honda</option>
-                    <option value="Ford">Ford</option>
-                    <option value="BMW">BMW</option>
-                    <option value="Chevrolet">Chevrolet</option>
-                    <!-- More options ... -->
+                <label for="id_brand">Mak <span class="text-red-500">*</span></label>
+                <select name="brand" id="id_brand" required
+                        class="mt-2 block w-full border rounded px-4 py-2 text-black">
+                    <option value="">Chwazi yon mak</option>
                 </select>
             </div>
 
+            <!-- Modèle -->
             <div>
-                <label for="id_model" class="block text-sm font-medium text-gray-500">Modèle</label>
-                <select id="id_model" name="model" class="mt-2 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                    <option value="">Sélectionnez une marque d'abord</option>
+                <label for="id_model">Modèl <span class="text-red-500">*</span></label>
+                <select name="model" id="id_model" required
+                        class="mt-2 block w-full border rounded px-4 py-2 text-black">
+                    <option value="">Chwazi yon modèl</option>
                 </select>
-                <div id="model-loader" class="spinner-border text-primary hidden" role="status">
-                    <span class="visually-hidden">Chargement...</span>
-                </div>
+                <div id="model-loader" class="hidden mt-2 text-blue-600">Chaje modèl yo...</div>
             </div>
 
+            <!-- Plaque -->
             <div>
-                <label for="id_plate_number" class="block text-sm font-medium text-gray-500">Nimewo Plak :</label>
-                <input type="text" name="plate_number" id="id_plate_number" class="mt-2 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" required>
+                <label for="id_plate_number">Nimewo Plak <span class="text-red-500">*</span></label>
+                <input type="text" name="plate_number" id="id_plate_number" required
+                       placeholder="Eg: AA-1234" class="mt-2 block w-full border rounded px-4 py-2 text-black">
             </div>
 
+            <!-- Serial number -->
             <div>
-                <label for="id_serial_number" class="block text-sm font-medium text-gray-500">Nimewo Motè a :</label>
-                <input type="text" name="serial_number" id="id_serial_number" class="mt-2 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" required>
+                <label for="id_serial_number">Nimewo Motè <span class="text-red-500">*</span></label>
+                <input type="text" name="serial_number" id="id_serial_number" required
+                       placeholder="Eg: 1HGCM82633A123456" class="mt-2 block w-full border rounded px-4 py-2 text-black">
             </div>
 
+            <!-- Année -->
             <div>
-                <label for="id_year" class="block text-sm font-medium text-gray-500">Dat li Soti :</label>
-                <input type="number" name="year" id="id_year" class="mt-2 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" required>
+                <label for="id_year">Ane <span class="text-red-500">*</span></label>
+                <input type="number" name="year" id="id_year" min="1900" max="2099" required
+                       placeholder="Eg: 2020" class="mt-2 block w-full border rounded px-4 py-2 text-black">
             </div>
 
+            <!-- Couleur -->
             <div>
-                <label for="id_color" class="block text-sm font-medium text-gray-500">Koulè :</label>
-                <input type="text" name="color" id="id_color" class="mt-2 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" required>
+                <label for="id_color">Koulè <span class="text-red-500">*</span></label>
+                <input type="text" name="color" id="id_color" required
+                       placeholder="Eg: Wouj" class="mt-2 block w-full border rounded px-4 py-2 text-black">
             </div>
 
+            <!-- Kilométrage -->
             <div>
-                <label for="id_mileage" class="block text-sm font-medium text-gray-500">Kilometraj :</label>
-                <input type="number" name="mileage" id="id_mileage" class="mt-2 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" required>
+                <label for="id_mileage">Kilometraj <span class="text-red-500">*</span></label>
+                <input type="number" name="mileage" id="id_mileage" min="0" required
+                       placeholder="Eg: 45000" class="mt-2 block w-full border rounded px-4 py-2 text-black">
             </div>
 
+            <!-- Gaz -->
             <div>
-                <label for="id_fuel_type" class="block text-sm font-medium text-gray-500">Tip Gaz :</label>
-                <select name="fuel_type" id="id_fuel_type" class="mt-2 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" required>
-                    <option value="essence">Essence</option>
-                    <option value="diesel">Diesel</option>
-                    <option value="electrique">Électrique</option>
-                    <option value="hybride">Hybride</option>
+                <label for="id_fuel_type">Tip Gaz <span class="text-red-500">*</span></label>
+                <select name="fuel_type" id="id_fuel_type" required class="mt-2 block w-full border rounded px-4 text-black py-2">
+                    <option value="gasoline">Gazolin</option>
+                    <option value="diesel">Dizèl</option>
+                    <option value="electric">Elektrik</option>
+                    <option value="hybrid">Ibrid</option>
                 </select>
             </div>
 
+            <!-- Statut -->
             <div>
-                <label for="id_status" class="block text-sm font-medium text-gray-500">Estati :</label>
-                <select name="status" id="id_status" class="mt-2 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" required>
+                <label for="id_status">Estati <span class="text-red-500">*</span></label>
+                <select name="status" id="id_status" required class="mt-2 block w-full border rounded px-4 py-2 text-black">
                     <option value="available">Disponib</option>
-                    <option value="rented">Nan Lwaye</option>
-                    <option value="maintenance">Nan Garaj</option>
+                    <option value="rented">Lwe</option>
+                    <option value="maintenance">Garaj</option>
                     <option value="sold">Vann</option>
-                    <option value="transferred">Transfè</option>
+                    <option value="transferred">Transfere</option>
                 </select>
             </div>
+
         </div>
 
         <div class="mt-4 flex items-center">
-            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-opacity-50">
-                <span class="spinner-border spinner-border-sm hidden" id="submit-loader" role="status"></span>
-                Anrejistre
-            </button>
-            <a href="{% url 'vehicles:vehicles_list' %}" class="ml-4 bg-red-600 text-white px-4 py-2 rounded-md hover:bg-gray-300 focus:outline-none">Anile</a>
+            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-green-600">Anrejistre</button>
+            <a href="{% url 'vehicles:vehicles_list' %}" class="ml-4 bg-red-500 text-white px-4 py-2 rounded hover:bg-yellow-600">Anile</a>
         </div>
     </form>
-    <div id="loading" class="spinner-border text-primary hidden" role="status">
-        <span class="visually-hidden">Loading...</span>
-    </div>
-    <div id="success-notification" class="alert alert-success hidden"></div>
-    <div id="notification" class="alert hidden"></div>
-    <div id="error-notification" class="alert alert-danger hidden"></div>
 </div>
 
-<script src="{% static 'js/cars.js' %}"></script>
-<script>
-// JavaScript (unchanged)
-</script>
+<script src="{% static 'js/vehicles_ajax.js' %}"></script>
 {% endblock %}

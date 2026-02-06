@@ -1,28 +1,39 @@
 from django.contrib import admin
-from .models import Recharge, Transaction, Payment, Balance
+from .models import Recharge, Transaction, Payment, BalanceCurrency, Wallet, FundTransfer
 
-@admin.register(Balance)
-class BalanceAdmin(admin.ModelAdmin):
-    list_display = ("user", "htg_balance", "usd_balance", "btc_balance", "btg_balance", "usdt_balance")
+@admin.register(BalanceCurrency)
+class BalanceCurrencyAdmin(admin.ModelAdmin):
+    list_display = ("balance", "currency")
+    search_fields = ("user__email",)
+    
+@admin.register(Wallet)
+class WalletAdmin(admin.ModelAdmin):
+    list_display = ("address", "network", "public_key")
     search_fields = ("user__email",)
 
 
 @admin.register(Transaction)
 class TransactionAdmin(admin.ModelAdmin):
-    list_display = ("user", "amount", "currency", "status", "date", "reference")
-    list_filter = ("currency", "status", "date")
-    search_fields = ("user__email", "reference")
+    list_display = ("user", "amount", "currency", "status", "created_at")
+    list_filter = ("currency", "status", "created_at")
+    search_fields = ("user__email",)
 
 
 @admin.register(Payment)
 class PaymentAdmin(admin.ModelAdmin):
-    list_display = ("user", "amount", "currency", "payment_type", "payment_date", "transaction")
-    list_filter = ("currency", "payment_type", "payment_date")
+    list_display = ("user", "amount", "currency", "method", "created_at", "transaction")
+    list_filter = ("currency", "method", "created_at")
     search_fields = ("user__email",)
 
 
 @admin.register(Recharge)
 class RechargeAdmin(admin.ModelAdmin):
-    list_display = ("user", "amount", "currency", "method", "status", "requested_at", "completed_at")
+    list_display = ("user", "amount", "currency", "method", "status", "created_at")
+    list_filter = ("currency", "method", "status")
+    search_fields = ("user__email",)
+    
+@admin.register(FundTransfer)
+class FundTransferAdmin(admin.ModelAdmin):
+    list_display = ("sender", "amount", "currency", "method", "status", "created_at")
     list_filter = ("currency", "method", "status")
     search_fields = ("user__email",)

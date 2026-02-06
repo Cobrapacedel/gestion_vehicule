@@ -5,7 +5,7 @@
 {% block title %}Verifikasyon OTP{% endblock %}
 
 {% block content %}
-<link rel="stylesheet" href="{% static 'css/style.css' %}">
+<link rel="stylesheet" href="{% static 'css/styles.css' %}">
 <script src="https://cdn.tailwindcss.com"></script>
 
 <!-- CSRF token dans une balise meta -->
@@ -27,6 +27,7 @@
     {% endif %}
 
     <!-- Formulaire de sélection du type et méthode OTP -->
+    {% comment %}
     <form method="post" action="{% url 'otp:request_otp' %}" class="space-y-4">
       {% csrf_token %}
         <div class="mb-4">
@@ -44,9 +45,10 @@
                 <option value="sms">SMS</option>
             </select>
         </div>
+    
       <button type="submit" class="w-full py-2 bg-blue-600 rounded hover:bg-blue-700">Envoyer OTP</button>
     </form>
-
+{% endcomment %}
     <!-- Formulaire de saisie du code OTP -->
     <form method="post" action="{% url 'otp:verify_otp' %}" class="space-y-4">
       {% csrf_token %}

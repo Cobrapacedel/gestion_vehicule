@@ -1,10 +1,25 @@
 {% extends "core/base.html" %}
 {% block content %}
-<h2>Supprimer l'Amende #{{ fine.id }}</h2>
-<p>Êtes-vous sûr de vouloir supprimer cette amende ?</p>
-<form method="post">
-    {% csrf_token %}
-    <button type="submit">Oui, Supprimer</button>
-</form>
-<a href="{% url 'fines:fine_list' %}">Annuler</a>
+<div class="max-w-xl mx-auto bg-white dark:bg-gray-800 shadow-md rounded-2xl p-6 mt-10">
+    <h2 class="text-xl font-bold text-white dark:text-red-400 mb-4">
+        Efase Kontravansyon # {{ fine.fine_id }}
+    </h2>
+    <p class="mb-6 text-gray-700 dark:text-gray-300">
+        Eske ou vle efase kontravansyon sa? Cette action est <strong>irréversible</strong>.
+    </p>
+
+    <form method="post" class="flex items-center gap-4">
+        {% csrf_token %}
+        <button type="submit"
+            class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-2xl shadow transition duration-200">
+            Wi, Efase
+        </button>
+        <a href="{% url 'fines:fine_list' %}"
+           class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded-2xl shadow transition duration-200">
+            Non
+        </a>
+    </form>
+     <div class= 'mt-6'> <a href="{% url 'fines:fine_list' %}" class="text-blue-600 hover:underline">← Retounen </a>
+        </div>
+</div>
 {% endblock %}

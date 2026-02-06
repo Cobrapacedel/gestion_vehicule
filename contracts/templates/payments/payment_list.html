@@ -1,0 +1,78 @@
+{% extends "core/base.html" %}
+
+{% block content %}
+<div class="flex justify-between items-center mb-6">
+    <h1 class="text-xl font-bold">
+        Peman Kontra #{{ contract.id }}
+    </h1>
+
+    <a href="{% url 'contracts:contract_payment_create' contract.id %}"
+       class="bg-blue-600 text-white px-4 py-2 rounded-lg shadow">
+        + Nouvo Peman
+    </a>
+</div>
+
+<div class="bg-white shadow rounded-lg p-4">
+    <table class="w-full text-left">
+        <thead>
+            <tr class="border-b">
+                <th class="p-2">#</th>
+                <th class="p-2">Montan</th>
+                <th class="p-2">Dat</th>
+                <th class="p-2">Mòd Peman</th>
+                <th class="p-2">Aksyon</th>
+            </tr>
+        </thead>
+
+        <tbody>
+        {% for payment in page_obj %}
+            <tr class="border-b hover:bg-gray-50">
+                <td class="p-2">{{ payment.id }}</td>
+
+                <td class="p-2 font-semibold">
+                    {{ payment.amount }} HTG
+                </td>
+
+                <td class="p-2">{{ payment.created_at|date:"d/m/Y H:i" }}</td>
+
+                <td class="p-2">
+                    {% include "partials/payment_badge.html" with type=payment.payment_method %}
+                </td>
+
+                <td class="p-2 flex space-x-3">
+                    <a href="{% url 'contracts:contract_payment_update' payment.id %}"
+                       class="text-yellow-600 hover:underline">
+                       Modifye
+                    </a>
+
+                    <a href="{% url 'contracts:contract_payment_delete' payment.id %}"
+                       class="text-red-600 hover:underline"
+                       onclick="return confirm('Ou vle efase peman sa a ?');">
+                       Efase
+                    </a>
+                </td>
+            </tr>
+        {% empty %}
+            <tr><td colspan="5" class="p-4 text-center">Pa gen peman pou kontra sa a.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- PAGINATION -->
+    <div class="mt-6 flex justify-center space-x-2">
+        {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}"
+               class="px-3 py-1 bg-gray-200 rounded">Prev</a>
+        {% endif %}
+
+        <span class="px-3 py-1 bg-blue-600 text-white rounded">
+            Paj {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}
+        </span>
+
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}"
+               class="px-3 py-1 bg-gray-200 rounded">Next</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

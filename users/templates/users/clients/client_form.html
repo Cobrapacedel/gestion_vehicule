@@ -1,0 +1,135 @@
+{% extends "core/base.html" %}
+{% load widget_tweaks %}
+{% load i18n %}
+{% load static %}
+{% block title %}{% trans "Kliyan | Kreye" %}{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto p-6">
+
+    <h1 class="text-2xl font-bold mb-6">
+        {% if form.instance.pk %}
+            Modifye Klian
+        {% else %}
+            Kreye Kliyan
+        {% endif %}
+    </h1>
+
+    <div class="bg-white shadow p-6 rounded">
+
+<form method="post" class="space-y-6 bg-white p-6 rounded shadow">
+    {% csrf_token %}
+
+    {% if form.non_field_errors %}
+        <div class="bg-red-100 text-red-700 p-3 rounded">
+            {{ form.non_field_errors }}
+        </div>
+    {% endif %}
+
+    <!-- UTILISATEUR EXISTANT -->
+    <div>
+        <label class="font-semibold">{{ form.real_user.label }}</label>
+        {{ form.real_user }}
+        {{ form.real_user.errors }}
+    </div>
+
+    <!-- TYPE CLIENT -->
+    <div id="wrap_client_type">
+        <label class="font-semibold">{{ form.client_type.label }}</label>
+        {{ form.client_type }}
+        {{ form.client_type.errors }}
+    </div>
+
+    <!-- SIMPLE CLIENT -->
+    <div id="simple_fields" class="hidden border-t pt-4 mt-4">
+        <h3 class="font-bold text-lg mb-2">Kliyan</h3>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label>{{ form.first_name.label }}</label>
+                {{ form.first_name }}
+                {{ form.first_name.errors }}
+            </div>
+
+            <div>
+                <label>{{ form.last_name.label }}</label>
+                {{ form.last_name }}
+                {{ form.last_name.errors }}
+            </div>
+
+            <div>
+                <label>{{ form.email.label }}</label>
+                {{ form.email }}
+                {{ form.email.errors }}
+            </div>
+            
+            <div>
+            <label>{{ form.phone.label }}</label>
+            {{ form.phone }}
+            {{ form.phone.errors }}
+        </div>
+
+        <div>
+            <label>{{ form.address.label }}</label>
+            {{ form.address }}
+            {{ form.address.errors }}
+        </div>
+
+            <div>
+                <label>{{ form.driver_license_number.label }}</label>
+                {{ form.driver_license_number }}
+                {{ form.driver_license_number.errors }}
+            </div>
+        </div>
+    </div>
+
+    <!-- BUSINESS CLIENT -->
+    <div id="business_fields" class="hidden border-t pt-4 mt-4">
+        <h3 class="font-bold text-lg mb-2">Kliyan</h3>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label>{{ form.business_name.label }}</label>
+                {{ form.business_name }}
+                {{ form.business_name.errors }}
+            </div>
+
+            <div>
+                <label>{{ form.patente_number.label }}</label>
+                {{ form.patente_number }}
+                {{ form.patente_number.errors }}
+            </div>
+
+            <div>
+                <label>{{ form.web_site.label }}</label>
+                {{ form.web_site }}
+                {{ form.web_site.errors }}
+            </div>
+            
+            <div>
+            <label>{{ form.phone.label }}</label>
+            {{ form.phone }}
+            {{ form.phone.errors }}
+        </div>
+
+        <div>
+            <label>{{ form.address.label }}</label>
+            {{ form.address }}
+            {{ form.address.errors }}
+        </div>
+        </div>
+    </div>
+
+    <!-- SUBMIT -->
+    <div class="pt-4">
+        <button type="submit"
+                class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">
+            Sove
+        </button>
+    </div>
+</form>
+
+
+<!-- JS -->
+    <script src="{% static 'js/client.js' %}"></script>
+{% endblock %}

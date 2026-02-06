@@ -1,0 +1,120 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block title %}Kliyan | Detay{% endblock %}
+
+{% block content %}
+<style>
+    strong {
+        color: red;
+    }
+</style>
+<div class="max-w-3xl mx-auto p-6">
+
+    <h1 class="text-3xl font-bold mb-6 text-yellow-400">
+        Detay Kliyan
+    </h1>
+
+    <div class="bg-gray-800 text-white p-6 rounded-lg shadow">
+
+        <!-- Nom / Business -->
+        <h2 class="text-2xl font-semibold mb-4 flex justify-center">
+            {% if client.real_user %}
+                {% if client.real_user.user_type == "simple" %}
+                    {{ client.real_user.simple.first_name }}
+                    {{ client.real_user.simple.last_name }}
+                {% else %}
+                    {{ client.real_user.businessprofile.business_name }}
+                {% endif %}
+            {% else %}
+                {% if client.client_type == "user" %}
+                    {{ client.first_name }} {{ client.last_name }}
+                {% else %}
+                    {{ client.business_name|default:"—" }}
+                {% endif %}
+            {% endif %}
+        </h2>
+
+        <!-- Type -->
+        <p class="mb-4 flex justify-center">
+            <span class="px-3 py-1 rounded text-lg font-semibold inline-block
+                {% if client.client_type == 'user' %} bg-blue-600
+                {% elif client.client_type == 'dealer' %} bg-purple-600
+                {% elif client.client_type == 'agency' %} bg-green-600
+                {% elif client.client_type == 'garage' %} bg-orange-600
+                {% else %} bg-gray-600 {% endif %}">
+                {{ client.get_client_type_display }}
+            </span>
+        </p>
+
+        <!-- Contact -->
+        <div class="mb-4">
+            <p><strong>Telefòn:</strong>
+                {{ client.real_user.phone|default:client.phone }}
+            </p>
+            <p><strong>Imèl:</strong>
+                {{ client.real_user.email|default:client.email }}
+            </p>
+        </div>
+
+    {% if client.real_user %}
+  <div class="mb-4">
+      
+        {% if client.real_user.user_type == "simple" %}
+
+            <p><strong>Nimewo Lisans:</strong>
+                {{ client.real_user.simple.driver_license_number|default:"—" }}
+            </p>
+                <p><strong>Adrès:</strong>
+                    {{ client.real_user.simple.address|default:"—" }}
+                </p>
+            {% else %}
+   <p><strong>Nimewo Patant:</strong>
+                {{ client.real_user.businessprofile.patente_number|default:"—" }}
+            </p>
+                <p><strong>Adrès:</strong>
+                    {{ client.real_user.businessprofile.address|default:"—" }}
+                </p>
+         <p>
+                    <strong>Sitwèb:</strong>
+                    <a href="{{ client.real_user.businessprofile.web_site }}" class="text-blue-400 underline" target="_blank">
+                        {{ client.real_user.businessprofile.web_site }}
+                    </a>
+                </p>
+        </div>
+        {% endif %}
+        {% endif %}
+
+        <!-- Métadonnées -->
+        <div class="mb-4 text-sm text-gray-400">
+            <p>Ajoute pa: {{ client.created_by.email|default:"Sistèm" }}</p>
+            <p>Dat kreyasyon: {{ client.created_at|date:"d/m/Y H:i" }}</p>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex justify-between mt-6">
+            <a href="{% url 'users:client_update' client.id %}"
+               class="bg-yellow-500 px-4 py-2 rounded hover:bg-yellow-600">
+                Modifye
+            </a>
+
+            <form action="{% url 'users:client_delete' client.id %}" method="post">
+                {% csrf_token %}
+                <button type="submit"
+                        class="bg-red-600 px-4 py-2 rounded hover:bg-red-700"
+                        onclick="return confirm('Ou sèten ou vle efase kliyan sa a ?')">
+                    Efase
+                </button>
+            </form>
+        </div>
+
+        <div class="flex justify-center mt-6">
+            <a href="{% url 'users:client_list' %}"
+               class="bg-gray-600 px-4 py-2 rounded hover:bg-gray-700">
+                Retounen
+            </a>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

@@ -1,56 +1,104 @@
 {% extends "core/base.html" %}
-{% block title %}Veyikil | Estati{% endblock %}
+{% load static %}
+{% block title %}Detay Veyikil | {{ vehicle.plate_number }}{% endblock %}
+
 {% block content %}
-<div class="max-w-4xl mx-auto p-6 bg-white rounded-2xl shadow-md mt-8">
-  <h2 class="text-2xl md:text-3xl font-bold text-gray-800 flex items-center gap-2 mb-4">
-    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 3L4 9v12h16V9l-5.75-6h-4.5z" />
-    </svg>
-    Estati Machin nan : {{ vehicule.marque }} {{ vehicule.modele }} ({{ vehicule.plaque_immatriculation }})
-  </h2>
+<div class="max-w-4xl mx-auto bg-white shadow-lg rounded-lg p-6 mt-8">
 
-  <p class="text-gray-700 mb-3">
-    <span class="font-semibold">Estati :</span> 
-    <span class="{% if vehicule.statut == 'Actif' %}text-green-600{% elif vehicule.statut == 'En panne' %}text-red-600{% elif vehicule.statut == 'En maintenance' %}text-yellow-600{% elif vehicule.statut == 'Vendu' %}text-gray-500{% endif %}">
-      {{ vehicule.statut }}
-    </span>
-  </p>
+  <h1 class="text-2xl font-bold text-gray-800 mb-4">
+    🚗 Detay sou Veyikil {{ vehicle.plate_number }}
+  </h1>
 
-  {% if vehicule.statut == "Actif" %}
-    <p class="text-gray-700 flex items-center gap-1">
-      <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" stroke-width="2"
-        viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-      </svg>
-      <span class="font-semibold">Itilizatè :</span> {{ vehicule.utilisateur }}
+  <!-- Infos principales -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm text-gray-800">
+    <p><strong>ID:</strong> {{ user.id }}</p>
+    <p><strong>Pwopriyetè:</strong> {{ user.first_name }} {{ user.last_name }}</p>
+    <p><strong>Imèl:</strong> {{ user.email }}</p>
+    <p><strong>Telefòn:</strong> {{ user.profile.phone }}</p>
+    <p><strong>Adrès:</strong> {{ user.profile.address }}</p>
+    <p><strong>Lisans #:</strong> {{ user.driver_license }}</p>
+    <p><strong>Mak:</strong> {{ vehicle.brand }}</p>
+    <p><strong>Modèl:</strong> {{ vehicle.model }}</p>
+    <p><strong>Plak:</strong> {{ vehicle.plate_number }}</p>
+    <p><strong>Kalite:</strong> {{ vehicle.vehicle_type|capfirst }}</p>
+    <p><strong>Dat Anrejistreman:</strong> {{ vehicle.created_at|date:"d/m/Y H:i" }}</p>
+    <p><strong>Estati:</strong>
+      {% if vehicle.status == 'available' %}
+        <span class="text-green-600 font-semibold">Aktif</span>
+      {% elif vehicle.status == 'rented' %}
+        <span class="text-gray-700 font-semibold">Lwaye</span>
+      {% elif vehicle.status == 'sold' %}
+        <span class="text-yellow-700 font-semibold">Vann</span>
+      {% elif vehicle.status == 'transferred' %}
+        <span class="text-blue-700 font-semibold">Transfere</span>
+      {% else %}
+        <span class="text-red-700 font-semibold">Nan Garaj</span>
+      {% endif %}
     </p>
-  {% elif vehicule.statut == "En panne" or vehicule.statut == "En maintenance" %}
-    <p class="text-gray-700 flex items-center gap-1">
-      <svg class="w-5 h-5 text-yellow-500" fill="none" stroke="currentColor" stroke-width="2"
-        viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M12 20h.01" />
-      </svg>
-      <span class="font-semibold">Garajis :</span> {{ vehicule.garagiste }}
-    </p>
-  {% elif vehicule.statut == "Vendu" %}
-    <p class="text-gray-700 flex items-center gap-1">
-      <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" stroke-width="2"
-        viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-      </svg>
-      <span class="font-medium">Machin sa vann.</span>
-    </p>
+  </div>
+
+  <hr class="my-6">
+
+  <!-- Informations selon l'état -->
+  {% if vehicle.status == 'rented' and vehicle.renter %}
+  <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+    <h2 class="font-semibold text-lg text-gray-800 mb-2">Lokasyon</h2>
+    <p><strong>Lokatè:</strong> {{ vehicle.renter.name }}</p>
+    <p><strong>Telefòn:</strong> {{ vehicle.renter.phone }}</p>
+    <p><strong>Adrès:</strong> {{ vehicle.renter.address }}</p>
+    <p><strong>Dat Lokasyon:</strong> {{ vehicle.renter.created_at|date:"d/m/Y H:i" }}</p>
+    <a href="{% url 'vehicles:rented_list' %}" 
+       class="mt-3 inline-block bg-blue-600 text-white px-4 py-2 rounded font-semibold hover:bg-blue-700">
+       📜 Lis tout machin lwe yo
+    </a>
+  </div>
+
+  {% elif vehicle.status == 'sold' and vehicle.seller %}
+  <div class="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+    <h2 class="font-semibold text-lg text-gray-800 mb-2">Vant</h2>
+    <p><strong>Achte pa:</strong> {{ vehicle.seller.name }}</p>
+    <p><strong>Telefòn:</strong> {{ vehicle.seller.phone }}</p>
+    <p><strong>Adrès:</strong> {{ vehicle.seller.address }}</p>
+    <p><strong>Dat Vant:</strong> {{ vehicle.seller.created_at|date:"d/m/Y H:i" }}</p>
+    <a href="{% url 'vehicles:sold_list' %}" 
+       class="mt-3 inline-block bg-yellow-600 text-white px-4 py-2 rounded font-semibold hover:bg-yellow-700">
+       💰 Lis tout machin vann yo
+    </a>
+  </div>
+
+  {% elif vehicle.status == 'transferred' and vehicle.transferred_to %}
+  <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
+    <h2 class="font-semibold text-lg text-gray-800 mb-2">Transfè</h2>
+    <p><strong>Nouveau Propriétè:</strong> {{ vehicle.transferred_to.name }}</p>
+    <p><strong>Telefòn:</strong> {{ vehicle.transferred_to.phone }}</p>
+    <p><strong>Adrès:</strong> {{ vehicle.transferred_to.address }}</p>
+    <p><strong>Dat Transfè:</strong> {{ vehicle.transferred_to.created_at|date:"d/m/Y H:i" }}</p>
+    <a href="{% url 'vehicles:transferred_list' %}" 
+       class="mt-3 inline-block bg-blue-600 text-white px-4 py-2 rounded font-semibold hover:bg-blue-700">
+       🔁 Lis transfè yo
+    </a>
+  </div>
+
+  {% elif vehicle.status == 'garage' and vehicle.mechanic %}
+  <div class="bg-red-50 p-4 rounded-lg border border-red-200">
+    <h2 class="font-semibold text-lg text-gray-800 mb-2">Garaj</h2>
+    <p><strong>Reparatè:</strong> {{ vehicle.mechanic.name }}</p>
+    <p><strong>Telefòn:</strong> {{ vehicle.mechanic.phone }}</p>
+    <p><strong>Adrès:</strong> {{ vehicle.mechanic.address }}</p>
+    <p><strong>Dat Depo:</strong> {{ vehicle.mechanic.created_at|date:"d/m/Y H:i" }}</p>
+    <a href="{% url 'vehicles:mechanic_list' %}" 
+       class="mt-3 inline-block bg-red-600 text-white px-4 py-2 rounded font-semibold hover:bg-red-700">
+       🔧 Lis machin nan garaj yo
+    </a>
+  </div>
+
+  {% else %}
+  <p class="text-gray-600 italic">Pa gen enfòmasyon adisyonèl pou estati sa a.</p>
   {% endif %}
 
-  <div class="mt-6">
-    <a href="{% url 'vehicles:vehicles_list' %}" class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-        stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-          d="M15 19l-7-7 7-7" />
-      </svg>
-        <span>Retounen nan lis machin yo</span>
-    </a>
+  <!-- Actions -->
+  <div class="flex justify-between mt-6">
+    <a href="{% url 'vehicles:vehicles_list' %}" class="text-blue-600 hover:underline">← Retounen nan lis</a>
   </div>
 </div>
 {% endblock %}

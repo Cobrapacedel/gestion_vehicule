@@ -1,0 +1,27 @@
+{% extends "core/base.html" %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto mt-10 p-6 bg-white rounded-lg shadow">
+    <h2 class="text-2xl font-bold mb-4">🔔 Marquer comme lu</h2>
+
+    <p class="mb-4">Ou pral konsidere notifikasyon sa li :</p>
+
+    <div class="border p-4 text-black rounded mb-6 bg-gray-50">
+        <P><strong>Id:</strong> {{ notification.id }}</P>
+        <p><strong>Tit :</strong> {{ notification.title }}</p>
+        <p><strong>Tip :</strong> {{ notification.get_notification_type_display }}</p>
+        <p><strong>Mesaj:</strong> {{ notification.message }}</p>
+        <p><strong>Dat:</strong> {{ notification.created_at|date:"d/m/Y H:i" }}</p>
+    </div>
+
+    <form method="POST">
+        {% csrf_token %}
+        <button type="submit"
+                class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded shadow">
+            Make li
+        </button>
+        <a href="{% url 'notifications:notification_list' %}" 
+           class="ml-4 text-gray-600 hover:underline">Anile</a>
+    </form>
+</div>
+{% endblock %}

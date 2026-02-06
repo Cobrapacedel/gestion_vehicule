@@ -1,0 +1,24 @@
+{% extends "core/base.html" %}
+{% block title %}Détail Historique{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto py-8">
+    <h1 class="text-2xl font-bold mb-4">Historique du véhicule : {{ history.vehicle.plate_number }}</h1>
+
+    <div class="bg-white shadow rounded p-4">
+        <p><strong>Date de changement :</strong> {{ history.changed_at|date:"d/m/Y H:i" }}</p>
+        <p><strong>Ancien statut :</strong> {{ history.old_status }}</p>
+        <p><strong>Nouveau statut :</strong> {{ history.new_status }}</p>
+        {% if history.changed_by %}
+            <p><strong>Modifié par :</strong> {{ history.changed_by.get_full_name }}</p>
+        {% endif %}
+        {% if history.comment %}
+            <p><strong>Commentaire :</strong> {{ history.comment }}</p>
+        {% endif %}
+    </div>
+
+    <a href="{% url 'vehicles:vehicle_status_history_list' history.vehicle.id %}" class="mt-4 inline-block bg-blue-500 text-white px-4 py-2 rounded">
+        Retour à l'historique
+    </a>
+</div>
+{% endblock %}

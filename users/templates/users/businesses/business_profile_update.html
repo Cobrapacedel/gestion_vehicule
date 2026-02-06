@@ -1,0 +1,39 @@
+{% extends "core/base.html" %}
+{% block title %}Modifye Biznis{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-100 flex items-center justify-center py-10 px-4">
+    <div class="bg-white shadow-xl rounded-xl w-full max-w-2xl">
+
+        <div class="bg-green-600 text-white p-4 rounded-t-xl">
+            <h2 class="text-2xl font-bold text-center">Modifye Pwofil Biznis</h2>
+        </div>
+
+        <form method="post" enctype="multipart/form-data" class="p-6 space-y-6">
+            {% csrf_token %}
+            
+            {% for field in form %}
+            <div>
+                <label class="font-semibold text-gray-700">{{ field.label }}</label>
+                {{ field }}
+                {% if field.errors %}
+                    <p class="text-red-500 text-sm">{{ field.errors.0 }}</p>
+                {% endif %}
+            </div>
+            {% endfor %}
+
+            <div class="flex justify-between pt-2">
+                <a href="{% url 'users:business_profile_detail' %}"
+                   class="bg-gray-500 text-white px-5 py-2 rounded-lg hover:bg-gray-600">
+                    Retounen
+                </a>
+
+                <button class="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600">
+                    Mete ajou
+                </button>
+            </div>
+        </form>
+
+    </div>
+</div>
+{% endblock %}

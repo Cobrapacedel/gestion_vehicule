@@ -1,0 +1,32 @@
+{% extends "core/base.html" %}
+
+{% block content %}
+<h1 class="text-xl font-bold mb-4">
+    {% if payment %} Modifye Peman {% else %} Nouvo Peman {% endif %}
+</h1>
+
+<div class="bg-white p-6 rounded-lg shadow">
+    <form method="post">
+        {% csrf_token %}
+
+        {{ form.non_field_errors }}
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {% for field in form %}
+            <div>
+                <label class="font-semibold">{{ field.label }}</label>
+                <div class="mt-1">{{ field }}</div>
+
+                {% if field.errors %}
+                <p class="text-red-600 text-sm">{{ field.errors|striptags }}</p>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+
+        <button class="mt-6 bg-blue-600 text-white px-4 py-2 rounded-lg shadow">
+            Sove
+        </button>
+    </form>
+</div>
+{% endblock %}

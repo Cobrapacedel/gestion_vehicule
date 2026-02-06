@@ -1,0 +1,90 @@
+{% extends 'core/base.html' %}
+{% block title %}Antrepriz | Pwofil{% endblock %}
+{% load static %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center bg-gray-700 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="bg-gray-800 p-8 sm:p-10 rounded-xl shadow-xl w-full max-w-2xl space-y-6">
+
+        <h2 class="text-3xl font-bold text-yellow-400 mb-6 text-center">
+            Pwofil Antrepriz
+        </h2>
+
+        <!-- SECTION INFO BUSINESS -->
+        <div class="flex flex-col items-center bg-gray-900 shadow-md rounded-lg p-6 w-full">
+
+            {% if businessprofile.businessprofile_avatar %}
+                <img src="{{ businessprofile.businessprofile_avatar.url }}" 
+                     class="w-32 h-32 rounded-lg border-4 border-blue-600 mb-4 object-cover">
+            {% else %}
+                <img src="{% static 'images/avatar/default.png' %}" 
+                     class="w-32 h-32 rounded-full border-4 border-blue-600 mb-4">
+            {% endif %}
+
+            <h3 class="text-xl font-semibold text-yellow-400">
+                {{ businessprofile.business_name }}
+            </h3>
+
+            <p class="mt-2 text-white">
+                <strong>Imèl:</strong> {{ user.email }}
+            </p>
+
+            <p class="mt-2 text-white">
+                <strong>Telefòn:</strong> {{ user.phone }}
+            </p>
+
+            <p class="mt-2 text-white">
+                <strong>Adrès:</strong> {{ businessprofile.address|default:"Pa espesifye" }}
+            </p>
+
+            <p class="mt-2 text-white">
+                <strong>Patant:</strong> {{ businessprofile.patente_number|default:"Pa gen" }}
+            </p>
+
+            {% if businessprofile.patente_image %}
+                <img src="{{ businessprofile.patente_image.url }}" 
+                     class="w-48 h-auto rounded mt-3 shadow-lg">
+            {% endif %}
+        </div>
+                <!-- SECTION PARRAINAGE -->
+<div class="mt-8 bg-gray-900 p-6 rounded-lg shadow-md w-full text-center">
+    <h3 class="text-lg font-semibold text-yellow-400 mb-2">Lyen envitasyon ou</h3>
+
+    {% if user.invitation_code %}
+        <p class="text-white mb-4">
+            Kopi lyen ou pou envite lòt itilizatè:
+        </p>
+        <div class="flex items-center justify-center gap-2">
+<input type="text" readonly
+       value="{{ request.scheme }}://{{ request.get_host }}{% url 'users:invite' user.invitation_code %}"
+       class="w-2/3 p-2 rounded-lg bg-gray-800 text-white text-center">
+         <button onclick="navigator.clipboard.writeText('{{ request.scheme }}://{{ request.get_host }}{% url 'users:invite' user.invitation_code %}')"
+        class="bg-green-500 px-4 py-2 rounded-lg text-white hover:bg-green-600 transition">
+    Kopi
+</button>
+        </div>
+        <p class="mt-2 text-sm text-gray-400">
+            Ou pral resevwa BTG lè itilizatè sa yo kreye kont oswa achte premye machin yo.
+        </p>
+    {% else %}
+        <p class="text-gray-400">Pa gen kòd envitasyon disponib.</p>
+    {% endif %}
+</div>
+
+        <!-- BOUTONS -->
+        <div class="flex justify-between gap-4 mt-6">
+
+            <a href="{% url 'users:business_profile_update' %}" 
+               class="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition">
+                Modifye
+            </a>
+
+            <a href="{% url 'core:dashboard_redirect' %}" 
+               class="bg-purple-500 text-white px-6 py-2 rounded-lg hover:bg-purple-600 transition">
+                Tounen
+            </a>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

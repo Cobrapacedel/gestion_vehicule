@@ -1,0 +1,14 @@
+{% load humanize %}
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+    {% for card in cards %}
+        <a href="{{ card.url }}" class="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow hover:shadow-lg transition flex items-center space-x-4">
+            <div class="text-3xl">
+                {{ card.icon }}
+            </div>
+            <div>
+                <p class="text-sm text-gray-500 dark:text-gray-400">{{ card.title }}</p>
+                <p class="text-xl font-bold text-gray-800 dark:text-gray-100">{{ card.count|intcomma }}</p>
+            </div>
+        </a>
+    {% endfor %}
+</div>

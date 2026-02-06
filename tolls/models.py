@@ -1,110 +1,217 @@
 from django.db import models
-from django.contrib.auth import get_user_model
+from django.conf import settings
+from django.utils import timezone
+from decimal import Decimal
 
-User = get_user_model()
-
-
+# ============================
+# POSTE DE PÉAGE
+# ============================
 class Toll(models.Model):
-    name = models.CharField(max_length=100)
-    highway_name = models.CharField(max_length=150, blank=True)
-    region = models.CharField(max_length=100, blank=True)
+    HTG = "htg"
+    USD = "usd"
+    JMU = "jmu"
+    
+    CURRENCY_TYPE = [
+        (HTG, "HTG"),
+        (USD, "USD"),
+        (JMU, "JMU")
+    ]
+    
+    name = models.CharField(
+        max_length=100
+    )
+    
+    highway_name = models.CharField(
+        max_length=150, 
+        blank=True
+    )
+    
+    region = models.CharField(
+        max_length=100, 
+        blank=True
+    )
+
+    amount = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=Decimal("0.00")
+    )
+
+    currency = models.CharField(
+        max_length=5,
+        choices=CURRENCY_TYPE,
+        default=HTG
+    )
+
+    class Meta:
+        verbose_name = "Rout Pòs Peyaj"
+        verbose_name_plural = "Rout Pòs Peyaj"
+        ordering = ["name"]
 
     def __str__(self):
         return f"{self.name} ({self.highway_name})"
 
-    class Meta:
-        verbose_name = "Poste de péage"
-        verbose_name_plural = "Postes de péage"
-        ordering = ['name']
 
+# ============================
+# GUICHET / PASSAGE
+# ============================
 
 class TollBooth(models.Model):
-    toll = models.ForeignKey(Toll, on_delete=models.CASCADE, related_name='booths')
-    booth_number = models.CharField(max_length=20)
-    location = models.CharField(max_length=255)
+    toll = models.ForeignKey(
+        "tolls.Toll",
+        on_delete=models.CASCADE,
+        related_name="booths"
+    )
 
-    def __str__(self):
-        return f"{self.toll.name} - Guichet {self.booth_number}"
+    vehicle = models.ForeignKey(
+        "vehicles.Vehicle",
+        on_delete=models.CASCADE,
+        related_name="vehicle_tolls"
+    )
+
+    driver = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="driven_tolls"
+    )
+
+    booth_number = models.CharField(
+        max_length=20
+    )
+
+    passage_date = models.DateTimeField(
+        default=timezone.now
+    )
+
+    is_paid = models.BooleanField(
+        default=False
+    )
 
     class Meta:
         verbose_name = "Guichet de péage"
         verbose_name_plural = "Guichets de péage"
-        unique_together = ('toll', 'booth_number')
-        ordering = ['toll__name', 'booth_number']
-
-
-class TollPayment(models.Model):
-    PAYMENT_STATUS_CHOICES = [
-        ('pending', 'En attente'),
-        ('processing', 'En traitement'),
-        ('completed', 'Complété'),
-        ('failed', 'Échoué'),
-        ('cancelled', 'Annulé'),
-    ]
-
-    CURRENCY_CHOICES = [
-        ('HTG', 'Gourde'),
-        ('USD', 'US Dollar'),
-        ('EUR', 'Euro'),
-    ]
-
-    PAYMENT_METHOD_CHOICES = [
-        ('cash', 'Espès'),
-        ('card', 'Kat'),
-        ('mobile', 'Mobil'),
-    ]
-
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='toll_payments')
-    toll_booth = models.ForeignKey(TollBooth, on_delete=models.PROTECT, related_name='payments')
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
-    currency = models.CharField(max_length=3, choices=CURRENCY_CHOICES, default='HTG')
-    payment_method = models.CharField(max_length=10, choices=PAYMENT_METHOD_CHOICES)
-    status = models.CharField(max_length=20, choices=PAYMENT_STATUS_CHOICES, default='pending')
-    created_at = models.DateTimeField(auto_now_add=True)
+        ordering = ["-passage_date"]
+        unique_together = ("toll", "booth_number")
 
     def __str__(self):
-        return f"Peman {self.amount} {self.currency} pou {self.user}"
+        return f"{self.toll.name} — Guichet {self.booth_number}"
 
-    class Meta:
-        verbose_name = "Paiement de péage"
-        verbose_name_plural = "Paiements de péage"
-        ordering = ['-created_at']
+    @property
+    def owner(self):
+        """Propriétaire réel du véhicule"""
+        return self.vehicle.owner
+
+    @property
+    def amount(self):
+        return self.toll.amount
+
+    @property
+    def currency(self):
+        return self.toll.currency
 
 
-class TollTransaction(models.Model):
-    TRANSACTION_STATUS_CHOICES = [
-        ('pending', 'En attente'),
-        ('success', 'Succès'),
-        ('failed', 'Échec'),
-        ('refunded', 'Remboursé'),
-        ('error', 'Erreur technique'),
-    ]
+# ============================
+# DÉTECTION AUTOMATIQUE
+# ============================
 
-    payment = models.OneToOneField(TollPayment, on_delete=models.CASCADE, related_name='transaction')
-    transaction_id = models.CharField(max_length=100, unique=True)
-    status = models.CharField(max_length=20, choices=TRANSACTION_STATUS_CHOICES)
-    confirmed_at = models.DateTimeField(auto_now_add=True)
-    response_data = models.JSONField(blank=True, null=True)
-
-    def __str__(self):
-        return f"Transaction {self.transaction_id} - {self.status}"
-
-    class Meta:
-        verbose_name = "Transaction de péage"
-        verbose_name_plural = "Transactions de péage"
-        ordering = ['-confirmed_at']
-        
 class TollDetection(models.Model):
-    plate_number = models.CharField(max_length=15)
-    detected_at = models.DateTimeField(auto_now_add=True)
-    booth = models.ForeignKey(TollBooth, on_delete=models.CASCADE)
-    processed = models.BooleanField(default=False)
+    vehicle = models.ForeignKey(
+        "vehicles.Vehicle",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="detections"
+        )
     
+    detected_at = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    booth = models.ForeignKey(
+        "tolls.TollBooth",
+        on_delete=models.CASCADE,
+        related_name="detections"
+    )
+
+    processed = models.BooleanField(
+        default=False
+    )
+
+    class Meta:
+        ordering = ["-detected_at"]
+
+    def __str__(self):
+        return f"Détection {self.vehicle} @ {self.detected_at}"
+
+
+# ============================
+# DETTE DE PÉAGE
+# ============================
+
 class TollDebt(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    amount_due = models.DecimalField(max_digits=10, decimal_places=2)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    interest_applied = models.BooleanField(default=False)
-    remaining_commission = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
-    is_fully_paid = models.BooleanField(default=False)
+    driver = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="toll_debts"
+    )
+
+    booth = models.ForeignKey(
+        "tolls.TollBooth",
+        on_delete=models.CASCADE,
+        related_name="debts"
+    )
+
+    amount_due = models.DecimalField(
+        max_digits=10,
+        decimal_places=2
+    )
+
+    interest_rate = models.DecimalField(
+        max_digits=4,
+        decimal_places=2,
+        default=Decimal("0.03"),
+        help_text="Taux mensuel"
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+    
+    updated_at = models.DateTimeField(
+        auto_now=True
+    )
+
+    is_fully_paid = models.BooleanField(
+        default=False
+    )
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return (
+            f"Dette {self.amount_due} "
+            f"{self.booth.currency.upper()} — "
+            f"Chauffeur: {self.driver}"
+    )
+        
+    def clean(self):
+        if not self.driver:
+            raise ValidationError("Une dette doit être associée à un chauffeur.")
+
+    def apply_interest(self):
+        """Applique l'intérêt mensuel si impayé"""
+        if self.is_fully_paid:
+            return
+
+        self.amount_due = (
+            self.amount_due * (1 + self.interest_rate)
+        ).quantize(Decimal("0.01"))
+
+        self.save(update_fields=["amount_due"])
+        
+@property
+def vehicle_owner(self):
+    return self.booth.vehicle.owner

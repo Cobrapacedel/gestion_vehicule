@@ -1,132 +1,115 @@
 {% extends "core/base.html" %}
 {% load static %}
-{% block title %}Veyikil | Lis{% endblock %}
+{% load humanize %}
+
+{% block title %}Lis Tout Veyikil Yo{% endblock %}
+
 {% block content %}
+<div class="max-w-7xl mx-auto px-4 py-8">
+  <h1 class="text-2xl font-bold mb-6">🚘 Lis Tout Veyikil Yo</h1>
 
-<h1 class="text-2xl font-bold mb-6">Lis Tout Veyikil Yo</h1>
+  <!-- Formulaire de recherche -->
+  <form method="GET" class="flex flex-wrap gap-4 mb-6">
+    <div class="w-full md:w-1/4 bg-gray-100 p-4 rounded-lg shadow border border-gray-500">
+      <input type="text" name="q" class="form-input p-3 border rounded-lg w-full" placeholder="Chèche ......" value="{{ request.GET.q }}">
+    </div>
+    <div class="w-full md:w-1/4 bg-gray-100 p-4 rounded-lg shadow border border-gray-500">
+      <input type="date" name="start_date" class="form-input p-3 border rounded-lg w-full" value="{{ request.GET.start_date }}">
+    </div>
+    <div class="w-full md:w-1/4 bg-gray-100 p-4 rounded-lg shadow border border-gray-500">
+      <input type="date" name="end_date" class="form-input p-3 border rounded-lg w-full" value="{{ request.GET.end_date }}">
+    </div>
+    <div class="w-full md:w-1/4 flex items-end">
+      <button type="submit" class="btn btn-primary px-4 py-2 rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none">Filtre</button>
+    </div>
+  </form>
 
-<!-- Formulaire de recherche et filtrage -->
+  <!-- 🚀 Boutons d’action selon rôle -->
+  <div class="flex justify-between mb-6 mt-6">
+    {% if user.role in "agency dealer garage user" %}
+      <a href="{% url 'vehicles:add_vehicle' %}" class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">➕</a>
+    {% endif %}
 
-<form method="GET" class="flex flex-wrap gap-4 mb-6">
-  <input type="text" name="query" placeholder="Chache..." value="{{ request.GET.query }}"
-         class="w-full sm:w-1/3 px-4 py-2 text-black border border-gray-300 rounded-lg focus:outline-none focus:ring focus:border-blue-400">
+    {% if user.role == "garage" %}
+      <a href="{% url 'contracts:contract_list' %}" class="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition">🔧</a>
+    {% endif %}
+  </div>
 
-  <input type="date" name="start_date" value="{{ request.GET.start_date }}"
-         class="w-full sm:w-1/4 px-4 py-2 text-black border border-gray-300 rounded-lg focus:outline-none focus:ring focus:border-blue-400">
+  <!-- Tableau des véhicules -->
+  <div class="overflow-x-auto bg-white rounded-lg shadow">
+    <table class="w-full text-left text-sm">
+      <thead class="bg-gray-100 text-black border-b font-semibold">
+        <tr>
+          <th class="px-4 py-3">ID</th>
+          <th class="px-4 py-3">Plak</th>
+          <th class="px-4 py-3">Estati</th>
+          <th class="px-4 py-3">Aksyon</th>
+          <th class="px-4 py-3">Tip</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y">
+        {% for vehicle in vehicles %}
+          <tr class="hover:bg-gray-50 text-black">
+            <td class="px-4 py-2">{{ user.id }}</td>
+            <td class="px-4 py-2">{{ vehicle.plate_number }}</td>
+            <td class="px-4 py-2">
+              {% if vehicle.status == 'available' %}
+                <span class="inline-block px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded">✅ Aktif</span>
+              {% elif vehicle.status == 'rented' %}
+                <span class="inline-block px-2 py-1 text-xs font-medium bg-gray-200 text-gray-800 rounded">🚗 Lwe</span>
+              {% elif vehicle.status == 'sold' %}
+                <span class="inline-block px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 rounded">🤝 Vann</span>
+              {% elif vehicle.status == 'loaned' %}
+                <span class="inline-block px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded">🔁 Prete</span>
+              {% elif vehicle.status == 'mechanic' %}
+                <span class="inline-block px-2 py-1 text-xs font-medium bg-red-200 text-red-900 rounded">🔧 Garaj</span>
+              {% else %}
+                <span class="inline-block px-2 py-1 text-xs font-medium bg-gray-100 text-gray-700 rounded">⚪ N/A</span>
+              {% endif %}
+            </td>
+            <td class="px-4 py-2 flex gap-2">
+              <a href="{% url 'vehicles:vehicle_detail' vehicle.id %}" class="text-blue-600 hover:underline">🔍 Detay</a>
 
-  <input type="date" name="end_date" value="{{ request.GET.end_date }}"
-         class="w-full sm:w-1/4 px-4 py-2 text-black border border-gray-300 rounded-lg focus:outline-none focus:ring focus:border-blue-400">
+              {% if user.role == 'agency' and vehicle.status == 'available' %}
+                <a href="{% url 'contracts:contract_create' %}" class="text-green-600 hover:underline">📄 Lwe</a>
+              {% endif %}
 
-    <button type="submit"
-            class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded shadow">
-      Chèche   </button>
-</form>
-<!-- Tableau des véhicules -->
-<div class="overflow-x-auto bg-white rounded-lg shadow">
-  <table class="w-full text-left text-sm">
-    <thead class="bg-gray-100 text-black border-b font-semibold">
-      {% with query_params=request.GET.urlencode %}
-      <tr>
-        <th class="px-4 py-3"><a href="?sort=id&{{ query_params|safe }}">ID</a></th>
-        <th class="px-4 py-3"><a href="?sort=brand&{{ query_params|safe }}">Mak</a></th>
-        <th class="px-4 py-3"><a href="?sort=model&{{ query_params|safe }}">Modèl</a></th>
-        <th class="px-4 py-3"><a href="?sort=plate_number&{{ query_params|safe }}">Plak</a></th>
-        <th class="px-4 py-3"><a href="?sort=created_at&{{ query_params|safe }}">Dat</a></th>
-        <th class="px-4 py-3"><a href="?sort=vehicle_type&{{ query_params|safe }}">Kalite</a></th>
-        <th class="px-4 py-3"><a href="?sort=status&{{ query_params|safe }}">Estati</a></th>
-      </tr>
-      {% endwith %}
-    </thead>
-    <tbody class="divide-y">
-      {% for vehicle in vehicles %}
-      <tr class="hover:bg-white-50 text-black-50">
-        <td class="px-4 py-2">{{ user.id }}</td>
-        <td class="px-4 py-2">{{ vehicle.brand }}</td>
-        <td class="px-4 py-2">{{ vehicle.model }}</td>
-        <td class="px-4 py-2">{{ vehicle.plate_number }}</td>
-        <td class="px-4 py-2">{{ vehicle.created_at|date:"d/m/Y H:i" }}</td>
-        <td class="px-4 py-2 capitalize">{{ vehicle.vehicle_type }}</td>
-        <td class="px-4 py-2">
-          {% if vehicle.status == 'available' %}
-            <span class="inline-block px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded">Aktif</span>
-          {% elif vehicle.status == 'rented' %}
-            <span class="inline-block px-2 py-1 text-xs font-medium bg-gray-200 text-gray-800 rounded">Lwaye</span>
-            {% if vehicle.renter %}
-            <div class="text-xs text-gray-700 mt-1">
-              <p><strong>Non:</strong> {{ vehicle.renter.name }}</p>
-              <p><strong>Adrès:</strong> {{ vehicle.renter.address }}</p>
-              <p><strong>Telefòn:</strong> {{ vehicle.renter.phone_number }}</p>
-              <p><strong>Dat:</strong> {{ vehicle.renter.created_at|date:"d/m/Y H:i" }}</p>
-            </div>
-            {% endif %}
-          {% elif vehicle.status == 'sold' %}
-            <span class="inline-block px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 rounded">Vann</span>
-            {% if vehicle.seller %}
-            <div class="text-xs text-gray-700 mt-1">
-              <p><strong>Non:</strong> {{ vehicle.seller.name }}</p>
-              <p><strong>Adrès:</strong> {{ vehicle.seller.address }}</p>
-              <p><strong>Telefòn:</strong> {{ vehicle.seller.phone_number }}</p>
-              <p><strong>Dat:</strong> {{ vehicle.seller.created_at|date:"d/m/Y H:i" }}</p>
-            </div>
-            {% endif %}
-          {% elif vehicle.status == 'transferred' %}
-            <span class="inline-block px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded">Transfere</span>
-            {% if vehicle.transferred_to %}
-            <div class="text-xs text-gray-700 mt-1">
-              <p><strong>Non:</strong> {{ vehicle.transferred_to.name }}</p>
-              <p><strong>Adrès:</strong> {{ vehicle.transferred_to.address }}</p>
-              <p><strong>Telefòn:</strong> {{ vehicle.transferred_to.phone_number }}</p>
-              <p><strong>Dat:</strong> {{ vehicle.transferred_to.created_at|date:"d/m/Y H:i" }}</p>
-            </div>
-            {% endif %}
-          {% else %}
-            <span class="inline-block px-2 py-1 text-xs font-medium bg-red-200 text-red-900 rounded">Nan Garaj</span>
-            {% if vehicle.mechanic %}
-            <div class="text-xs text-gray-700 mt-1">
-              <p><strong>Garaj:</strong> {{ vehicle.mechanic.name }}</p>
-              <p><strong>Adrès:</strong> {{ vehicle.mechanic.address }}</p>
-              <p><strong>Telefòn:</strong> {{ vehicle.mechanic.phone_number }}</p>
-              <p><strong>Dat:</strong> {{ vehicle.mechanic.created_at|date:"d/m/Y H:i" }}</p>
-            </div>
-            {% endif %}
-          {% endif %}
-        </td>
-      </tr>
-      {% empty %}
-      <tr>
-        <td colspan="7" class="px-4 py-4 text-center text-gray-500">Pa gen machin disponib.</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+              {% if user.role == 'dealer' and vehicle.status == 'available' %}
+                <a href="{% url 'contracts:contract_create' %}" class="text-yellow-600 hover:underline">🤝 Vann</a>
+              {% endif %}
+              
+              {% if user.role == 'user' and vehicle.status == 'available' %}
+              <a href="{% url 'contracts:contract_create' %}" class="text-purple-609 hover:underline">Prete</a>
+              {% endif %}
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="4" class="px-4 py-4 text-center text-gray-500">Pa gen machin disponib.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination -->
+  <div class="mt-6 text-sm flex justify-center items-center gap-4 flex-wrap">
+    {% if vehicles.has_previous %}
+      <a href="?page=1" class="text-blue-600 hover:underline">&laquo; Premye</a>
+      <a href="?page={{ vehicles.previous_page_number }}" class="text-blue-600 hover:underline">Anvan</a>
+    {% endif %}
+
+    <span class="text-gray-700">Paj {{ vehicles.number }} sou {{ vehicles.paginator.num_pages }}</span>
+
+    {% if vehicles.has_next %}
+      <a href="?page={{ vehicles.next_page_number }}" class="text-blue-600 hover:underline">Pwochen</a>
+      <a href="?page={{ vehicles.paginator.num_pages }}" class="text-blue-600 hover:underline">Dènye &raquo;</a>
+    {% endif %}
+  </div>
+
+  <!-- ⏪ Retour -->
+  <div class="mt-6">
+    <a href="{% url 'core:dashboard_redirect' %}" class="text-blue-600 hover:underline">← Retounen sou tablodbò a</a>
+  </div>
 </div>
-
-<!-- Actions -->
-<div class="flex justify-between mt-6">
-  <a href="{% url 'vehicles:add_vehicle' %}"
-     class="btn px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-blue-700 transition">+ Anrejistre</a>
-
-  <a href="{% url 'vehicles:transfer_vehicle' %}"
-     class="btn px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-purple-700 transition">Transfere</a>
-</div>
-           <div class= 'mt-6'> <a href="{% url 'core:dashboard' %}" class="text-blue-600 hover:underline">← Retounen </a>
-        </div>
-
-<!-- Pagination -->
-<div class="mt-6 text-sm flex justify-center items-center gap-4 flex-wrap">
-  {% if vehicles.has_previous %}
-    <a href="?page=1&{{ request.GET.urlencode }}" class="text-blue-600 hover:underline">&laquo; Premye</a>
-    <a href="?page={{ vehicles.previous_page_number }}&{{ request.GET.urlencode }}" class="text-blue-600 hover:underline">Anvan</a>
-  {% endif %}
-
-  <span class="text-gray-700">
-    Paj {{ vehicles.number }} sou {{ vehicles.paginator.num_pages }}
-  </span>
-
-  {% if vehicles.has_next %}
-    <a href="?page={{ vehicles.next_page_number }}&{{ request.GET.urlencode }}" class="text-blue-600 hover:underline">Pwochen</a>
-    <a href="?page={{ vehicles.paginator.num_pages }}&{{ request.GET.urlencode }}" class="text-blue-600 hover:underline">Dènye &raquo;</a>
-  {% endif %}
-</div>
-
 {% endblock %}

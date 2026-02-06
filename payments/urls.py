@@ -10,7 +10,7 @@ urlpatterns = [
 
     # Transactions
     path('transactions/', views.transaction_list, name='transaction_list'),
-    path('transactions/<int:pk>/', views.transaction_detail, name='transaction_detail'),
+    path('transactions/<uuid:pk>/', views.transaction_detail, name='transaction_detail'),
     
     # Transfert
     path('transfer/', views.fund_transfer_list, name='fund_transfer_list'),
@@ -21,7 +21,7 @@ urlpatterns = [
     # Recharge (CBV)
     path("recharges/", views.RechargeListView.as_view(), name="recharge_list"),
     path("recharges/<int:pk>/", views.RechargeDetailView.as_view(), name="recharge_detail"),
-    path("recharges/new/", views.RechargeCreateView.as_view(), name="recharge_create"),
+    path("recharges/new/", views.RechargeCreateView.as_view(), name="recharge_form"),
     path("recharges/<int:pk>/complete/", views.complete_recharge, name="complete_recharge"),
     
     # Transactions - CRUD

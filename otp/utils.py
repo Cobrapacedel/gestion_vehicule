@@ -17,12 +17,12 @@ def generate_otp(length=6):
 
 
 # --- Validation numéro ---
-def validate_phone_number(phone_number):
+def validate_phone(phone):
     """
     Valide un numéro de téléphone international.
     """
     try:
-        parsed = phonenumbers.parse(phone_number, None)
+        parsed = phonenumbers.parse(phone, None)
         if not phonenumbers.is_valid_number(parsed):
             raise ValidationError("Numéro de téléphone invalide.")
     except phonenumbers.NumberParseException:
@@ -91,8 +91,8 @@ def send_otp(user, otp):
     if otp.delivery_method == 'email':
         send_otp_via_email(user.email, otp.code)
     elif otp.delivery_method == 'sms':
-        if user.phone_number:
-            send_otp_via_sms(user.phone_number, otp.code)
+        if user.phone:
+            send_otp_via_sms(user.phone, otp.code)
         else:
             raise ValueError("Numéro de téléphone non défini pour cet utilisateur.")
     else:

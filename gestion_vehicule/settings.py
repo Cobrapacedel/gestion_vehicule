@@ -3,6 +3,15 @@ from pathlib import Path
 from dotenv import load_dotenv
 import logging
 from decouple import config
+from django.utils.translation import gettext_lazy as _
+
+LANGUAGE_CODE = "fr"
+
+LANGUAGES = [
+    ("fr", _("Français")),
+    ("en", _("English")),
+    ("ht", _("Kreyòl Ayisyen")),
+]
 
 BSCSCAN_API_KEY = config('BSCSCAN_API_KEY')
 
@@ -34,26 +43,35 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
+    "django.contrib.humanize",
     "django.contrib.staticfiles",
-    "users",          # Application pour la gestion des utilisateurs
-    "core",           # Application pour les fonctionnalités principales
-    "payments",       # Application pour la gestion des paiements
-    "vehicles",       # Application pour la gestion des véhicules
-    "tolls", 
-    "otp",
-    "fines",
-    "documents",
-    'widget_tweaks', # Pour le style des formulaires
-    "rest_framework", # API REST avec Django REST Framework
-    "debug_toolbar", # Application pour la gestion des péages 
-    "notifications",  # Application pour les notifications en temps réel
-    "corsheaders",    # Gestion des en-têtes CORS
-    "django_filters", # Filtrage des requêtes via Django
-    "channels",  
+
+    "users.apps.UsersConfig",
+    "core.apps.CoreConfig",
+    "contracts.apps.ContractsConfig",
+    "payments.apps.PaymentsConfig",
+    "vehicles.apps.VehiclesConfig",
+    "tolls.apps.TollsConfig",
+    "otp.apps.OtpConfig",
+    "fines.apps.FinesConfig",
+    "documents.apps.DocumentsConfig",
+
+    "widget_tweaks",
+    "rest_framework",
+    "crispy_forms",
+    "crispy_tailwind",
+
+    "notifications.apps.NotificationsConfig",  # ✅ TRÈS IMPORTANT
+    "corsheaders",
+    "django_filters",
+    "django_extensions",
+    "channels",
     "django_celery_beat",
-    "twilio", # Pour le support des WebSockets avec Django Channels
+    "twilio",
 ]
 
+CRISPY_ALLOWED_TEMPLATE_PACKS = ["tailwind", "bootstrap4", "bootstrap5"]
+CRISPY_TEMPLATE_PACK = "tailwind"  # ou "bootstrap4" selon ce que tu veux
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
@@ -63,11 +81,10 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-
-    # Middlewares personnalisés
+    #"users.middleware.VerifiedAccountMiddleware",
     "users.middleware.AccountLockMiddleware",       # Middleware pour verrouiller un compte après trop de tentatives
     "users.middleware.GeolocationLoggingMiddleware", 
-    "debug_toolbar.middleware.DebugToolbarMiddleware", # Middleware pour enregistrer la géolocalisation
+   # "debug_toolbar.middleware.DebugToolbarMiddleware", # Middleware pour enregistrer la géolocalisation
     "users.middleware.SecurityMiddleware",           # Middleware pour des vérifications de sécurité supplémentaires
 ]
 
@@ -120,6 +137,10 @@ DATABASES = {
 
 DATABASE_ROUTERS = ['gestion_vehicule.db_router.DeletedFineRouter']
 
+LOCALE_PATHS = [
+    BASE_DIR / "locale",
+]
+
 # Validateurs de mots de passe
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
@@ -133,6 +154,7 @@ LANGUAGE_CODE = "fr"
 TIME_ZONE = "Africa/Abidjan"
 USE_I18N = True
 USE_TZ = True
+USE_L10N = True
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
@@ -143,7 +165,8 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+DEFAULT_FROM_EMAIL = "no-reply@jeremachinou.com"
+SERVER_EMAIL = "no-reply@jeremachinou.com"
 
 # Paramètres de sécurité
 SECURE_SSL_REDIRECT = not DEBUG
@@ -184,6 +207,10 @@ CORS_ALLOWED_ORIGINS = [
 
 # Configuration de Django REST Framework (pagination)
 REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': 
+        (
+  'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10,  # Nombre d'éléments par page
 }

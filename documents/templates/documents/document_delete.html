@@ -1,25 +1,19 @@
-{% extends "core/base.html" %}
+{% extends 'core/base.html' %}
+{% block title %}Supprimer document{% endblock %}
 
 {% block content %}
-<div class="max-w-xl mx-auto mt-16 p-6 bg-white rounded-2xl shadow-lg">
-    <h2 class="text-2xl font-bold text-gray-800 mb-4">
-        Siprime dokiman #{{ document.id }} 
-    </h2>
-
-    <p class="text-gray-700 mb-6">
-        Eske ou asire ke ou vle siprime dokiman sa ? 
+<div class="max-w-2xl mx-auto px-4 py-8">
+  <div class="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-xl text-center">
+    <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Supprimer ce document ?</h2>
+    <p class="text-gray-600 dark:text-gray-400 mb-6">
+      Le document <strong>{{ document }}</strong> sera définitivement supprimé.
     </p>
 
-    <form method="post" class="flex items-center space-x-4">
-        {% csrf_token %}
-        <button type="submit"
-                class="bg-red-600 hover:bg-red-700 text-white font-semibold px-5 py-2 rounded transition duration-200">
-            Wi, Siprime li!
-        </button>
-        <a href="{% url 'documents_list' %}"
-           class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold px-5 py-2 rounded transition duration-200">
-            Non, Retounen!
-        </a>
+    <form method="post" class="inline">
+      {% csrf_token %}
+      <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition">Confirmer</button>
+      <a href="{% url 'documents:document_detail' document.pk %}" class="ml-3 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition">Annuler</a>
     </form>
+  </div>
 </div>
 {% endblock %}

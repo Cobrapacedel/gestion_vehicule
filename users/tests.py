@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from .models import Profile, OTP, LoginAttempt, LoginHistory
 from .forms import CustomUserCreationForm, CustomAuthenticationForm, OTPVerificationForm
-from .utils import generate_otp, validate_phone_number, send_email, get_geolocation
+from .utils import generate_otp, validate_phone, send_email, get_geolocation
 from .signals import create_user_profile
 from unittest.mock import patch
 
@@ -17,7 +17,7 @@ class UserModelTests(TestCase):
         self.user = CustomUser.objects.create_user(
             email="test@example.com",
             password="password123",
-            phone_number="+1234567890"
+            phone="+1234567890"
         )
 
     def test_create_user(self):
@@ -32,11 +32,11 @@ class UserModelTests(TestCase):
         with self.assertRaises(ValidationError):
             CustomUser.objects.create_user(email="test@example.com", password="password123")
 
-    def test_phone_number_validation(self):
+    def test_phone_validation(self):
         """Test phone number validation."""
         invalid_phone = "+123invalid"
         with self.assertRaises(ValidationError):
-            validate_phone_number(invalid_phone)
+            validate_phone(invalid_phone)
 
     def test_profile_creation_signal(self):
         """Test that a profile is created automatically when a user is created."""
@@ -77,7 +77,7 @@ class ViewTests(TestCase):
         """Test user registration view."""
         response = self.client.post(reverse("register"), {
             "email": "newuser@example.com",
-            "phone_number": "+1987654321",
+            "phone": "+1987654321",
             "first_name": "New",
             "last_name": "User",
             "password1": "password123",
@@ -108,7 +108,7 @@ class FormTests(TestCase):
         """Test CustomUserCreationForm."""
         form_data = {
             "email": "formuser@example.com",
-            "phone_number": "+1123456789",
+            "phone": "+1123456789",
             "first_name": "Form",
             "last_name": "User",
             "password1": "password123",

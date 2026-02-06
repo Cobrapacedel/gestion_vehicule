@@ -1,0 +1,40 @@
+{% extends 'core/base.html' %}
+{% block title %}Dokiman | {% if form.instance.pk %}Modifye{% else %}Kreye{% endif %}{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto px-4 py-8">
+  <div class="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-xl">
+    <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+      {% if form.instance.pk %}Modifye Dokiman{% else %}Kreye Dokiman{% endif %}
+    </h2>
+
+    {% if messages %}
+      {% for message in messages %}
+        <div class="mb-4 p-3 rounded-lg
+                    {% if message.tags == 'error' %}bg-red-100 text-red-700 border border-red-300
+                    {% else %}bg-green-100 text-green-700 border border-green-300{% endif %}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data" class="space-y-4">
+      {% csrf_token %}
+      {% for field in form %}
+        <div>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ field.label }}</label>
+          {{ field }}
+          {% if field.errors %}
+            <p class="text-red-500 text-xs mt-1">{{ field.errors|striptags }}</p>
+          {% endif %}
+        </div>
+      {% endfor %}
+
+      <div class="flex justify-end space-x-3">
+        <a href="{% url 'documents:document_list' %}" class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition">Anile</a>
+        <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">Sove</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends 'core/base.html' %}
+{% block title %}Garaj | Enskripsyon{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center bg-gray-700 py-12 px-4 sm:px-6 lg:px-8">
+  <div class="bg-gray-800 p-8 sm:p-10 rounded-xl shadow-xl w-full max-w-md space-y-6">
+    <h2 class="text-3xl font-bold text-red-500 mb-6 text-center">Kreye Kont Sèvis / Garaj</h2>
+
+    <form method="post" enctype="multipart/form-data" class="space-y-4">
+      {% csrf_token %}
+      {% for field in form %}
+        <div class="flex flex-col">
+          {{ field.label_tag }} 
+          {{ field }}
+          {% if field.errors %}
+            <p class="text-red-500 text-sm">{{ field.errors|striptags }}</p>
+          {% endif %}
+        </div>
+      {% endfor %}
+      <button type="submit" class="w-full bg-yellow-500 text-white py-2 rounded-lg hover:bg-yellow-600 transition">Kreye Kont Sèvis</button>
+    </form>
+
+    <p class="text-gray-300 text-sm text-center">Deja gen kont? <a href="{% url 'login' %}" class="text-blue-400">Konekte</a></p>
+  </div>
+</div>
+<!-- ⏪ Retour -->
+  <div class="mt-6">
+    <a href="{% url 'users:register_choice' %}" class="text-blue-600 hover:underline">← Tounen</a>
+  </div>
+{% endblock %}

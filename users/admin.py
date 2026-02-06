@@ -1,97 +1,156 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import CustomUser, Profile, LoginAttempt, LoginHistory
+from django.utils.html import format_html
+from .models import (
+    CustomUser,
+    SimpleProfile,
+    BusinessProfile,
+    Client,
+    Employee,
+    LoginAttempt,
+    LoginHistory,
+)
+from .forms import CustomUserCreationForm, CustomUserChangeForm
 
-# Custom User Admin
+
+# ============================
+# ADMIN : CUSTOM USER
+# ============================
+@admin.register(CustomUser)
 class CustomUserAdmin(UserAdmin):
-    """Customized admin interface for the CustomUser model."""
+    add_form = CustomUserCreationForm
+    form = CustomUserChangeForm
+    model = CustomUser
+
     list_display = (
         "email",
-        "first_name",
-        "last_name",
-        "phone_number",
-        "driver_license",
+        "phone",
+        "user_type",
         "is_active",
         "is_staff",
-        "is_locked",
-        "created_at",
+        "last_login",
     )
-    list_filter = (
-        "is_active",
-        "is_staff",
-        "is_superuser",
-        "is_locked",
-        "created_at",
-    )
-    search_fields = ("email", "first_name", "last_name", "phone_number", "driver_license")
-    ordering = ("-created_at",)
-    readonly_fields = ("uuid", "created_at", "last_failed_login")
+    list_filter = ("user_type", "is_active", "is_staff")
 
     fieldsets = (
-        (None, {"fields": ("email", "password")}),
-        ("Personal Info", {"fields": ("first_name", "last_name", "phone_number")}),
-        ("Permissions", {"fields": ("is_active", "is_staff", "is_superuser", "is_locked")}),
-        ("Important Dates", {"fields": ("created_at", "last_failed_login")}),
-        ("Unique Identifier", {"fields": ("uuid",)}),
-        ("Informations supplémentaires", {"fields": ("driver_license",)}),
+        ("Identifiants", {"fields": ("email", "phone", "password")}),
+        ("Type utilisateur", {"fields": ("user_type",)}),
+        ("Permissions", {"fields": ("is_active", "is_staff", "is_superuser", "groups", "user_permissions")}),
+        ("Dates", {"fields": ("last_login", "date_joined")}),
     )
 
     add_fieldsets = (
         (None, {
             "classes": ("wide",),
-            "fields": ("email", "phone_number", "driver_license", "password1", "password2"),
+            "fields": ("email", "phone", "user_type", "password1", "password2"),
         }),
     )
 
-# Profile Admin
-class ProfileAdmin(admin.ModelAdmin):
-    """Admin interface for the Profile model."""
+    search_fields = ("email", "phone")
+    ordering = ("email",)
+    
+    def save_model(self, request, obj, form, change):
+        if not change:  # création via admin
+            obj.created_via_admin = True
+        super().save_model(request, obj, form, change)
+
+
+# ================================
+# ADMIN : PROFILE UTILISATEUR SIMPLE
+# ================================
+@admin.register(SimpleProfile)
+class SimpleProfileAdmin(admin.ModelAdmin):
     list_display = (
         "user",
+        "first_name",
+        "last_name",
         "address",
-        "phone_number",
-        "email_notifications",
-        "sms_notifications",
+        "driver_license_number",
+        "driver_license_preview",
     )
-    list_filter = ("email_notifications", "sms_notifications")
-    search_fields = ("user__email", "phone_number", "address")
-    readonly_fields = ("user",)
 
-# Login Attempt Admin
+    def driver_license_preview(self, obj):
+        if obj.driver_license_image:
+            return format_html(
+                '<img src="{}" width="60" style="border-radius:5px;" />',
+                obj.driver_license_image.url,
+            )
+        return "Aucune image"
+    driver_license_preview.short_description = "Permis (photo)"
+
+    search_fields = ("user__email", "first_name", "last_name", "driver_license_number")
+
+
+# ================================
+# ADMIN : BUSINESS PROFILE
+# ================================
+@admin.register(BusinessProfile)
+class BusinessProfileAdmin(admin.ModelAdmin):
+    list_display = (
+        "user",
+        "business_name",
+        "address",
+        "patente_number",
+        "patente_preview",
+    )
+
+    def patente_preview(self, obj):
+        if obj.patente_image:
+            return format_html(
+                '<img src="{}" width="60" style="border-radius:5px;" />',
+                obj.patente_image.url,
+            )
+        return "Aucune image"
+    patente_preview.short_description = "Patente (photo)"
+
+    search_fields = ("user__email", "business_name", "patente_number")
+
+
+# ============================
+# ADMIN : CLIENT
+# ============================
+@admin.register(Client)
+class ClientAdmin(admin.ModelAdmin):
+    list_display = ("real_user", "created_at")
+    search_fields = ("user__email",)
+
+
+# ============================
+# ADMIN : EMPLOYEE
+# ============================
+@admin.register(Employee)
+class EmployeeAdmin(admin.ModelAdmin):
+    list_display = ("first_name", "last_name", "business", "user", "employee_type", "position", "created_at")
+    search_fields = ("first_name", "business__business_name", "user__email", "position")
+    list_filter = ("business", "position")
+
+# ============================
+# ADMIN : LOGIN ATTEMPTS
+# ============================
+@admin.register(LoginAttempt)
 class LoginAttemptAdmin(admin.ModelAdmin):
-    """Admin interface for the LoginAttempt model."""
     list_display = (
         "user",
         "failed_attempts",
-        "last_attempt",
-        "locked_until",
-        "is_locked",
+        "is_successful",
+        "timestamp",
     )
-    list_filter = ("failed_attempts", "locked_until")
-    search_fields = ("user__email",)
-    readonly_fields = ("user", "failed_attempts", "last_attempt", "locked_until")
+    list_filter = ("is_successful", "timestamp")
+    search_fields = ("user__email", "locked_until")
 
-    def is_locked(self, obj):
-        """Display whether the user is currently locked."""
-        return obj.is_locked()
-    is_locked.boolean = True  # Display as a green/red checkbox
 
-# Login History Admin
+# ============================
+# ADMIN : LOGIN HISTORY
+# ============================
+@admin.register(LoginHistory)
 class LoginHistoryAdmin(admin.ModelAdmin):
-    """Admin interface for the LoginHistory model."""
     list_display = (
         "user",
         "ip_address",
         "city",
         "country",
         "timestamp",
+        "device_type",
     )
-    list_filter = ("city", "country", "timestamp")
+    list_filter = ("country", "device_type")
     search_fields = ("user__email", "ip_address", "city", "country")
-    readonly_fields = ("user", "ip_address", "user_agent", "city", "country", "timestamp")
-
-# Register Models
-admin.site.register(CustomUser, CustomUserAdmin)
-admin.site.register(Profile, ProfileAdmin)
-admin.site.register(LoginAttempt, LoginAttemptAdmin)
-admin.site.register(LoginHistory, LoginHistoryAdmin)

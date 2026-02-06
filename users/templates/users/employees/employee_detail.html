@@ -1,0 +1,90 @@
+{% extends "core/base.html" %}
+{% block title %}Detay Anplwaye{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-900 px-6 py-10 text-white">
+
+    <div class="max-w-3xl mx-auto bg-gray-800 p-8 rounded-xl shadow-lg">
+
+        <h1 class="text-3xl font-bold text-center text-yellow-400 mb-6">
+            Detay Anplwaye
+        </h1>
+
+        <div class="space-y-4">
+
+            <div class="flex justify-between">
+                <span class="font-semibold">Non konplè :</span>
+                <span>{{ employee.first_name }} {{ employee.last_name }}</span>
+            </div>
+
+            <div class="flex justify-between">
+                <span class="font-semibold">Imèl :</span>
+                <span>{{ employee.email }}</span>
+            </div>
+
+            <div class="flex justify-between">
+                <span class="font-semibold">Telefòn :</span>
+                <span>{{ employee.phone }}</span>
+            </div>
+
+            <div class="flex justify-between">
+                <span class="font-semibold">Kalite :</span>
+                <span class="capitalize">{{ employee.employee_type }}</span>
+            </div>
+
+            <div class="flex justify-between">
+                <span class="font-semibold">Pozisyon :</span>
+                <span>{{ employee.position }}</span>
+            </div>
+
+            <div class="flex justify-between">
+                <span class="font-semibold">Biznis :</span>
+                <span>
+                    {% if employee.business %}
+                        {{ employee.business.business_name }}
+                    {% else %}
+                        —
+                    {% endif %}
+                </span>
+            </div>
+
+            <div class="flex justify-between">
+                <span class="font-semibold">Itilizatè asosye :</span>
+                <span>
+                    {% if employee.user %}
+                        {{ employee.user.email }}
+                    {% else %}
+                        —
+                    {% endif %}
+                </span>
+            </div>
+
+            <div class="flex justify-between">
+                <span class="font-semibold">Kreye :</span>
+                <span>{{ employee.created_at|date:"d M Y - H:i" }}</span>
+            </div>
+
+        </div>
+
+        <!-- ACTION BUTTONS -->
+        <div class="flex justify-center gap-4 mt-8">
+            <a href="{% url 'users:employee_update' employee.id %}" 
+               class="bg-yellow-500 px-6 py-2 rounded-lg hover:bg-yellow-600">
+                Modifye
+            </a>
+
+            <a href="{% url 'users:employee_delete' employee.id %}" 
+               class="bg-red-600 px-6 py-2 rounded-lg hover:bg-red-700">
+                Efase
+            </a>
+
+            <a href="{% url 'users:employee_list' %}" 
+               class="bg-gray-700 px-6 py-2 rounded-lg hover:bg-gray-600">
+                Retounen
+            </a>
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}

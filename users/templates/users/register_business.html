@@ -1,0 +1,111 @@
+{% extends "core/base.html" %}
+{% load widget_tweaks %}
+{% block title %}Inscription — Entreprise{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center bg-gray-800 py-12 px-4">
+  <div class="w-full max-w-2xl bg-gray-900 p-8 rounded-xl shadow-lg">
+
+    <h1 class="text-2xl font-bold text-white text-center mb-6">
+        Kreye yon kont
+    </h1>
+
+    {% if messages %}
+      <div class="mb-4">
+        {% for m in messages %}
+          <div class="px-3 py-2 rounded {{ m.tags }}">{{ m }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <!-- FORMULAIRE UNIQUE -->
+    <form method="POST" enctype="multipart/form-data" novalidate>
+      {% csrf_token %}
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+        <!-- EMAIL -->
+        <div>
+          <label class="text-gray-300 text-sm">Imèl</label>
+          {{ form.email|add_class:"w-full mt-1 p-2 bg-gray-800 border border-gray-700 rounded text-white" }}
+          {% for error in form.email.errors %}
+            <p class="text-red-400 text-sm">{{ error }}</p>
+          {% endfor %}
+        </div>
+
+        <!-- PHONE -->
+        <div>
+          <label class="text-gray-300 text-sm">Telefòn</label>
+          {{ form.phone|add_class:"w-full mt-1 p-2 bg-gray-800 border border-gray-700 rounded text-white" }}
+          {% for error in form.phone.errors %}
+            <p class="text-red-400 text-sm">{{ error }}</p>
+          {% endfor %}
+        </div>
+
+        <!-- ROLE -->
+        <div>
+          <label class="text-gray-300 text-sm">Wòl</label>
+          {{ form.role|add_class:"w-full mt-1 p-2 bg-gray-800 border border-gray-700 rounded text-white" }}
+          {% for error in form.role.errors %}
+            <p class="text-red-400 text-sm">{{ error }}</p>
+          {% endfor %}
+        </div>
+
+      </div>
+<br>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+  <!-- PASSWORD -->
+  <div>
+    <label class="text-gray-300 text-sm">Modpas</label>
+    {{ form.password1|add_class:"w-full mt-1 p-2 bg-gray-800 border border-gray-700 rounded text-white password-field" }}
+    {% for error in form.password1.errors %}
+      <p class="text-red-400 text-sm">{{ error }}</p>
+    {% endfor %}
+  </div>
+
+  <!-- CONFIRM PASSWORD -->
+  <div>
+    <label class="text-gray-300 text-sm">Konfime modpas</label>
+    {{ form.password2|add_class:"w-full mt-1 p-2 bg-gray-800 border border-gray-700 rounded text-white password-field" }}
+    {% for error in form.password2.errors %}
+      <p class="text-red-400 text-sm">{{ error }}</p>
+    {% endfor %}
+  </div>
+
+</div>
+
+<!-- SHOW PASSWORD -->
+<div class="flex items-center mt-3">
+  <input
+    type="checkbox"
+    id="togglePasswords"
+    class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+  >
+  <label for="togglePasswords" class="ml-2 text-sm text-gray-300">
+    Montre modpas yo
+  </label>
+</div>
+      <button type="submit"
+              class="mt-6 w-full py-2 rounded bg-blue-600 hover:bg-blue-500 text-white font-semibold">
+        Sove
+      </button>
+
+      <p class="text-sm text-gray-400 mt-4 text-center">
+        Ou vle kreye yon kont senp pito ?
+        <a class="text-blue-400 hover:underline" href="{% url 'users:register_choice' %}?type=simple">
+            Tounen
+        </a>
+      </p>
+
+    </form>
+  </div>
+  <script>
+  document.getElementById("togglePasswords").addEventListener("change", function () {
+    document.querySelectorAll(".password-field").forEach(field => {
+      field.type = this.checked ? "text" : "password";
+    });
+  });
+</script>
+</div>
+{% endblock %}

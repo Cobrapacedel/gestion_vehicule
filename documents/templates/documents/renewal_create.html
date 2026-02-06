@@ -1,0 +1,43 @@
+{% extends "core/base.html" %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto mt-10 p-6 bg-white shadow-xl rounded-2xl">
+    <h2 class="text-2xl font-bold mb-6 text-gray-800">Anrejistre yon Dokiman</h2>
+
+    {% if messages %}
+        <ul class="mb-4">
+            {% for message in messages %}
+                <li class="text-sm text-white px-4 py-2 mb-2 rounded 
+                    {% if message.tags == 'error' %}bg-red-500
+                    {% elif message.tags == 'success' %}bg-green-500
+                    {% else %}bg-gray-500{% endif %}">
+                    {{ message }}
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data" class="space-y-4">
+        {% csrf_token %}
+        {% for field in form %}
+            <div>
+                <label for="{{ field.id_for_label }}" class="block text-gray-700 font-medium mb-1">
+                    {{ field.label }}{% if field.field.required %}<span class="text-red-500">*</span>{% endif %}
+                </label>
+                {{ field }}
+                {% if field.help_text %}
+                    <p class="text-xs text-gray-500">{{ field.help_text }}</p>
+                {% endif %}
+                {% for error in field.errors %}
+                    <p class="text-sm text-red-600">{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endfor %}
+
+        <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition">
+            Anrejistre Dokiman an
+        </button>
+        <a href="{% url 'payments:payment_create' %}" class="text-gray-600 hover:underline">Retounen</a>
+    </form>
+</div>
+{% endblock %}

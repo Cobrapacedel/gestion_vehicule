@@ -1,0 +1,147 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto bg-white p-6 rounded-xl shadow">
+
+    <h1 class="text-2xl font-bold mb-6">
+        {% if form.instance.pk %}
+            Modifier le contrat
+        {% else %}
+            Nouveau contrat
+        {% endif %}
+    </h1>
+
+    <form method="post" class="space-y-6">
+        {% csrf_token %}
+
+        <!-- TYPE DE CONTRAT -->
+        <div>
+            <label class="block font-semibold mb-1">Type de contrat</label>
+            {{ form.contract_type }}
+            {% if form.contract_type.errors %}
+                <p class="text-red-600 text-sm">{{ form.contract_type.errors.0 }}</p>
+            {% endif %}
+        </div>
+
+        <!-- CLIENT -->
+        <div>
+            <label class="block font-semibold mb-1">Client</label>
+            {{ form.new_user }}
+        </div>
+
+        <!-- VEHICULE -->
+        <div id="vehicle-field">
+            <label class="block font-semibold mb-1">Véhicule</label>
+            {{ form.vehicle }}
+        </div>
+
+        <!-- SERVICE -->
+        <div id="service-field">
+            <label class="block font-semibold mb-1">Type de service</label>
+            {{ form.service_type }}
+        </div>
+
+        <!-- DATES -->
+        <div class="grid grid-cols-2 gap-4">
+            <div id="start-date-field">
+                <label class="block font-semibold mb-1">Date de début</label>
+                {{ form.start_date }}
+            </div>
+
+            <div id="end-date-field">
+                <label class="block font-semibold mb-1">Date de fin</label>
+                {{ form.end_date }}
+            </div>
+        </div>
+
+        <!-- PRIX -->
+        <div id="price-field">
+            <label class="block font-semibold mb-1">Prix</label>
+            {{ form.price }}
+        </div>
+
+        <!-- PENALITE -->
+        <div id="penalty-field">
+            <label class="block font-semibold mb-1">Pénalité / jour</label>
+            {{ form.penalty_per_day }}
+        </div>
+
+        <!-- GARANTIE -->
+        <div id="warranty-field">
+            <label class="block font-semibold mb-1">Garantie (jours)</label>
+            {{ form.warranty_period }}
+        </div>
+
+        <!-- PAYE -->
+        <div class="flex items-center gap-3">
+            {{ form.is_paid }}
+            <span class="font-semibold">Contrat déjà payé</span>
+
+            {% if form.instance.pk %}
+                <a href="{% url 'contracts:payment_form' form.instance.id %}"
+                   class="ml-auto bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg">
+                    Payer
+                </a>
+            {% endif %}
+        </div>
+
+        <button type="submit"
+                class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg">
+            Enregistrer
+        </button>
+
+    </form>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const contractType = document.getElementById("id_contract_type");
+
+    const fields = {
+        vehicle: document.getElementById("vehicle-field"),
+        service: document.getElementById("service-field"),
+        start: document.getElementById("start-date-field"),
+        end: document.getElementById("end-date-field"),
+        price: document.getElementById("price-field"),
+        penalty: document.getElementById("penalty-field"),
+        warranty: document.getElementById("warranty-field"),
+    };
+
+    function updateFields() {
+        const type = contractType.value;
+        Object.values(fields).forEach(el => el.style.display = "none");
+
+        if (type === "loan") {
+            fields.start.style.display = "block";
+            fields.end.style.display = "block";
+        }
+
+        if (type === "rent") {
+            fields.vehicle.style.display = "block";
+            fields.start.style.display = "block";
+            fields.end.style.display = "block";
+            fields.price.style.display = "block";
+            fields.penalty.style.display = "block";
+        }
+
+        if (type === "sell") {
+            fields.vehicle.style.display = "block";
+            fields.price.style.display = "block";
+            fields.warranty.style.display = "block";
+        }
+
+        if (type === "service") {
+            fields.service.style.display = "block";
+        }
+
+        if (type === "transfer") {
+            fields.vehicle.style.display = "block";
+        }
+    }
+
+    contractType.addEventListener("change", updateFields);
+    updateFields();
+});
+</script>
+{% endblock %}

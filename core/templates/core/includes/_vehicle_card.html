@@ -1,0 +1,28 @@
+{% load vehicle_tags %}
+
+<li class="p-3 border text-black rounded-lg bg-gray-50 hover:bg-gray-100 transition">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+        <div class="flex items-center gap-2 text-sm font-medium text-gray-800">
+            {% vehicle_icon vehicle.vehicle_type %}
+            {{ vehicle.brand }} - {{ vehicle.model }}
+            <span class="text-gray-500">
+                ({{ vehicle.serial_number }} · {{ vehicle.year }})
+            </span>
+        </div>
+
+        <div class="flex items-center gap-2 mt-1 sm:mt-0">
+            {{ vehicle.status|vehicle_status_badge }}
+            {{ vehicle.fuel_type|fuel_type_badge }}
+        </div>
+    </div>
+
+    {% if vehicle.related_user %}
+        <p class="text-xs text-gray-700 mt-1">
+            <strong>{{ vehicle.related_role }} :</strong>
+            {{ vehicle.related_user.first_name }} {{ vehicle.related_user.last_name }}
+            {% if vehicle.related_user.phone %}
+                — 📞 {{ vehicle.related_user.phone }}
+            {% endif %}
+        </p>
+    {% endif %}
+</li>

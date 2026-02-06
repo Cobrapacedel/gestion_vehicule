@@ -1,23 +1,101 @@
-{% extends "core/base.html" %}
+{% extends 'core/base.html' %}
+{% block title %}Dokiman | Detay{% endblock %}
+{% load document_badges %}
+
 
 {% block content %}
-<div class="max-w-4xl mx-auto mt-16 p-6 bg-white rounded-2xl shadow-lg">
-    <h2 class="text-3xl font-bold text-gray-800 mb-6">Dokiman #{{ document.id }}</h2>
+<div class="max-w-4xl mx-auto px-4 py-8">
+  <div class="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-xl space-y-6">
 
-    <p class="text-xl text-gray-700 mb-4"><strong>Tip :</strong> {{ document.document_type }}</p>
-    <p class="text-xl text-gray-700 mb-4"><strong>Machin :</strong> {{ document.vehicle }}</p>
-    <p class="text-xl text-gray-700 mb-6"><strong>Date Expirasyon :</strong> {{ document.expiration_date }}</p>
-
-    <div class="flex space-x-4">
-        <a href="{% url 'document_update' document.id %}" 
-           class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300">Modifye</a>
-        <a href="{% url 'document_delete' document.id %}" 
-           class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300">Siprime</a>
+    <!-- En-tête -->
+    <div class="items-center">
+      <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Detay</h1>
+  
+    <!-- Infos -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div>
+        <p class="text-sm text-gray-600 dark:text-gray-400">Tip</p>
+        <p class="text-lg font-semibold text-gray-900 dark:text-white">{{ document.document_type|document_type_badge }}</p>
+      </div>
+      <div>
+        <p class="text-sm text-gray-600 dark:text-gray-400">Veyikil</p>
+        <p class="text-lg font-semibold text-gray-900 dark:text-white">{{ document.vehicle|default:"-" }}</p>
+      </div>
+   <div>
+        <p class="text-sm text-gray-600 dark:text-gray-400">Pwopriyetè</p>
+        <p class="text-sm font-semibold text-gray-900 dark:text-white">{{ document.user|default:"-" }}</p>
+      {% if document.user.user_type == 'business' %}
+        <p><strong>Non :</strong> {{ document.user.businessprofile.business_name|default:"—" }}</p>
+        <p><strong>Patant :</strong> {{ document.user.businessprofile.patente_number|default:"—" }}</p>
+      {% else %}
+        <p><strong>Non :</strong> {{ document.user.simple.first_name|default:"—" }} {{ document.user.simple.last_name|default:"—" }}</p>
+        <p><strong>Lisans :</strong> {{ document.user.simple.driver_license_number|default:"—" }}</p>
+      {% endif %}
+      <p><strong>Telefòn :</strong> {{ document.user.phone|default:"—" }}</p>
+      </div>
+      <div>
+        <p class="text-sm text-gray-600 dark:text-gray-400">Dat Emisyon</p>
+        <p class="text-lg font-semibold text-gray-900 dark:text-white">{{ document.created_at|date:"d/m/Y" }}</p>
+      </div>
+      <div>
+        <p class="text-sm text-gray-600 dark:text-gray-400">Dat Ekspirasyon</p>
+        <p class="text-lg font-semibold text-gray-900 dark:text-white">{{ document.expiry_date|date:"d/m/Y" }}</p>
+      </div>
+      <div>
+        <p class="text-sm text-gray-600 dark:text-gray-400">Estati</p>
+        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                     {% if document.is_valid %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">
+          {{ document.is_valid|yesno:"Valid,Ekspire" }}
+        </span>
+      </div>
     </div>
-    <button type="reset" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300">
-        <a href="{% url 'documents:document_list' %}">Retounen nan lis dokiman yo</a>
-    </button>
-    <button type="reset" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300">
-        <a href="{% url 'documents:document_create' %}">Anrejistre yon nouvo dokiman</a>
+  
+    </div>
+
+{% comment %}
+    <!-- Actions rapides -->
+    <div class="flex flex-wrap gap-3">
+      <a href="{% url 'documents:renewal_form' document.pk %}" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">Renouveler</a>
+      <a href="{% url 'documents:payment_create' document.pk %}" class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition">Payer</a>
+    </div>
+
+    <!-- Renouvellements récents -->
+    {% if renewals %}
+      <div>
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">Renouvellements récents</h3>
+        <ul class="divide-y divide-gray-200 dark:divide-gray-700">
+          {% for r in renewals %}
+            <li class="flex justify-between items-center py-2">
+              <span class="text-sm text-gray-600 dark:text-gray-400">{{ r.old_expiry|date:"d/m/Y" }} → {{ r.new_expiry|date:"d/m/Y" }}</span>
+              <span class="text-sm text-gray-500 dark:text-gray-400">{{ r.renewed_at|date:"d/m/Y H:i" }}</span>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+
+    <!-- Paiements récents -->
+    {% if payments %}
+      <div>
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">Paiements récents</h3>
+        <ul class="divide-y divide-gray-200 dark:divide-gray-700">
+          {% for p in payments %}
+            <li class="flex justify-between items-center py-2">
+              <span class="text-sm text-gray-600 dark:text-gray-400">{{ p.amount }} {{ p.currency }}</span>
+              <span class="text-sm text-gray-500 dark:text-gray-400">{{ p.paid_at|date:"d/m/Y H:i" }}</span>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+
+  </div>
+  {% endcomment %}
+  <div class="flex justify-end">
+        <a href="{% url 'documents:document_delete' document.pk %}" class="px-3 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition">Efase</a>
+      </div>
 </div>
+  <div class="flex justify-center mt-6">
+        <a href="{% url 'documents:document_list' %}" class="px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">Tounen</a>
+      </div>
 {% endblock %}
